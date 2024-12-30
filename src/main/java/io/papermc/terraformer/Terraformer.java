@@ -4,13 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -77,7 +81,7 @@ public class Terraformer extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPlayerRightClick(PlayerInteractEvent event) {
+    public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         TerraformerProperties properties = terraformers.get(player.getUniqueId());
@@ -86,19 +90,14 @@ public class Terraformer extends JavaPlugin implements Listener {
             return;
         }
 
-        if (event.getItem() != null && event.getItem().getType() == Material.BRUSH) {
+        if (event.getItem() != null) {
             ItemMeta meta = event.getItem().getItemMeta();
 
             if (meta.customName().equals(TerraformItems.TERRAFORMER_BRUSH)) {
                 if (event.getAction().isLeftClick()) {
-                    Stack<BlockState> undoStates = properties.History.undo();
-                    if (undoStates == null) {
-                        player.sendMessage(Component.text(Messages.NOTHING_TO_UNDO)
-                                .color(NamedTextColor.RED));
-                        return;
-                    }
-                    undo(undoStates);
+                    openBrushSettings(player, properties);
                 }
+
                 if (event.getAction().isRightClick()) {
                     Block targetBlock = player.getTargetBlock(null, 256);
 
@@ -108,6 +107,44 @@ public class Terraformer extends JavaPlugin implements Listener {
                     }
                 }
             }
+
+            if (meta.customName().equals(TerraformItems.TERRAFORMER_UNDO)) {
+                if (event.getAction().isRightClick()) {
+                    Stack<BlockState> undoStates = properties.History.undo();
+                    if (undoStates == null) {
+                        player.sendMessage(Component.text(Messages.NOTHING_TO_UNDO)
+                                .color(NamedTextColor.RED));
+                        return;
+                    }
+                    undo(undoStates);
+                }
+            }
+
+            if (meta.customName().equals(TerraformItems.TERRAFORMER_REDO)) {
+                if (event.getAction().isRightClick()) {
+                    BrushAction redoAction = properties.History.redo();
+                    if (redoAction == null) {
+                        player.sendMessage(Component.text(Messages.NOTHING_TO_REDO).color(NamedTextColor.RED));
+                        return;
+                    }
+                    brush(properties, redoAction.targetLocation(), true);
+                    player.sendMessage(Component.text(Messages.REDO_SUCCESSFUL)
+                            .color(NamedTextColor.GREEN));
+                }
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+
+        TerraformerProperties properties = terraformers.get(player.getUniqueId());
+
+        if (properties != null) {
+            event.setCancelled(true);
         }
     }
 
@@ -126,10 +163,10 @@ public class Terraformer extends JavaPlugin implements Listener {
                 for (int z = -brushSize; z <= brushSize; z++) {
                     Location loc = targetLocation.clone().add(x, y, z);
                     if (loc.distance(targetLocation) <= brushSize) {
+                        Block block = loc.getBlock();
+                        BlockData blockData = block.getBlockData();
                         states.push(
-                                new BlockState(loc.clone(), loc.getBlock().getType(), targetLocation, properties.Brush,
-                                        properties.BrushSize));
-                        loc.getBlock().setType(Material.STONE);
+                                new BlockState(loc.clone(), blockData, targetLocation, properties.Brush, brushSize));
                     }
                 }
             }
@@ -140,9 +177,41 @@ public class Terraformer extends JavaPlugin implements Listener {
         } else {
             properties.History.pushRedo(states);
         }
+
+        for (BlockState state : states) {
+            Block block = state.location().getBlock();
+            if (!block.getType().isSolid()) {
+                block.setType(Material.STONE);
+            }
+        }
+
+        for (BlockState state : states) {
+            Block block = state.location().getBlock();
+            if (block.getType().isSolid()) {
+                block.setType(Material.STONE);
+            }
+        }
     }
 
     public void undo(Stack<BlockState> states) {
-        states.forEach(state -> state.location().getBlock().setType(state.material()));
+        for (BlockState state : states) {
+            Block block = state.location().getBlock();
+            if (block.getType().isSolid()) {
+                block.setBlockData(state.blockData());
+            }
+        }
+
+        for (BlockState state : states) {
+            Block block = state.location().getBlock();
+            if (!block.getType().isSolid()) {
+                block.setBlockData(state.blockData());
+            }
+        }
+    }
+
+    public void openBrushSettings(Player player, TerraformerProperties properties) {
+        BrushSettings settings = new BrushSettings(this, properties.Brush, properties.BrushSize);
+
+        player.openInventory(settings.getInventory());
     }
 }

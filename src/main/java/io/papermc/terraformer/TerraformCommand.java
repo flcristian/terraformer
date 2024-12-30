@@ -24,7 +24,6 @@ class TerraformCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
-    @SuppressWarnings("unused")
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
             String[] args) {
@@ -68,8 +67,22 @@ class TerraformCommand implements CommandExecutor {
                     ItemMeta brushMeta = brush.getItemMeta();
                     brushMeta.customName(TerraformItems.TERRAFORMER_BRUSH);
                     brush.setItemMeta(brushMeta);
-
                     player.getInventory().setItem(4, brush);
+
+                    // Create the undo item
+                    ItemStack undo = new ItemStack(Material.AMETHYST_BLOCK);
+                    ItemMeta undoMeta = undo.getItemMeta();
+                    undoMeta.customName(TerraformItems.TERRAFORMER_UNDO);
+                    undo.setItemMeta(undoMeta);
+                    player.getInventory().setItem(3, undo);
+
+                    // Create the redo item
+                    ItemStack redo = new ItemStack(Material.PRISMARINE);
+                    ItemMeta redoMeta = redo.getItemMeta();
+                    redoMeta.customName(TerraformItems.TERRAFORMER_REDO);
+                    redo.setItemMeta(redoMeta);
+                    player.getInventory().setItem(5, redo);
+
                     break;
 
                 case "stop":
