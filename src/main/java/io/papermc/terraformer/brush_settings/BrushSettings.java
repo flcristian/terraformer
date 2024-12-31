@@ -1,8 +1,9 @@
-package io.papermc.terraformer;
+package io.papermc.terraformer.brush_settings;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
+import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.terraformer_properties.properties.BrushType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

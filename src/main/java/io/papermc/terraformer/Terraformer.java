@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.kyori.adventure.text.Component;
-
+import io.papermc.terraformer.brush_settings.BrushSettings;
 import io.papermc.terraformer.constants.Messages;
 import io.papermc.terraformer.constants.TerraformItems;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
@@ -26,7 +26,6 @@ import io.papermc.terraformer.terraformer_properties.block_history.BlockStateHis
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
 import io.papermc.terraformer.terraformer_properties.properties.BrushType;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -46,7 +45,7 @@ public class Terraformer extends JavaPlugin implements Listener {
 
         terraformers.put(player.getUniqueId(),
                 new TerraformerProperties(currentProperties.Brush, currentProperties.BrushSize,
-                        currentProperties.History, currentProperties.Palette, true));
+                        currentProperties.History, currentProperties.Materials, currentProperties.Palette, true));
     }
 
     public void removeTerraformer(Player player) {
@@ -58,7 +57,7 @@ public class Terraformer extends JavaPlugin implements Listener {
         }
 
         terraformers.put(player.getUniqueId(), new TerraformerProperties(properties.Brush, properties.BrushSize,
-                properties.History, properties.Palette, false));
+                properties.History, properties.Materials, properties.Palette, false));
     }
 
     public TerraformerProperties getTerraformer(Player player) {
@@ -256,15 +255,14 @@ public class Terraformer extends JavaPlugin implements Listener {
         for (BlockStateHistory state : states) {
             Block block = state.location().getBlock();
             if (!block.getType().isSolid()) {
-                block.setType(Material.STONE);
+                block.setType(properties.getRandomMaterial());
             }
         }
 
         for (BlockStateHistory state : states) {
             Block block = state.location().getBlock();
             if (block.getType().isSolid()) {
-                block.setType(Material.STONE);
-
+                block.setType(properties.getRandomMaterial());
             }
         }
     }
