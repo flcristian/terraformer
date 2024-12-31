@@ -9,19 +9,13 @@ api-version: '1.21.4'
 commands:
   terraform:
     description: Main command for the Terraformer plugin
-    usage: /<command> [start|stop|undo|redo]
+    usage: /<command> [help] for more information
     permission: terraformer.use
 
 permissions:
   terraformer.use:
     description: Allows using the base terraform command
     default: true
-  terraformer.start:
-    description: Allows using the terraform start command
-    default: op
-  terraformer.stop:
-    description: Allows using the terraform stop command
-    default: op
-  terraformer.modify:
-    description: Allows using undo and redo commands
+  terraformer.mode:
+    description: Allows entering terraform mode
     default: op

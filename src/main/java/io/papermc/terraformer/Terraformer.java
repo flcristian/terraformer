@@ -4,25 +4,29 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import net.kyori.adventure.text.Component;
 
 import io.papermc.terraformer.constants.Messages;
 import io.papermc.terraformer.constants.TerraformItems;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
+import io.papermc.terraformer.terraformer_properties.block_history.BlockStateHistory;
+import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
+import io.papermc.terraformer.terraformer_properties.properties.BrushType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -31,12 +35,30 @@ import java.util.UUID;
 public class Terraformer extends JavaPlugin implements Listener {
     private final Map<UUID, TerraformerProperties> terraformers = new HashMap<>();
 
-    public void setTerraformer(Player player, TerraformerProperties properties) {
-        terraformers.put(player.getUniqueId(), properties);
+    public void setTerraformer(Player player) {
+        TerraformerProperties currentProperties = terraformers.get(player.getUniqueId());
+        setTerraformerInventory(player);
+
+        if (currentProperties == null) {
+            terraformers.put(player.getUniqueId(), new TerraformerProperties());
+            return;
+        }
+
+        terraformers.put(player.getUniqueId(),
+                new TerraformerProperties(currentProperties.Brush, currentProperties.BrushSize,
+                        currentProperties.History, currentProperties.Palette, true));
     }
 
     public void removeTerraformer(Player player) {
-        terraformers.remove(player.getUniqueId());
+        TerraformerProperties properties = terraformers.get(player.getUniqueId());
+        player.getInventory().clear();
+
+        if (properties == null) {
+            return;
+        }
+
+        terraformers.put(player.getUniqueId(), new TerraformerProperties(properties.Brush, properties.BrushSize,
+                properties.History, properties.Palette, false));
     }
 
     public TerraformerProperties getTerraformer(Player player) {
@@ -56,7 +78,7 @@ public class Terraformer extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryInteract(InventoryInteractEvent event) {
         if (event.getWhoClicked() instanceof Player player) {
             if (terraformers.containsKey(player.getUniqueId())) {
                 event.setCancelled(true);
@@ -81,12 +103,40 @@ public class Terraformer extends JavaPlugin implements Listener {
     }
 
     @EventHandler
+    public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        if (terraformers.containsKey(player.getUniqueId()) && event.getMessage().toLowerCase().startsWith("/clear")) {
+            setTerraformerInventory(player);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        if (terraformers.containsKey(player.getUniqueId())) {
+            ItemMeta meta = event.getItemInHand().getItemMeta();
+            Component[] terraformerItems = new Component[] {
+                    TerraformItems.TERRAFORMER_BRUSH,
+                    TerraformItems.TERRAFORMER_UNDO,
+                    TerraformItems.TERRAFORMER_REDO,
+                    TerraformItems.TERRAFORMER_LEAVE
+            };
+
+            for (Component item : terraformerItems) {
+                if (meta.customName().equals(item)) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-
         TerraformerProperties properties = terraformers.get(player.getUniqueId());
 
-        if (properties == null) {
+        if (properties == null || properties.IsTerraformer == false) {
             return;
         }
 
@@ -94,10 +144,6 @@ public class Terraformer extends JavaPlugin implements Listener {
             ItemMeta meta = event.getItem().getItemMeta();
 
             if (meta.customName().equals(TerraformItems.TERRAFORMER_BRUSH)) {
-                if (event.getAction().isLeftClick()) {
-                    openBrushSettings(player, properties);
-                }
-
                 if (event.getAction().isRightClick()) {
                     Block targetBlock = player.getTargetBlock(null, 256);
 
@@ -105,18 +151,20 @@ public class Terraformer extends JavaPlugin implements Listener {
                         Location targetLocation = targetBlock.getLocation();
                         brush(properties, targetLocation, false);
                     }
+                    event.setCancelled(true);
                 }
             }
 
             if (meta.customName().equals(TerraformItems.TERRAFORMER_UNDO)) {
                 if (event.getAction().isRightClick()) {
-                    Stack<BlockState> undoStates = properties.History.undo();
+                    Stack<BlockStateHistory> undoStates = properties.History.undo();
                     if (undoStates == null) {
-                        player.sendMessage(Component.text(Messages.NOTHING_TO_UNDO)
-                                .color(NamedTextColor.RED));
+                        player.sendMessage(Messages.NOTHING_TO_UNDO);
                         return;
                     }
                     undo(undoStates);
+                    player.sendMessage(Messages.UNDO_SUCCESSFUL);
+                    event.setCancelled(true);
                 }
             }
 
@@ -124,28 +172,54 @@ public class Terraformer extends JavaPlugin implements Listener {
                 if (event.getAction().isRightClick()) {
                     BrushAction redoAction = properties.History.redo();
                     if (redoAction == null) {
-                        player.sendMessage(Component.text(Messages.NOTHING_TO_REDO).color(NamedTextColor.RED));
+                        player.sendMessage(Messages.NOTHING_TO_REDO);
                         return;
                     }
                     brush(properties, redoAction.targetLocation(), true);
-                    player.sendMessage(Component.text(Messages.REDO_SUCCESSFUL)
-                            .color(NamedTextColor.GREEN));
+                    player.sendMessage(Messages.REDO_SUCCESSFUL);
+                    event.setCancelled(true);
                 }
             }
 
-            event.setCancelled(true);
+            if (meta.customName().equals(TerraformItems.TERRAFORMER_LEAVE)) {
+                if (event.getAction().isRightClick()) {
+                    removeTerraformer(player);
+                    player.sendMessage(Messages.STOP_TERRAFORM);
+                }
+            }
         }
     }
 
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
+    public void setTerraformerInventory(Player player) {
+        player.getInventory().clear();
 
-        TerraformerProperties properties = terraformers.get(player.getUniqueId());
+        // Brush Item
+        ItemStack brush = new ItemStack(Material.BRUSH);
+        ItemMeta brushMeta = brush.getItemMeta();
+        brushMeta.customName(TerraformItems.TERRAFORMER_BRUSH);
+        brush.setItemMeta(brushMeta);
+        player.getInventory().setItem(4, brush);
 
-        if (properties != null) {
-            event.setCancelled(true);
-        }
+        // Undo Item
+        ItemStack undo = new ItemStack(Material.AMETHYST_BLOCK);
+        ItemMeta undoMeta = undo.getItemMeta();
+        undoMeta.customName(TerraformItems.TERRAFORMER_UNDO);
+        undo.setItemMeta(undoMeta);
+        player.getInventory().setItem(3, undo);
+
+        // Redo Item
+        ItemStack redo = new ItemStack(Material.PRISMARINE);
+        ItemMeta redoMeta = redo.getItemMeta();
+        redoMeta.customName(TerraformItems.TERRAFORMER_REDO);
+        redo.setItemMeta(redoMeta);
+        player.getInventory().setItem(5, redo);
+
+        // Leave Terraform Mode Item
+        ItemStack leave = new ItemStack(Material.BARRIER);
+        ItemMeta leaveMeta = leave.getItemMeta();
+        leaveMeta.customName(TerraformItems.TERRAFORMER_LEAVE);
+        leave.setItemMeta(leaveMeta);
+        player.getInventory().setItem(0, leave);
     }
 
     public void brush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
@@ -155,7 +229,7 @@ public class Terraformer extends JavaPlugin implements Listener {
     }
 
     private void brushBall(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
-        Stack<BlockState> states = new Stack<>();
+        Stack<BlockStateHistory> states = new Stack<>();
         int brushSize = properties.BrushSize;
 
         for (int x = -brushSize; x <= brushSize; x++) {
@@ -164,9 +238,10 @@ public class Terraformer extends JavaPlugin implements Listener {
                     Location loc = targetLocation.clone().add(x, y, z);
                     if (loc.distance(targetLocation) <= brushSize) {
                         Block block = loc.getBlock();
-                        BlockData blockData = block.getBlockData();
+                        BlockState blockState = block.getState();
                         states.push(
-                                new BlockState(loc.clone(), blockData, targetLocation, properties.Brush, brushSize));
+                                new BlockStateHistory(loc.clone(), blockState, targetLocation,
+                                        properties.Brush, brushSize));
                     }
                 }
             }
@@ -178,34 +253,25 @@ public class Terraformer extends JavaPlugin implements Listener {
             properties.History.pushRedo(states);
         }
 
-        for (BlockState state : states) {
+        for (BlockStateHistory state : states) {
             Block block = state.location().getBlock();
             if (!block.getType().isSolid()) {
                 block.setType(Material.STONE);
             }
         }
 
-        for (BlockState state : states) {
+        for (BlockStateHistory state : states) {
             Block block = state.location().getBlock();
             if (block.getType().isSolid()) {
                 block.setType(Material.STONE);
+
             }
         }
     }
 
-    public void undo(Stack<BlockState> states) {
-        for (BlockState state : states) {
-            Block block = state.location().getBlock();
-            if (block.getType().isSolid()) {
-                block.setBlockData(state.blockData());
-            }
-        }
-
-        for (BlockState state : states) {
-            Block block = state.location().getBlock();
-            if (!block.getType().isSolid()) {
-                block.setBlockData(state.blockData());
-            }
+    public void undo(Stack<BlockStateHistory> states) {
+        for (BlockStateHistory state : states) {
+            state.blockState().update(true);
         }
     }
 

@@ -1,25 +1,25 @@
-package io.papermc.terraformer;
+package io.papermc.terraformer.terraformer_properties.block_history;
 
 import java.util.Stack;
 
 public class BlockHistory {
-    private final Stack<Stack<BlockState>> undoStack = new Stack<>();
+    private final Stack<Stack<BlockStateHistory>> undoStack = new Stack<>();
     private final Stack<BrushAction> redoStack = new Stack<>();
 
-    public void pushModification(Stack<BlockState> states) {
+    public void pushModification(Stack<BlockStateHistory> states) {
         undoStack.push(states);
         redoStack.clear();
     }
 
-    public void pushRedo(Stack<BlockState> states) {
+    public void pushRedo(Stack<BlockStateHistory> states) {
         undoStack.push(states);
     }
 
-    public Stack<BlockState> undo() {
+    public Stack<BlockStateHistory> undo() {
         if (undoStack.isEmpty())
             return null;
-        Stack<BlockState> states = undoStack.pop();
-        BlockState firstState = states.firstElement();
+        Stack<BlockStateHistory> states = undoStack.pop();
+        BlockStateHistory firstState = states.firstElement();
         redoStack.push(new BrushAction(
                 firstState.targetLocation(),
                 firstState.brushType(),

@@ -5,17 +5,16 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.Stack;
 
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import io.papermc.terraformer.constants.Messages;
-import io.papermc.terraformer.constants.TerraformItems;
+import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
+import io.papermc.terraformer.terraformer_properties.block_history.BlockStateHistory;
+import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
 
 class TerraformCommand implements CommandExecutor {
     private final Terraformer plugin;
@@ -28,8 +27,7 @@ class TerraformCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
             String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text(Messages.SENDER_NOT_PLAYER)
-                    .color(NamedTextColor.RED));
+            sender.sendMessage(Messages.SENDER_NOT_PLAYER);
             return true;
         }
 
@@ -47,102 +45,70 @@ class TerraformCommand implements CommandExecutor {
                     return true;
 
                 case "start":
-                    if (!player.hasPermission("terraformer.start")) {
-                        player.sendMessage(Component.text(Messages.NO_PERMISSION)
-                                .color(NamedTextColor.RED));
+                    if (!player.hasPermission("terraformer.mode")) {
+                        player.sendMessage(Messages.NO_PERMISSION);
                         return true;
                     }
-                    if (properties != null) {
-                        player.sendMessage(Component.text(Messages.TERRAFORM_MODE_ALREADY_STARTED)
-                                .color(NamedTextColor.YELLOW));
+                    if (properties != null && properties.IsTerraformer) {
+                        player.sendMessage(Messages.TERRAFORM_MODE_ALREADY_STARTED);
                         return true;
                     }
-                    plugin.setTerraformer(player, new TerraformerProperties());
-                    player.getInventory().clear();
-                    player.sendMessage(Component.text(Messages.START_TERRAFORM)
-                            .color(NamedTextColor.GREEN));
-
-                    // Create the brush item
-                    ItemStack brush = new ItemStack(Material.BRUSH);
-                    ItemMeta brushMeta = brush.getItemMeta();
-                    brushMeta.customName(TerraformItems.TERRAFORMER_BRUSH);
-                    brush.setItemMeta(brushMeta);
-                    player.getInventory().setItem(4, brush);
-
-                    // Create the undo item
-                    ItemStack undo = new ItemStack(Material.AMETHYST_BLOCK);
-                    ItemMeta undoMeta = undo.getItemMeta();
-                    undoMeta.customName(TerraformItems.TERRAFORMER_UNDO);
-                    undo.setItemMeta(undoMeta);
-                    player.getInventory().setItem(3, undo);
-
-                    // Create the redo item
-                    ItemStack redo = new ItemStack(Material.PRISMARINE);
-                    ItemMeta redoMeta = redo.getItemMeta();
-                    redoMeta.customName(TerraformItems.TERRAFORMER_REDO);
-                    redo.setItemMeta(redoMeta);
-                    player.getInventory().setItem(5, redo);
+                    plugin.setTerraformer(player);
+                    player.sendMessage(Messages.START_TERRAFORM);
 
                     break;
 
                 case "stop":
-                    if (!player.hasPermission("terraformer.stop")) {
-                        player.sendMessage(Component.text(Messages.STOP_TERRAFORM)
-                                .color(NamedTextColor.RED));
+                    if (!player.hasPermission("terraformer.mode")) {
+                        player.sendMessage(Messages.NO_PERMISSION);
+                        return true;
+                    }
+                    if (properties == null || !properties.IsTerraformer) {
+                        player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
                         return true;
                     }
                     plugin.removeTerraformer(player);
-                    player.getInventory().clear();
-                    player.sendMessage(Component.text()
-                            .color(NamedTextColor.RED));
+                    player.sendMessage(Messages.STOP_TERRAFORM);
                     break;
 
                 case "undo":
-                    if (!player.hasPermission("terraformer.modify")) {
-                        player.sendMessage(Component.text(Messages.NO_PERMISSION)
-                                .color(NamedTextColor.RED));
+                    if (!player.hasPermission("terraformer.mode")) {
+                        player.sendMessage(Messages.NO_PERMISSION);
                         return true;
                     }
-                    if (properties == null) {
-                        player.sendMessage(Component.text(Messages.TERRAFORM_MODE_NECESSARY)
-                                .color(NamedTextColor.RED));
+                    if (properties == null || !properties.IsTerraformer) {
+                        player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
                         return true;
                     }
-                    Stack<BlockState> undoStates = properties.History.undo();
-                    if (undoStates == null) {
-                        player.sendMessage(Component.text(Messages.NOTHING_TO_UNDO)
-                                .color(NamedTextColor.RED));
+                    Stack<BlockStateHistory> undoStates = properties.History.undo();
+                    if (undoStates == null || !properties.IsTerraformer) {
+                        player.sendMessage(Messages.NOTHING_TO_UNDO);
                         return true;
                     }
                     plugin.undo(undoStates);
-                    player.sendMessage(Component.text(Messages.UNDO_SUCCESSFUL)
-                            .color(NamedTextColor.GREEN));
+                    player.sendMessage(Messages.UNDO_SUCCESSFUL);
                     break;
 
                 case "redo":
-                    if (!player.hasPermission("terraformer.modify")) {
-                        player.sendMessage(Component.text(Messages.NO_PERMISSION)
-                                .color(NamedTextColor.RED));
+                    if (!player.hasPermission("terraformer.mode")) {
+                        player.sendMessage(Messages.NO_PERMISSION);
                         return true;
                     }
-                    if (properties == null) {
-                        player.sendMessage(Component.text(Messages.TERRAFORM_MODE_NECESSARY)
-                                .color(NamedTextColor.RED));
+                    if (properties == null || !properties.IsTerraformer) {
+                        player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
                         return true;
                     }
                     BrushAction redoAction = properties.History.redo();
                     if (redoAction == null) {
-                        player.sendMessage(Component.text(Messages.NOTHING_TO_REDO).color(NamedTextColor.RED));
+                        player.sendMessage(Messages.NOTHING_TO_REDO);
                         return true;
                     }
                     plugin.brush(properties, redoAction.targetLocation(), true);
-                    player.sendMessage(Component.text(Messages.REDO_SUCCESSFUL)
-                            .color(NamedTextColor.GREEN));
+                    player.sendMessage(Messages.REDO_SUCCESSFUL);
                     break;
 
                 default:
-                    player.sendMessage(Component.text("Unknown subcommand! Use /terraform start, stop, undo, or redo")
-                            .color(NamedTextColor.RED));
+                    player.sendMessage(Messages.UNKNOWN_COMMAND);
                     break;
             }
             return true;
@@ -151,6 +117,7 @@ class TerraformCommand implements CommandExecutor {
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     private void showPluginInfo(Player player) {
         Component message = Component.text()
                 .append(Component.text("=-=-=-=-=-=-=-=-=-="))

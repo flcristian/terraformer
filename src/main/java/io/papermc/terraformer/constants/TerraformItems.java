@@ -7,4 +7,6 @@ public class TerraformItems {
     public static final Component TERRAFORMER_BRUSH = Component.text("Brush").color(NamedTextColor.AQUA);
     public static final Component TERRAFORMER_UNDO = Component.text("Undo").color(NamedTextColor.LIGHT_PURPLE);
     public static final Component TERRAFORMER_REDO = Component.text("Redo").color(NamedTextColor.GREEN);
+    public static final Component TERRAFORMER_LEAVE = Component.text("Leave Terraform Mode")
+            .color(NamedTextColor.DARK_RED);
 }

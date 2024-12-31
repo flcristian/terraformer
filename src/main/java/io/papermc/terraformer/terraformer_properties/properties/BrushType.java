@@ -1,4 +1,4 @@
-package io.papermc.terraformer;
+package io.papermc.terraformer.terraformer_properties.properties;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
