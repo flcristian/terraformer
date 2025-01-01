@@ -18,6 +18,7 @@ import io.papermc.terraformer.constants.Messages;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockStateHistory;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
+import io.papermc.terraformer.terraformer_properties.properties.BrushType;
 
 class TerraformCommand implements CommandExecutor {
     private final Terraformer plugin;
@@ -41,103 +42,133 @@ class TerraformCommand implements CommandExecutor {
 
         TerraformerProperties properties = plugin.getTerraformer(player);
 
-        if (args.length == 1) {
-            switch (args[0].toLowerCase()) {
-                case "help":
-                    showHelpInfo(player);
-                    return true;
-
-                case "start":
-                    if (!player.hasPermission("terraformer.mode")) {
-                        player.sendMessage(Messages.NO_PERMISSION);
-                        return true;
-                    }
-                    if (properties != null && properties.IsTerraformer) {
-                        player.sendMessage(Messages.TERRAFORM_MODE_ALREADY_STARTED);
-                        return true;
-                    }
-                    plugin.setTerraformer(player);
-                    player.sendMessage(Messages.START_TERRAFORM);
-
-                    break;
-
-                case "stop":
-                    if (!player.hasPermission("terraformer.mode")) {
-                        player.sendMessage(Messages.NO_PERMISSION);
-                        return true;
-                    }
-                    if (properties == null || !properties.IsTerraformer) {
-                        player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
-                        return true;
-                    }
-                    plugin.removeTerraformer(player);
-                    player.sendMessage(Messages.STOP_TERRAFORM);
-                    break;
-
-                case "undo":
-                    if (!player.hasPermission("terraformer.mode")) {
-                        player.sendMessage(Messages.NO_PERMISSION);
-                        return true;
-                    }
-                    if (properties == null || !properties.IsTerraformer) {
-                        player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
-                        return true;
-                    }
-                    Stack<BlockStateHistory> undoStates = properties.History.undo();
-                    if (undoStates == null || !properties.IsTerraformer) {
-                        player.sendMessage(Messages.NOTHING_TO_UNDO);
-                        return true;
-                    }
-                    plugin.undo(undoStates);
-                    player.sendMessage(Messages.UNDO_SUCCESSFUL);
-                    break;
-
-                case "redo":
-                    if (!player.hasPermission("terraformer.mode")) {
-                        player.sendMessage(Messages.NO_PERMISSION);
-                        return true;
-                    }
-                    if (properties == null || !properties.IsTerraformer) {
-                        player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
-                        return true;
-                    }
-                    BrushAction redoAction = properties.History.redo();
-                    if (redoAction == null) {
-                        player.sendMessage(Messages.NOTHING_TO_REDO);
-                        return true;
-                    }
-                    plugin.brush(properties, redoAction.targetLocation(), true);
-                    player.sendMessage(Messages.REDO_SUCCESSFUL);
-                    break;
-
-                default:
-                    player.sendMessage(Messages.UNKNOWN_COMMAND);
-                    break;
-            }
-            return true;
-        }
-
-        if (args[0].equalsIgnoreCase("materials") || args[0].equalsIgnoreCase("mat")) {
-            if (args.length < 2) {
-                player.sendMessage(Component.text("Usage: /terraform materials <materials>")
-                        .color(NamedTextColor.RED));
+        switch (args[0].toLowerCase()) {
+            case "help":
+                showHelpInfo(player);
                 return true;
-            }
 
-            try {
-                StringBuilder materialsString = new StringBuilder();
-                for (int i = 1; i < args.length; i++) {
-                    materialsString.append(args[i]);
+            case "start":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return false;
                 }
-                properties.Materials = parseMaterialPercentages(materialsString.toString());
-                player.sendMessage(Component.text("Materials updated successfully!").color(NamedTextColor.GREEN));
-            } catch (IllegalArgumentException e) {
-                player.sendMessage(Component.text("Error: " + e.getMessage()).color(NamedTextColor.RED));
-            }
-            return true;
-        }
+                if (properties != null && properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_ALREADY_STARTED);
+                    return false;
+                }
+                plugin.setTerraformer(player);
+                player.sendMessage(Messages.START_TERRAFORM);
+                return true;
 
-        return false;
+            case "stop":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return false;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return false;
+                }
+                plugin.removeTerraformer(player);
+                player.sendMessage(Messages.STOP_TERRAFORM);
+                return true;
+
+            case "undo":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return false;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return false;
+                }
+                Stack<BlockStateHistory> undoStates = properties.History.undo();
+                if (undoStates == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.NOTHING_TO_UNDO);
+                    return false;
+                }
+                plugin.undo(undoStates);
+                player.sendMessage(Messages.UNDO_SUCCESSFUL);
+                return true;
+
+            case "redo":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return false;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return false;
+                }
+                BrushAction redoAction = properties.History.redo();
+                if (redoAction == null) {
+                    player.sendMessage(Messages.NOTHING_TO_REDO);
+                    return false;
+                }
+                plugin.brush(properties, redoAction.targetLocation(), true);
+                player.sendMessage(Messages.REDO_SUCCESSFUL);
+                return true;
+
+            case "materials":
+            case "mat":
+                if (args.length < 2) {
+                    player.sendMessage(Component.text("Usage: /terraform materials <materials>")
+                            .color(NamedTextColor.RED));
+                    return false;
+                }
+
+                try {
+                    StringBuilder materialsString = new StringBuilder();
+                    for (int i = 1; i < args.length; i++) {
+                        materialsString.append(args[i]);
+                    }
+                    properties.Materials = parseMaterialPercentages(materialsString.toString());
+                    player.sendMessage(Component.text("Materials updated successfully!").color(NamedTextColor.GREEN));
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage(Component.text(e.getMessage()).color(NamedTextColor.RED));
+                }
+                return true;
+
+            case "brush":
+            case "b":
+                if (args.length < 2) {
+                    player.sendMessage(Messages.INVALID_BRUSH_TYPE);
+                    return false;
+                }
+                BrushType brushType = BrushType.getBrushType(args[1]);
+                if (brushType == null) {
+                    player.sendMessage(Messages.INVALID_BRUSH_TYPE);
+                    return false;
+                }
+                properties.Brush = brushType;
+                player.sendMessage(Component.text("Brush type set to ").append(brushType.getName()));
+                return true;
+
+            case "size":
+            case "bs":
+                if (args.length < 2) {
+                    player.sendMessage(Messages.INVALID_BRUSH_SIZE);
+                    return false;
+                }
+                int size;
+                try {
+                    size = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(Messages.INVALID_BRUSH_SIZE);
+                    return false;
+                }
+                if (size < 1 || size > 9) {
+                    player.sendMessage(Messages.INVALID_BRUSH_SIZE);
+                    return false;
+                }
+                properties.BrushSize = size;
+                player.sendMessage(Component.text("Brush size set to " + size).color(NamedTextColor.GREEN));
+                return true;
+
+            default:
+                player.sendMessage(Messages.UNKNOWN_COMMAND);
+                return false;
+        }
     }
 
     @SuppressWarnings("deprecation")

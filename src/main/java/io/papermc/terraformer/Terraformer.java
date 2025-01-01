@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,9 +25,10 @@ import io.papermc.terraformer.constants.TerraformItems;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockStateHistory;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
-import io.papermc.terraformer.terraformer_properties.properties.BrushType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
@@ -221,9 +223,12 @@ public class Terraformer extends JavaPlugin implements Listener {
         player.getInventory().setItem(0, leave);
     }
 
+    // Brushes
+
     public void brush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
-        if (properties.Brush == BrushType.BALL) {
-            brushBall(properties, targetLocation, isRedo);
+        switch (properties.Brush) {
+            case BALL -> brushBall(properties, targetLocation, isRedo);
+            case SMOOTH -> brushSmooth(targetLocation, properties.BrushSize);
         }
     }
 
@@ -235,7 +240,7 @@ public class Terraformer extends JavaPlugin implements Listener {
             for (int y = -brushSize; y <= brushSize; y++) {
                 for (int z = -brushSize; z <= brushSize; z++) {
                     Location loc = targetLocation.clone().add(x, y, z);
-                    if (loc.distance(targetLocation) <= brushSize) {
+                    if (loc.distance(targetLocation) < brushSize) {
                         Block block = loc.getBlock();
                         BlockState blockState = block.getState();
                         states.push(
@@ -267,11 +272,97 @@ public class Terraformer extends JavaPlugin implements Listener {
         }
     }
 
+    public void brushSmooth(Location center, int radius) {
+        // Get all blocks in the sphere
+        HashMap<Location, BlockData> originalBlocks = new HashMap<>();
+
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    Location loc = center.clone().add(x, y, z);
+                    // Check if block is within sphere
+                    if (center.distance(loc) <= radius) {
+                        originalBlocks.put(loc, loc.getBlock().getBlockData());
+                    }
+                }
+            }
+        }
+
+        // Smooth the blocks
+        for (Location loc : originalBlocks.keySet()) {
+            // Get surrounding blocks (26 neighbors - all adjacent blocks including
+            // diagonals)
+            List<BlockData> neighbors = new ArrayList<>();
+
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        if (dx == 0 && dy == 0 && dz == 0)
+                            continue;
+
+                        Location neighborLoc = loc.clone().add(dx, dy, dz);
+                        if (originalBlocks.containsKey(neighborLoc)) {
+                            neighbors.add(originalBlocks.get(neighborLoc));
+                        }
+                    }
+                }
+            }
+
+            // Apply smoothing algorithm
+            BlockData mostCommon = findMostCommonBlock(neighbors);
+
+            // If the current block is significantly different from its neighbors, replace
+            // it
+            if (shouldSmooth(originalBlocks.get(loc), neighbors)) {
+                loc.getBlock().setBlockData(mostCommon);
+            }
+        }
+    }
+
+    private boolean shouldSmooth(BlockData current, List<BlockData> neighbors) {
+        // Count how many neighbors are different from the current block
+        int differentNeighbors = 0;
+        for (BlockData neighbor : neighbors) {
+            if (!neighbor.getMaterial().equals(current.getMaterial())) {
+                differentNeighbors++;
+            }
+        }
+
+        // If more than 70% of neighbors are different, smooth this block
+        return differentNeighbors > (neighbors.size() * 0.7);
+    }
+
+    private BlockData findMostCommonBlock(List<BlockData> blocks) {
+        Map<Material, Integer> counts = new HashMap<>();
+
+        // Count occurrences of each block type
+        for (BlockData block : blocks) {
+            Material mat = block.getMaterial();
+            counts.put(mat, counts.getOrDefault(mat, 0) + 1);
+        }
+
+        // Find the most common block type
+        Material mostCommon = null;
+        int maxCount = 0;
+
+        for (Map.Entry<Material, Integer> entry : counts.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                mostCommon = entry.getKey();
+            }
+        }
+
+        // Return a new BlockData of the most common type
+        return mostCommon.createBlockData();
+    }
+
     public void undo(Stack<BlockStateHistory> states) {
         for (BlockStateHistory state : states) {
             state.blockState().update(true);
         }
     }
+
+    // Miscellanous
 
     public void openBrushSettings(Player player, TerraformerProperties properties) {
         BrushSettings settings = new BrushSettings(this, properties.Brush, properties.BrushSize);
