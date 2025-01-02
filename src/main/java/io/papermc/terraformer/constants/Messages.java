@@ -1,5 +1,7 @@
 package io.papermc.terraformer.constants;
 
+import io.papermc.terraformer.terraformer_properties.properties.MaterialsMode;
+import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -36,22 +38,42 @@ public final class Messages {
                         .color(NamedTextColor.RED);
         public static final Component INVALID_BRUSH_SIZE = Component
                         .text("Invalid brush size. Size must be between 1 and 9.").color(NamedTextColor.RED);
+        public static final Component INVALID_BRUSH_DEPTH = Component
+                        .text("Invalid brush depth. depth must be between 1 and 9.").color(NamedTextColor.RED);
+        public static final Component INVALID_MATERIALS_MODE = Component.text("Invalid materials mode.")
+                        .color(NamedTextColor.RED);
 
         public static final Component USAGE_MATERIALS = Component
-                        .text("Usage: '/terraform materials <materials>' or '/terraform mat <materials>'")
+                        .text("Usage: '/terraform materials <materials>' or '/terraform m <materials>'")
+                        .color(NamedTextColor.RED);
+        public static final Component USAGE_MATERIALS_MODE = Component
+                        .text("Usage: '/terraform materialsmode <materials mode>' or '/terraform mm <materials mode>'. All material modes: Random, Layer, Gradient")
                         .color(NamedTextColor.RED);
         public static final Component USAGE_BRUSH = Component
                         .text("Usage: '/terraform brush <brush>' or '/terraform b <brush>'")
                         .color(NamedTextColor.RED);
         public static final Component USAGE_BRUSH_SIZE = Component
-                        .text("Usage: '/terraform size <size>' or '/terraform bs <size>'")
+                        .text("Usage: '/terraform size <size>' or '/terraform s <size>'")
+                        .color(NamedTextColor.RED);
+        public static final Component USAGE_BRUSH_DEPTH = Component
+                        .text("Usage: '/terraform depth <d>' or '/terraform d <depth>'")
                         .color(NamedTextColor.RED);
 
         public static final Component CHANGED_BRUSH_SIZE(int size) {
                 return Component.text("Changed brush size to ").append(Component.text(size).color(NamedTextColor.GOLD));
         }
 
-        public static final Component CHANGED_BRUSH(Component brushName) {
-                return Component.text("Changed brush type to ").append(brushName);
+        public static final Component CHANGED_BRUSH_DEPTH(int depth) {
+                return Component.text("Changed brush depth to ")
+                                .append(Component.text(depth).color(NamedTextColor.YELLOW));
+        }
+
+        public static final Component CHANGED_BRUSH(BrushType brushType) {
+                return Component.text("Changed brush type to ").append(brushType.getName());
+        }
+
+        public static final Component CHANGED_MATERIALS_MODE(MaterialsMode mode) {
+                return Component.text("Changed materials mode to ")
+                                .append(mode.getName());
         }
 }

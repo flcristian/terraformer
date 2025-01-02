@@ -5,8 +5,13 @@ import java.util.Stack;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 
-import io.papermc.terraformer.terraformer_properties.properties.BrushType;
+import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
+import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
 
 public record BlockHistoryStates(Stack<BlockState> states, Location targetLocation,
-        BrushType brushType, int brushSize) {
+        BrushProperties brushProperties) {
+
+    public BlockHistoryStates(Stack<BlockState> states, Location targetLocation, TerraformerProperties properties) {
+        this(states, targetLocation, properties.Brush);
+    }
 }

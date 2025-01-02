@@ -13,14 +13,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 
-import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryStates;
+import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushErode extends Brush {
-    public static void brush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
+    public static void brush(BrushProperties properties, Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         Map<Location, BlockData> erodedBlocks = new HashMap<>();
-        int brushSize = properties.BrushSize;
+        int brushSize = properties.Brush.BrushSize;
 
         for (int x = -brushSize; x <= brushSize; x++) {
             for (int y = -brushSize; y <= brushSize; y++) {
@@ -33,8 +33,7 @@ public class BrushErode extends Brush {
             }
         }
 
-        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties.Brush,
-                properties.BrushSize);
+        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties);
         if (!isRedo) {
             properties.History
                     .pushModification(historyStates);

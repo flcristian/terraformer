@@ -46,8 +46,9 @@ public class Terraformer extends JavaPlugin implements Listener {
         }
 
         terraformers.put(player.getUniqueId(),
-                new TerraformerProperties(currentProperties.Brush, currentProperties.BrushSize,
-                        currentProperties.History, currentProperties.Materials, currentProperties.Palette, true));
+                new TerraformerProperties(true, currentProperties.Brush, currentProperties.BrushSize,
+                        currentProperties.BrushDepth, currentProperties.Materials, currentProperties.Mode,
+                        currentProperties.History, currentProperties.Palette));
     }
 
     public void removeTerraformer(Player player) {
@@ -58,8 +59,8 @@ public class Terraformer extends JavaPlugin implements Listener {
             return;
         }
 
-        terraformers.put(player.getUniqueId(), new TerraformerProperties(properties.Brush, properties.BrushSize,
-                properties.History, properties.Materials, properties.Palette, false));
+        terraformers.put(player.getUniqueId(), new TerraformerProperties(false, properties.Brush, properties.BrushSize,
+                properties.BrushDepth, properties.Materials, properties.Mode, properties.History, properties.Palette));
     }
 
     public TerraformerProperties getTerraformer(Player player) {
@@ -165,7 +166,7 @@ public class Terraformer extends JavaPlugin implements Listener {
 
                     if (targetBlock != null) {
                         Location targetLocation = targetBlock.getLocation();
-                        properties.Brush.applyBrush(properties, targetLocation, false);
+                        properties.Brush.applyBrush(targetLocation, false);
                     }
                     event.setCancelled(true);
                 }
@@ -191,7 +192,7 @@ public class Terraformer extends JavaPlugin implements Listener {
                         player.sendMessage(Messages.NOTHING_TO_REDO);
                         return;
                     }
-                    properties.Brush.applyBrush(properties, redoAction.targetLocation(), true);
+                    properties.Brush.applyBrush(redoAction.targetLocation(), true);
                     player.sendMessage(Messages.REDO_SUCCESSFUL);
                     event.setCancelled(true);
                 }
@@ -206,7 +207,7 @@ public class Terraformer extends JavaPlugin implements Listener {
 
             if (meta.customName().equals(TerraformItems.TERRAFORMER_SETTINGS)) {
                 if (event.getAction().isRightClick()) {
-                    properties.Brush.openBrushSettings(this, player, properties.BrushSize);
+                    properties.Brush.openBrushSettings(this, player, properties);
                 }
             }
         }

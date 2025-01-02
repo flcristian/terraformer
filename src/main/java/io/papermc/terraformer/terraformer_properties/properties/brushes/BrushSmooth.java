@@ -19,7 +19,7 @@ import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryS
 public class BrushSmooth extends Brush {
     public static void brush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
-        int brushSize = properties.BrushSize;
+        int brushSize = properties.Brush.BrushSize;
 
         // Map to store blocks by Y level
         Map<Integer, List<Block>> blocksByLevel = new HashMap<>();
@@ -44,8 +44,7 @@ public class BrushSmooth extends Brush {
         states = allBlocks.stream()
                 .map(Block::getState)
                 .collect(Collectors.toCollection(Stack::new));
-        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties.Brush,
-                properties.BrushSize);
+        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties);
         if (!isRedo) {
             properties.History
                     .pushModification(historyStates);

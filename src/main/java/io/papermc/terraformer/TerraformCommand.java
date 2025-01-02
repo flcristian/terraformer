@@ -17,7 +17,8 @@ import io.papermc.terraformer.constants.Messages;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryStates;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
-import io.papermc.terraformer.terraformer_properties.properties.BrushType;
+import io.papermc.terraformer.terraformer_properties.properties.MaterialsMode;
+import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
 
 class TerraformCommand implements CommandExecutor {
     private final Terraformer plugin;
@@ -104,36 +105,8 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.NOTHING_TO_REDO);
                     return true;
                 }
-                properties.Brush.applyBrush(properties, redoAction.targetLocation(), true);
+                properties.Brush.applyBrush(redoAction.targetLocation(), true);
                 player.sendMessage(Messages.REDO_SUCCESSFUL);
-                return true;
-
-            case "materials":
-            case "mat":
-                if (!player.hasPermission("terraformer.mode")) {
-                    player.sendMessage(Messages.NO_PERMISSION);
-                    return true;
-                }
-                if (properties == null || !properties.IsTerraformer) {
-                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
-                    return true;
-                }
-
-                if (args.length < 2) {
-                    player.sendMessage(Messages.USAGE_MATERIALS);
-                    return true;
-                }
-
-                try {
-                    StringBuilder materialsString = new StringBuilder();
-                    for (int i = 1; i < args.length; i++) {
-                        materialsString.append(args[i]);
-                    }
-                    properties.Materials = parseMaterialPercentages(materialsString.toString());
-                    player.sendMessage(Component.text("Materials updated successfully!").color(NamedTextColor.GREEN));
-                } catch (IllegalArgumentException e) {
-                    player.sendMessage(Component.text(e.getMessage()).color(NamedTextColor.RED));
-                }
                 return true;
 
             case "brush":
@@ -157,11 +130,11 @@ class TerraformCommand implements CommandExecutor {
                     return true;
                 }
                 properties.Brush = brushType;
-                player.sendMessage(Messages.CHANGED_BRUSH(brushType.getName()));
+                player.sendMessage(Messages.CHANGED_BRUSH(brushType));
                 return true;
 
             case "size":
-            case "bs":
+            case "s":
                 if (!player.hasPermission("terraformer.mode")) {
                     player.sendMessage(Messages.NO_PERMISSION);
                     return true;
@@ -189,6 +162,89 @@ class TerraformCommand implements CommandExecutor {
                 }
                 properties.BrushSize = size;
                 player.sendMessage(Messages.CHANGED_BRUSH_SIZE(size));
+                return true;
+
+            case "depth":
+            case "d":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(Messages.USAGE_BRUSH_DEPTH);
+                    return true;
+                }
+
+                int depth;
+                try {
+                    depth = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(Messages.INVALID_BRUSH_DEPTH);
+                    return true;
+                }
+                if (depth < 1 || depth > 9) {
+                    player.sendMessage(Messages.INVALID_BRUSH_DEPTH);
+                    return true;
+                }
+                properties.BrushDepth = depth;
+                player.sendMessage(Messages.CHANGED_BRUSH_DEPTH(depth));
+                return true;
+
+            case "materials":
+            case "m":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(Messages.USAGE_MATERIALS);
+                    return true;
+                }
+
+                try {
+                    StringBuilder materialsString = new StringBuilder();
+                    for (int i = 1; i < args.length; i++) {
+                        materialsString.append(args[i]);
+                    }
+                    properties.Materials = parseMaterialPercentages(materialsString.toString());
+                    player.sendMessage(Component.text("Materials updated successfully!").color(NamedTextColor.GREEN));
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage(Component.text(e.getMessage()).color(NamedTextColor.RED));
+                }
+                return true;
+
+            case "materialsmode":
+            case "mm":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(Messages.USAGE_MATERIALS_MODE);
+                    return true;
+                }
+                MaterialsMode materialsMode = MaterialsMode.getMaterialsMode(args[1]);
+                if (materialsMode == null) {
+                    player.sendMessage(Messages.INVALID_MATERIALS_MODE);
+                    return true;
+                }
+                properties.Mode = materialsMode;
+                player.sendMessage(Messages.CHANGED_MATERIALS_MODE(materialsMode));
                 return true;
 
             default:
@@ -225,6 +281,9 @@ class TerraformCommand implements CommandExecutor {
         Component message = Component.text()
                 .append(Component.text("Terraform Command Help").color(NamedTextColor.LIGHT_PURPLE))
                 .append(Component.newline())
+                .append(Component.newline())
+                .append(Component.text("/terraform help - Show help information for terraform command")
+                        .color(NamedTextColor.LIGHT_PURPLE))
                 .append(Component.text("/terraform start - Start terraforming mode").color(NamedTextColor.LIGHT_PURPLE))
                 .append(Component.newline())
                 .append(Component.text("/terraform stop - Stop terraforming mode").color(NamedTextColor.LIGHT_PURPLE))
@@ -235,13 +294,23 @@ class TerraformCommand implements CommandExecutor {
                 .append(Component.text("/terraform redo - Redo last modification")
                         .color(NamedTextColor.LIGHT_PURPLE))
                 .append(Component.newline())
-                .append(Component.text("/terraform materials <percentages> - Set terraforming materials")
+                .append(Component.text(
+                        "/terraform brush <brush> - Set terraforming brush type. Alias: /terraform b <brush>")
                         .color(NamedTextColor.LIGHT_PURPLE))
                 .append(Component.newline())
-                .append(Component.text("/terraform mat <percentages> - Short version of materials command")
+                .append(Component.text(
+                        "/terraform size <size> - Set terraforming brush size. Alias: /terraform s <size>")
                         .color(NamedTextColor.LIGHT_PURPLE))
                 .append(Component.newline())
-                .append(Component.text("/terraform help - Show help information for terraform command")
+                .append(Component.text(
+                        "/terraform depth <depth> - Set terraforming brush size. Alias: /terraform d <depth>")
+                        .color(NamedTextColor.LIGHT_PURPLE))
+                .append(Component.newline())
+                .append(Component.text(
+                        "/terraform materials <materials> - Set terraforming materials. Alias: /terraform m <materials>")
+                        .color(NamedTextColor.LIGHT_PURPLE))
+                .append(Component.text(
+                        "/terraform materialsmode <materials mode> - Set terraforming materials mode. Alias: /terraform mm <materials mode>. All material modes: Random, Layer, Gradient")
                         .color(NamedTextColor.LIGHT_PURPLE))
                 .build();
 

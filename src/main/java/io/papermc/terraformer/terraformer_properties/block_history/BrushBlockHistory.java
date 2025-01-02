@@ -24,8 +24,7 @@ public class BrushBlockHistory {
         BlockHistoryStates historyStates = undoStack.pop();
         redoStack.push(new BrushAction(
                 historyStates.targetLocation(),
-                historyStates.brushType(),
-                historyStates.brushSize()));
+                historyStates.brushProperties()));
         trimStackSize(redoStack);
         return historyStates;
     }

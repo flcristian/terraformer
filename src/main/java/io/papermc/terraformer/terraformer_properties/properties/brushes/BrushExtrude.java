@@ -18,7 +18,7 @@ public class BrushExtrude extends Brush {
     public static void brush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         HashMap<Location, BlockData> extrudeedBlocks = new HashMap<>();
-        int brushSize = properties.BrushSize;
+        int brushSize = properties.Brush.BrushSize;
 
         // Gather blocks in sphere
         for (int x = -brushSize; x <= brushSize; x++) {
@@ -32,8 +32,7 @@ public class BrushExtrude extends Brush {
             }
         }
 
-        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties.Brush,
-                properties.BrushSize);
+        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties);
         if (!isRedo) {
             properties.History
                     .pushModification(historyStates);

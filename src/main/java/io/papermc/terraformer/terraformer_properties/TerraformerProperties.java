@@ -1,54 +1,33 @@
 package io.papermc.terraformer.terraformer_properties;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.bukkit.Material;
 
 import io.papermc.terraformer.terraformer_properties.block_history.BrushBlockHistory;
-import io.papermc.terraformer.terraformer_properties.properties.BrushType;
+import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
+import io.papermc.terraformer.terraformer_properties.properties.MaterialsMode;
 import io.papermc.terraformer.terraformer_properties.properties.Palette;
+import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
 
 public class TerraformerProperties {
     public boolean IsTerraformer;
-    public BrushType Brush;
-    public int BrushSize;
+    public BrushProperties Brush;
     public BrushBlockHistory History;
-    public Map<Material, Integer> Materials;
     public Palette Palette;
 
     public TerraformerProperties() {
-        Brush = BrushType.BALL;
-        BrushSize = 4;
-        History = new BrushBlockHistory();
-        Materials = new HashMap<>();
-        Materials.put(Material.STONE, 100);
-        Palette = new Palette();
         IsTerraformer = true;
+        Brush = new BrushProperties();
+        History = new BrushBlockHistory();
+        Palette = new Palette();
     }
 
-    public TerraformerProperties(BrushType brushType, int brushSize, BrushBlockHistory history,
-            Map<Material, Integer> materials, Palette palette, boolean isTerraformer) {
-        Brush = brushType;
-        BrushSize = brushSize;
-        History = history;
-        Materials = materials;
-        Palette = palette;
+    public TerraformerProperties(boolean isTerraformer, BrushType brushType, int brushSize, int brushDepth,
+            Map<Material, Integer> materials, MaterialsMode materialsMode, BrushBlockHistory history, Palette palette) {
         IsTerraformer = isTerraformer;
-    }
-
-    public Material getRandomMaterial() {
-        int random = new Random().nextInt(100);
-        int currentSum = 0;
-
-        for (Map.Entry<Material, Integer> entry : Materials.entrySet()) {
-            currentSum += entry.getValue();
-            if (random < currentSum) {
-                return entry.getKey();
-            }
-        }
-
-        return Materials.entrySet().iterator().next().getKey();
+        Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode);
+        History = history;
+        Palette = palette;
     }
 }

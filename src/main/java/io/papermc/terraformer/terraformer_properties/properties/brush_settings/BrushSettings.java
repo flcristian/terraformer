@@ -16,21 +16,27 @@ import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.constants.BrushSettingsItems;
 import io.papermc.terraformer.constants.Messages;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
-import io.papermc.terraformer.terraformer_properties.properties.BrushType;
+import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
 public class BrushSettings implements InventoryHolder {
+    private final boolean usesMaterials;
+    private final boolean usesDepth;
     private final Inventory inventory;
 
-    public BrushSettings(Terraformer plugin, BrushType brushType, int brushSize) {
+    public BrushSettings(Terraformer plugin, TerraformerProperties properties, boolean usesMaterials,
+            boolean usesDepth) {
+        this.usesMaterials = usesMaterials;
+        this.usesDepth = usesDepth;
+
+        Component inventoryName = Component.text("Brush Settings").color(NamedTextColor.AQUA)
+                .append(Component.text(" - ").color(NamedTextColor.GRAY)
+                        .append(properties.Brush.BrushType.getName()));
+
         this.inventory = plugin.getServer().createInventory(this, 54,
-                Component.text("Brush Settings").color(NamedTextColor.AQUA)
-                        .append(Component.text(" - ").color(NamedTextColor.GRAY)
-                                .append(brushType.getName())
-                                .append(Component.text(" - ").color(NamedTextColor.GRAY)
-                                        .append(Component.text(brushSize).color(NamedTextColor.GOLD)))));
+                inventoryName);
 
         // Size Selection
 
@@ -48,6 +54,25 @@ public class BrushSettings implements InventoryHolder {
             inventory.setItem(45 + size - 1, brushSizeItem);
         }
 
+        // Depth Selection
+
+        if (usesDepth) {
+            for (int depth = 1; depth <= 9; depth++) {
+                ItemStack brushDepthItem = new ItemStack(Material.HEART_OF_THE_SEA);
+                ItemMeta brushDepthItemMeta = brushDepthItem.getItemMeta();
+                brushDepthItemMeta.customName(BrushSettingsItems.SETTINGS_BRUSH_DEPTH(depth));
+                brushDepthItemMeta.lore(List.of(
+                        Component.text("Set the brush depth to " + depth +
+                                "").color(NamedTextColor.LIGHT_PURPLE),
+                        Component.text("Click to select").color(NamedTextColor.LIGHT_PURPLE),
+                        Component.text("Works for: Paint, Rise, Dig").color(NamedTextColor.DARK_GRAY)
+                                .decorate(TextDecoration.ITALIC)));
+                brushDepthItem.add(depth - 1);
+                brushDepthItem.setItemMeta(brushDepthItemMeta);
+                inventory.setItem(36 + depth - 1, brushDepthItem);
+            }
+        }
+
         // Brush Selection
 
         List<ItemStack> brushes = Arrays.stream(BrushType.values())
@@ -55,7 +80,7 @@ public class BrushSettings implements InventoryHolder {
                 .collect(Collectors.toList());
 
         for (int i = 0; i < brushes.size(); i++) {
-            inventory.setItem(36 + i, brushes.get(i));
+            inventory.setItem((usesDepth ? 27 : 36) + i, brushes.get(i));
         }
     }
 
@@ -70,22 +95,37 @@ public class BrushSettings implements InventoryHolder {
         if (meta == null)
             return;
 
+        // Size Selection
+
         for (int size = 1; size <= 9; size++) {
             if (meta.customName().equals(BrushSettingsItems.SETTINGS_BRUSH_SIZE(size))) {
-                properties.BrushSize = size;
+                properties.Brush.BrushSize = size;
                 player.sendMessage(Messages.CHANGED_BRUSH_SIZE(size));
-                properties.Brush.openBrushSettings(plugin, player, properties.BrushSize);
+                properties.Brush.BrushType.openBrushSettings(plugin, player, properties);
                 return;
             }
         }
+
+        if (usesDepth) {
+            for (int depth = 1; depth <= 9; depth++) {
+                if (meta.customName().equals(BrushSettingsItems.SETTINGS_BRUSH_DEPTH(depth))) {
+                    properties.Brush.BrushDepth = depth;
+                    player.sendMessage(Messages.CHANGED_BRUSH_DEPTH(depth));
+                    properties.Brush.BrushType.openBrushSettings(plugin, player, properties);
+                    return;
+                }
+            }
+        }
+
+        // Brush Selection
 
         BrushType[] brushTypes = BrushType.values();
 
         for (BrushType brush : brushTypes) {
             if (meta.customName().equals(brush.getName())) {
-                properties.Brush = brush;
-                player.sendMessage(Messages.CHANGED_BRUSH(brush.getName()));
-                properties.Brush.openBrushSettings(plugin, player, properties.BrushSize);
+                properties.Brush.BrushType = brush;
+                player.sendMessage(Messages.CHANGED_BRUSH(brush));
+                properties.Brush.BrushType.openBrushSettings(plugin, player, properties);
                 return;
             }
         }

@@ -5,14 +5,19 @@ import java.util.Stack;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 
+import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryStates;
+import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushBall extends Brush {
-    public static void brush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
+    public static void brush(Terraformer plguin, Player player, BrushProperties brushProperties,
+            Location targetLocation,
+            boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
-        int brushSize = properties.BrushSize;
+        int brushSize = brushProperties.BrushSize;
 
         for (int x = -brushSize; x <= brushSize; x++) {
             for (int y = -brushSize; y <= brushSize; y++) {
@@ -25,26 +30,30 @@ public class BrushBall extends Brush {
             }
         }
 
-        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties.Brush,
-                properties.BrushSize);
+        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, brushProperties);
+        TerraformerProperties terraformerProperties = plguin.getTerraformer(player);
+        if (terraformerProperties == null) {
+            throw new IllegalArgumentException("Player is not in terraformer mode");
+        }
+
         if (!isRedo) {
-            properties.History
+            terraformerProperties.History
                     .pushModification(historyStates);
         } else {
-            properties.History.pushRedo(historyStates);
+            terraformerProperties.History.pushRedo(historyStates);
         }
 
         for (BlockState state : states) {
             Block block = state.getBlock();
             if (!block.getType().isSolid()) {
-                block.setType(properties.getRandomMaterial());
+                block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
             }
         }
 
         for (BlockState state : states) {
             Block block = state.getBlock();
             if (block.getType().isSolid()) {
-                block.setType(properties.getRandomMaterial());
+                block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
             }
         }
     }
