@@ -1,6 +1,8 @@
 package io.papermc.terraformer.terraformer_properties.properties.brush_settings;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,6 +32,8 @@ public class BrushSettings implements InventoryHolder {
                                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
                                         .append(Component.text(brushSize).color(NamedTextColor.GOLD)))));
 
+        // Size Selection
+
         for (int size = 1; size <= 9; size++) {
             ItemStack brushSizeItem = new ItemStack(Material.HEART_OF_THE_SEA);
             ItemMeta brushSizeItemMeta = brushSizeItem.getItemMeta();
@@ -41,7 +45,17 @@ public class BrushSettings implements InventoryHolder {
                             .decorate(TextDecoration.ITALIC)));
             brushSizeItem.add(size - 1);
             brushSizeItem.setItemMeta(brushSizeItemMeta);
-            inventory.setItem(size - 1, brushSizeItem);
+            inventory.setItem(45 + size - 1, brushSizeItem);
+        }
+
+        // Brush Selection
+
+        List<ItemStack> brushes = Arrays.stream(BrushType.values())
+                .map(BrushType::getBrushSettingsItem)
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < brushes.size(); i++) {
+            inventory.setItem(36 + i, brushes.get(i));
         }
     }
 
@@ -60,6 +74,17 @@ public class BrushSettings implements InventoryHolder {
             if (meta.customName().equals(BrushSettingsItems.SETTINGS_BRUSH_SIZE(size))) {
                 properties.BrushSize = size;
                 player.sendMessage(Messages.CHANGED_BRUSH_SIZE(size));
+                properties.Brush.openBrushSettings(plugin, player, properties.BrushSize);
+                return;
+            }
+        }
+
+        BrushType[] brushTypes = BrushType.values();
+
+        for (BrushType brush : brushTypes) {
+            if (meta.customName().equals(brush.getName())) {
+                properties.Brush = brush;
+                player.sendMessage(Messages.CHANGED_BRUSH(brush.getName()));
                 properties.Brush.openBrushSettings(plugin, player, properties.BrushSize);
                 return;
             }

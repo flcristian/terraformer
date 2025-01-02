@@ -1,7 +1,12 @@
 package io.papermc.terraformer.terraformer_properties.properties;
 
+import java.util.List;
+
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
@@ -37,6 +42,24 @@ public enum BrushType {
             case "extrude" -> EXTRUDE;
             default -> null;
         };
+    }
+
+    public static ItemStack getBrushSettingsItem(BrushType brushType) {
+        ItemStack item = switch (brushType) {
+            case BALL -> new ItemStack(Material.SLIME_BALL);
+            case SMOOTH -> new ItemStack(Material.SNOWBALL);
+            case ERODE -> new ItemStack(Material.WIND_CHARGE);
+            case EXTRUDE -> new ItemStack(Material.REDSTONE);
+        };
+
+        ItemMeta meta = item.getItemMeta();
+        meta.customName(brushType.getName());
+        meta.lore(List.of(
+                Component.text("Set the brush size to ").color(NamedTextColor.LIGHT_PURPLE)
+                        .append(brushType.getName()),
+                Component.text("Click to select").color(NamedTextColor.LIGHT_PURPLE)));
+        item.setItemMeta(meta);
+        return item;
     }
 
     public void applyBrush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {

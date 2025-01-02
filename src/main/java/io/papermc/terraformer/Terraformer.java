@@ -261,14 +261,14 @@ public class Terraformer extends JavaPlugin implements Listener {
         ItemMeta leaveMeta = leave.getItemMeta();
         leaveMeta.customName(TerraformItems.TERRAFORMER_LEAVE);
         leave.setItemMeta(leaveMeta);
-        player.getInventory().setItem(0, leave);
+        player.getInventory().setItem(8, leave);
 
         // Open Brush Settings Item
         ItemStack settings = new ItemStack(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
         ItemMeta settingsMeta = settings.getItemMeta();
         settingsMeta.customName(TerraformItems.TERRAFORMER_SETTINGS);
         settings.setItemMeta(settingsMeta);
-        player.getInventory().setItem(8, settings);
+        player.getInventory().setItem(0, settings);
     }
 
     // Undo

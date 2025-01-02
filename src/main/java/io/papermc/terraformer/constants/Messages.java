@@ -48,7 +48,7 @@ public final class Messages {
                         .color(NamedTextColor.RED);
 
         public static final Component CHANGED_BRUSH_SIZE(int size) {
-                return Component.text("Changed brush size to " + size).color(NamedTextColor.GREEN);
+                return Component.text("Changed brush size to ").append(Component.text(size).color(NamedTextColor.GOLD));
         }
 
         public static final Component CHANGED_BRUSH(Component brushName) {
