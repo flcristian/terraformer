@@ -2,6 +2,7 @@ package io.papermc.terraformer.constants;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 
 public class TerraformItems {
     public static final Component TERRAFORMER_BRUSH = Component.text("Brush").color(NamedTextColor.AQUA);
@@ -9,4 +10,6 @@ public class TerraformItems {
     public static final Component TERRAFORMER_REDO = Component.text("Redo").color(NamedTextColor.GREEN);
     public static final Component TERRAFORMER_LEAVE = Component.text("Leave Terraform Mode")
             .color(NamedTextColor.DARK_RED);
+    public static final Component TERRAFORMER_SETTINGS = Component.text("Open Brush Settings")
+            .color(TextColor.color(255, 127, 36));
 }

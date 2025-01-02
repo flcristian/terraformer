@@ -5,7 +5,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.papermc.terraformer.constants.Messages;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
-import io.papermc.terraformer.terraformer_properties.block_history.BlockStateHistory;
+import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryStates;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
 import io.papermc.terraformer.terraformer_properties.properties.BrushType;
 
@@ -50,11 +49,11 @@ class TerraformCommand implements CommandExecutor {
             case "start":
                 if (!player.hasPermission("terraformer.mode")) {
                     player.sendMessage(Messages.NO_PERMISSION);
-                    return false;
+                    return true;
                 }
                 if (properties != null && properties.IsTerraformer) {
                     player.sendMessage(Messages.TERRAFORM_MODE_ALREADY_STARTED);
-                    return false;
+                    return true;
                 }
                 plugin.setTerraformer(player);
                 player.sendMessage(Messages.START_TERRAFORM);
@@ -63,11 +62,11 @@ class TerraformCommand implements CommandExecutor {
             case "stop":
                 if (!player.hasPermission("terraformer.mode")) {
                     player.sendMessage(Messages.NO_PERMISSION);
-                    return false;
+                    return true;
                 }
                 if (properties == null || !properties.IsTerraformer) {
                     player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
-                    return false;
+                    return true;
                 }
                 plugin.removeTerraformer(player);
                 player.sendMessage(Messages.STOP_TERRAFORM);
@@ -76,45 +75,53 @@ class TerraformCommand implements CommandExecutor {
             case "undo":
                 if (!player.hasPermission("terraformer.mode")) {
                     player.sendMessage(Messages.NO_PERMISSION);
-                    return false;
+                    return true;
                 }
                 if (properties == null || !properties.IsTerraformer) {
                     player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
-                    return false;
+                    return true;
                 }
-                Stack<BlockStateHistory> undoStates = properties.History.undo();
+                BlockHistoryStates undoStates = properties.History.undo();
                 if (undoStates == null || !properties.IsTerraformer) {
                     player.sendMessage(Messages.NOTHING_TO_UNDO);
-                    return false;
+                    return true;
                 }
-                plugin.undo(undoStates);
+                plugin.undo(undoStates.states());
                 player.sendMessage(Messages.UNDO_SUCCESSFUL);
                 return true;
 
             case "redo":
                 if (!player.hasPermission("terraformer.mode")) {
                     player.sendMessage(Messages.NO_PERMISSION);
-                    return false;
+                    return true;
                 }
                 if (properties == null || !properties.IsTerraformer) {
                     player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
-                    return false;
+                    return true;
                 }
                 BrushAction redoAction = properties.History.redo();
                 if (redoAction == null) {
                     player.sendMessage(Messages.NOTHING_TO_REDO);
-                    return false;
+                    return true;
                 }
-                plugin.brush(properties, redoAction.targetLocation(), true);
+                properties.Brush.applyBrush(properties, redoAction.targetLocation(), true);
                 player.sendMessage(Messages.REDO_SUCCESSFUL);
                 return true;
 
             case "materials":
             case "mat":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
                 if (args.length < 2) {
-                    player.sendMessage(Component.text("Usage: /terraform materials <materials>")
-                            .color(NamedTextColor.RED));
-                    return false;
+                    player.sendMessage(Messages.USAGE_MATERIALS);
+                    return true;
                 }
 
                 try {
@@ -131,43 +138,62 @@ class TerraformCommand implements CommandExecutor {
 
             case "brush":
             case "b":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
                 if (args.length < 2) {
-                    player.sendMessage(Messages.INVALID_BRUSH_TYPE);
-                    return false;
+                    player.sendMessage(Messages.USAGE_BRUSH);
+                    return true;
                 }
                 BrushType brushType = BrushType.getBrushType(args[1]);
                 if (brushType == null) {
                     player.sendMessage(Messages.INVALID_BRUSH_TYPE);
-                    return false;
+                    return true;
                 }
                 properties.Brush = brushType;
-                player.sendMessage(Component.text("Brush type set to ").append(brushType.getName()));
+                player.sendMessage(Messages.CHANGED_BRUSH(brushType.getName()));
                 return true;
 
             case "size":
             case "bs":
-                if (args.length < 2) {
-                    player.sendMessage(Messages.INVALID_BRUSH_SIZE);
-                    return false;
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
                 }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(Messages.USAGE_BRUSH_SIZE);
+                    return true;
+                }
+
                 int size;
                 try {
                     size = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
                     player.sendMessage(Messages.INVALID_BRUSH_SIZE);
-                    return false;
+                    return true;
                 }
                 if (size < 1 || size > 9) {
                     player.sendMessage(Messages.INVALID_BRUSH_SIZE);
-                    return false;
+                    return true;
                 }
                 properties.BrushSize = size;
-                player.sendMessage(Component.text("Brush size set to " + size).color(NamedTextColor.GREEN));
+                player.sendMessage(Messages.CHANGED_BRUSH_SIZE(size));
                 return true;
 
             default:
                 player.sendMessage(Messages.UNKNOWN_COMMAND);
-                return false;
+                return true;
         }
     }
 

@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.bukkit.Material;
 
-import io.papermc.terraformer.terraformer_properties.block_history.BlockHistory;
+import io.papermc.terraformer.terraformer_properties.block_history.BrushBlockHistory;
 import io.papermc.terraformer.terraformer_properties.properties.BrushType;
 import io.papermc.terraformer.terraformer_properties.properties.Palette;
 
@@ -14,21 +14,21 @@ public class TerraformerProperties {
     public boolean IsTerraformer;
     public BrushType Brush;
     public int BrushSize;
-    public BlockHistory History;
+    public BrushBlockHistory History;
     public Map<Material, Integer> Materials;
     public Palette Palette;
 
     public TerraformerProperties() {
         Brush = BrushType.BALL;
         BrushSize = 4;
-        History = new BlockHistory();
+        History = new BrushBlockHistory();
         Materials = new HashMap<>();
         Materials.put(Material.STONE, 100);
         Palette = new Palette();
         IsTerraformer = true;
     }
 
-    public TerraformerProperties(BrushType brushType, int brushSize, BlockHistory history,
+    public TerraformerProperties(BrushType brushType, int brushSize, BrushBlockHistory history,
             Map<Material, Integer> materials, Palette palette, boolean isTerraformer) {
         Brush = brushType;
         BrushSize = brushSize;

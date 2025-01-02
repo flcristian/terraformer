@@ -26,7 +26,7 @@ public final class Messages {
         public static final Component UNDO_SUCCESSFUL = Component.text("Undone last modification!")
                         .color(NamedTextColor.GREEN);
         public static final Component REDO_SUCCESSFUL = Component.text("Redone last modification!")
-                        .color(NamedTextColor.GREEN);
+                        .color(NamedTextColor.LIGHT_PURPLE);
         public static final Component NOTHING_TO_UNDO = Component.text("Nothing to undo!")
                         .color(NamedTextColor.RED);
         public static final Component NOTHING_TO_REDO = Component.text("Nothing to redo!")
@@ -36,4 +36,22 @@ public final class Messages {
                         .color(NamedTextColor.RED);
         public static final Component INVALID_BRUSH_SIZE = Component
                         .text("Invalid brush size. Size must be between 1 and 9.").color(NamedTextColor.RED);
+
+        public static final Component USAGE_MATERIALS = Component
+                        .text("Usage: '/terraform materials <materials>' or '/terraform mat <materials>'")
+                        .color(NamedTextColor.RED);
+        public static final Component USAGE_BRUSH = Component
+                        .text("Usage: '/terraform brush <brush>' or '/terraform b <brush>'")
+                        .color(NamedTextColor.RED);
+        public static final Component USAGE_BRUSH_SIZE = Component
+                        .text("Usage: '/terraform size <size>' or '/terraform bs <size>'")
+                        .color(NamedTextColor.RED);
+
+        public static final Component CHANGED_BRUSH_SIZE(int size) {
+                return Component.text("Changed brush size to " + size).color(NamedTextColor.GREEN);
+        }
+
+        public static final Component CHANGED_BRUSH(Component brushName) {
+                return Component.text("Changed brush type to ").append(brushName);
+        }
 }
