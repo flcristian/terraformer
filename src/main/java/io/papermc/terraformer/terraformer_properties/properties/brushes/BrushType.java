@@ -61,9 +61,9 @@ public enum BrushType {
         return item;
     }
 
-    public void applyBrush(Terraformer plugin, Player player, BrushProperties properties, Location targetLocation,
-            boolean isRedo) {
-        switch (this) {
+    public static void applyBrush(Terraformer plugin, Player player, BrushProperties properties,
+            Location targetLocation, boolean isRedo) {
+        switch (properties.Type) {
             case BALL -> BrushBall.brush(plugin, player, properties, targetLocation, isRedo);
             case SMOOTH -> BrushSmooth.brush(plugin, player, properties, targetLocation, isRedo);
             case ERODE -> BrushErode.brush(plugin, player, properties, targetLocation, isRedo);

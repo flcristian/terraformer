@@ -105,7 +105,7 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.NOTHING_TO_REDO);
                     return true;
                 }
-                properties.Brush.applyBrush(redoAction.targetLocation(), true);
+                properties.applyRedo(plugin, player, redoAction);
                 player.sendMessage(Messages.REDO_SUCCESSFUL);
                 return true;
 
@@ -129,7 +129,7 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.INVALID_BRUSH_TYPE);
                     return true;
                 }
-                properties.Brush = brushType;
+                properties.Brush.Type = brushType;
                 player.sendMessage(Messages.CHANGED_BRUSH(brushType));
                 return true;
 
@@ -160,7 +160,7 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.INVALID_BRUSH_SIZE);
                     return true;
                 }
-                properties.BrushSize = size;
+                properties.Brush.BrushSize = size;
                 player.sendMessage(Messages.CHANGED_BRUSH_SIZE(size));
                 return true;
 
@@ -191,7 +191,7 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.INVALID_BRUSH_DEPTH);
                     return true;
                 }
-                properties.BrushDepth = depth;
+                properties.Brush.BrushDepth = depth;
                 player.sendMessage(Messages.CHANGED_BRUSH_DEPTH(depth));
                 return true;
 
@@ -216,7 +216,7 @@ class TerraformCommand implements CommandExecutor {
                     for (int i = 1; i < args.length; i++) {
                         materialsString.append(args[i]);
                     }
-                    properties.Materials = parseMaterialPercentages(materialsString.toString());
+                    properties.Brush.Materials = parseMaterialPercentages(materialsString.toString());
                     player.sendMessage(Component.text("Materials updated successfully!").color(NamedTextColor.GREEN));
                 } catch (IllegalArgumentException e) {
                     player.sendMessage(Component.text(e.getMessage()).color(NamedTextColor.RED));
@@ -243,7 +243,7 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.INVALID_MATERIALS_MODE);
                     return true;
                 }
-                properties.Mode = materialsMode;
+                properties.Brush.Mode = materialsMode;
                 player.sendMessage(Messages.CHANGED_MATERIALS_MODE(materialsMode));
                 return true;
 

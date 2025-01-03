@@ -33,7 +33,7 @@ public class BrushSettings implements InventoryHolder {
 
         Component inventoryName = Component.text("Brush Settings").color(NamedTextColor.AQUA)
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
-                        .append(properties.Brush.BrushType.getName()));
+                        .append(properties.Brush.Type.getName()));
 
         this.inventory = plugin.getServer().createInventory(this, 54,
                 inventoryName);
@@ -101,7 +101,7 @@ public class BrushSettings implements InventoryHolder {
             if (meta.customName().equals(BrushSettingsItems.SETTINGS_BRUSH_SIZE(size))) {
                 properties.Brush.BrushSize = size;
                 player.sendMessage(Messages.CHANGED_BRUSH_SIZE(size));
-                properties.Brush.BrushType.openBrushSettings(plugin, player, properties);
+                properties.Brush.Type.openBrushSettings(plugin, player, properties);
                 return;
             }
         }
@@ -111,7 +111,7 @@ public class BrushSettings implements InventoryHolder {
                 if (meta.customName().equals(BrushSettingsItems.SETTINGS_BRUSH_DEPTH(depth))) {
                     properties.Brush.BrushDepth = depth;
                     player.sendMessage(Messages.CHANGED_BRUSH_DEPTH(depth));
-                    properties.Brush.BrushType.openBrushSettings(plugin, player, properties);
+                    properties.Brush.Type.openBrushSettings(plugin, player, properties);
                     return;
                 }
             }
@@ -123,9 +123,9 @@ public class BrushSettings implements InventoryHolder {
 
         for (BrushType brush : brushTypes) {
             if (meta.customName().equals(brush.getName())) {
-                properties.Brush.BrushType = brush;
+                properties.Brush.Type = brush;
                 player.sendMessage(Messages.CHANGED_BRUSH(brush));
-                properties.Brush.BrushType.openBrushSettings(plugin, player, properties);
+                properties.Brush.Type.openBrushSettings(plugin, player, properties);
                 return;
             }
         }

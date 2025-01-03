@@ -13,9 +13,8 @@ import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryS
 import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushBall extends Brush {
-    public static void brush(Terraformer plguin, Player player, BrushProperties brushProperties,
-            Location targetLocation,
-            boolean isRedo) {
+    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+            Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         int brushSize = brushProperties.BrushSize;
 
@@ -30,8 +29,8 @@ public class BrushBall extends Brush {
             }
         }
 
-        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, brushProperties);
-        TerraformerProperties terraformerProperties = plguin.getTerraformer(player);
+        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, brushProperties.clone());
+        TerraformerProperties terraformerProperties = plugin.getTerraformer(player);
         if (terraformerProperties == null) {
             throw new IllegalArgumentException("Player is not in terraformer mode");
         }

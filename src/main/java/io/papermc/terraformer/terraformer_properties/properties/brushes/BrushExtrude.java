@@ -10,15 +10,19 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
 
+import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryStates;
+import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushExtrude extends Brush {
-    public static void brush(TerraformerProperties properties, Location targetLocation, boolean isRedo) {
+    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+            Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         HashMap<Location, BlockData> extrudeedBlocks = new HashMap<>();
-        int brushSize = properties.Brush.BrushSize;
+        int brushSize = brushProperties.BrushSize;
 
         // Gather blocks in sphere
         for (int x = -brushSize; x <= brushSize; x++) {
@@ -32,12 +36,17 @@ public class BrushExtrude extends Brush {
             }
         }
 
-        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, properties);
+        BlockHistoryStates historyStates = new BlockHistoryStates(states, targetLocation, brushProperties.clone());
+        TerraformerProperties terraformerProperties = plugin.getTerraformer(player);
+        if (terraformerProperties == null) {
+            throw new IllegalArgumentException("Player is not in terraformer mode");
+        }
+
         if (!isRedo) {
-            properties.History
+            terraformerProperties.History
                     .pushModification(historyStates);
         } else {
-            properties.History.pushRedo(historyStates);
+            terraformerProperties.History.pushRedo(historyStates);
         }
 
         // Process each block
@@ -88,5 +97,4 @@ public class BrushExtrude extends Brush {
         // Only extrude if more than 50% of neighbors are different
         return differentNeighbors > (neighbors.size() * 0.5);
     }
-
 }
