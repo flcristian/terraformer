@@ -27,6 +27,7 @@ import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryStates;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
 import io.papermc.terraformer.terraformer_properties.properties.brush_settings.BrushSettings;
+import io.papermc.terraformer.utility.SkullTexturesApplier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -115,28 +116,20 @@ public class Terraformer extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        if (terraformers.containsKey(player.getUniqueId())) {
-            ItemStack itemInHand = event.getItemInHand();
-            if (itemInHand == null)
+        ItemStack itemInHand = event.getItemInHand();
+        if (itemInHand == null)
+            return;
+
+        ItemMeta meta = itemInHand.getItemMeta();
+        if (meta == null)
+            return;
+
+        Component[] terraformerItems = TerraformItems.values();
+
+        for (Component item : terraformerItems) {
+            if (meta.customName().equals(item)) {
+                event.setCancelled(true);
                 return;
-
-            ItemMeta meta = itemInHand.getItemMeta();
-            if (meta == null)
-                return;
-
-            Component[] terraformerItems = new Component[] {
-                    TerraformItems.TERRAFORMER_BRUSH,
-                    TerraformItems.TERRAFORMER_UNDO,
-                    TerraformItems.TERRAFORMER_REDO,
-                    TerraformItems.TERRAFORMER_LEAVE
-            };
-
-            for (Component item : terraformerItems) {
-                if (meta.customName().equals(item)) {
-                    event.setCancelled(true);
-                    return;
-                }
             }
         }
     }
@@ -243,29 +236,37 @@ public class Terraformer extends JavaPlugin implements Listener {
         player.getInventory().setItem(4, brush);
 
         // Undo Item
-        ItemStack undo = new ItemStack(Material.AMETHYST_BLOCK);
+        ItemStack undo = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta undoMeta = undo.getItemMeta();
         undoMeta.customName(TerraformItems.TERRAFORMER_UNDO);
+        SkullTexturesApplier.applyTextures(undoMeta,
+                "http://textures.minecraft.net/texture/5d9c93f8b9f2f8f91aa4377551c2738002a78816d612f39f142fc91a3d713ad");
         undo.setItemMeta(undoMeta);
         player.getInventory().setItem(3, undo);
 
         // Redo Item
-        ItemStack redo = new ItemStack(Material.PRISMARINE);
+        ItemStack redo = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta redoMeta = redo.getItemMeta();
         redoMeta.customName(TerraformItems.TERRAFORMER_REDO);
+        SkullTexturesApplier.applyTextures(redoMeta,
+                "http://textures.minecraft.net/texture/479e8cf21b839b255a2836e251941c5fdc99af01559e3733d5325ccfa3d922aa");
         redo.setItemMeta(redoMeta);
         player.getInventory().setItem(5, redo);
 
         // Leave Terraform Mode Item
-        ItemStack leave = new ItemStack(Material.BARRIER);
+        ItemStack leave = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta leaveMeta = leave.getItemMeta();
+        SkullTexturesApplier.applyTextures(leaveMeta,
+                "http://textures.minecraft.net/texture/ed0a1420844ce237a45d2e7e544d135841e9f82d09e203267cf8896c8515e360");
         leaveMeta.customName(TerraformItems.TERRAFORMER_LEAVE);
         leave.setItemMeta(leaveMeta);
         player.getInventory().setItem(8, leave);
 
         // Open Brush Settings Item
-        ItemStack settings = new ItemStack(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
+        ItemStack settings = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta settingsMeta = settings.getItemMeta();
+        SkullTexturesApplier.applyTextures(settingsMeta,
+                "http://textures.minecraft.net/texture/ec2ff244dfc9dd3a2cef63112e7502dc6367b0d02132950347b2b479a72366dd");
         settingsMeta.customName(TerraformItems.TERRAFORMER_SETTINGS);
         settings.setItemMeta(settingsMeta);
         player.getInventory().setItem(0, settings);

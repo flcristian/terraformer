@@ -41,7 +41,7 @@ public class BrushSettings implements InventoryHolder {
         // Size Selection
 
         for (int size = 1; size <= 9; size++) {
-            ItemStack brushSizeItem = new ItemStack(Material.HEART_OF_THE_SEA);
+            ItemStack brushSizeItem = new ItemStack(Material.HEART_OF_THE_SEA, size);
             ItemMeta brushSizeItemMeta = brushSizeItem.getItemMeta();
             brushSizeItemMeta.customName(BrushSettingsItems.SETTINGS_BRUSH_SIZE(size));
             brushSizeItemMeta.lore(List.of(
@@ -49,7 +49,6 @@ public class BrushSettings implements InventoryHolder {
                     Component.text("Click to select").color(NamedTextColor.LIGHT_PURPLE),
                     Component.text("Works for all brushes").color(NamedTextColor.DARK_GRAY)
                             .decorate(TextDecoration.ITALIC)));
-            brushSizeItem.add(size - 1);
             brushSizeItem.setItemMeta(brushSizeItemMeta);
             inventory.setItem(45 + size - 1, brushSizeItem);
         }
@@ -58,7 +57,7 @@ public class BrushSettings implements InventoryHolder {
 
         if (usesDepth) {
             for (int depth = 1; depth <= 9; depth++) {
-                ItemStack brushDepthItem = new ItemStack(Material.HEART_OF_THE_SEA);
+                ItemStack brushDepthItem = new ItemStack(Material.HEART_OF_THE_SEA, depth);
                 ItemMeta brushDepthItemMeta = brushDepthItem.getItemMeta();
                 brushDepthItemMeta.customName(BrushSettingsItems.SETTINGS_BRUSH_DEPTH(depth));
                 brushDepthItemMeta.lore(List.of(
@@ -67,7 +66,6 @@ public class BrushSettings implements InventoryHolder {
                         Component.text("Click to select").color(NamedTextColor.LIGHT_PURPLE),
                         Component.text("Works for: Paint, Rise, Dig").color(NamedTextColor.DARK_GRAY)
                                 .decorate(TextDecoration.ITALIC)));
-                brushDepthItem.add(depth - 1);
                 brushDepthItem.setItemMeta(brushDepthItemMeta);
                 inventory.setItem(36 + depth - 1, brushDepthItem);
             }
@@ -82,6 +80,8 @@ public class BrushSettings implements InventoryHolder {
         for (int i = 0; i < brushes.size(); i++) {
             inventory.setItem((usesDepth ? 27 : 36) + i, brushes.get(i));
         }
+
+        // Material Modes
     }
 
     public void onInventoryClick(Terraformer plugin, InventoryClickEvent event, Player player,

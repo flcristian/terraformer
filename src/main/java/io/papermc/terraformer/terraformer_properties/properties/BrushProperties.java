@@ -1,6 +1,6 @@
 package io.papermc.terraformer.terraformer_properties.properties;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -15,23 +15,23 @@ public class BrushProperties implements Cloneable {
     public int BrushSize;
     public int BrushDepth;
     public Map<Material, Integer> Materials;
-    public MaterialsMode Mode;
+    public MaterialMode Mode;
 
     public BrushProperties() {
         Type = BrushType.BALL;
         BrushSize = 4;
         BrushDepth = 1;
-        Materials = new HashMap<>();
+        Materials = new LinkedHashMap<>();
         Materials.put(Material.STONE, 100);
-        Mode = MaterialsMode.RANDOM;
+        Mode = MaterialMode.RANDOM;
     }
 
     public BrushProperties(BrushType brushType, int brushSize, int brushDepth, Map<Material, Integer> materials,
-            MaterialsMode materialsMode) {
+            MaterialMode materialsMode) {
         Type = brushType;
         BrushSize = brushSize;
         BrushDepth = brushDepth;
-        Materials = materials;
+        Materials = new LinkedHashMap<>(materials);
         Mode = materialsMode;
     }
 
@@ -45,6 +45,6 @@ public class BrushProperties implements Cloneable {
 
     @Override
     public BrushProperties clone() {
-        return new BrushProperties(Type, BrushSize, BrushDepth, new HashMap<>(Materials), Mode);
+        return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode);
     }
 }
