@@ -283,11 +283,6 @@ class TerraformCommand implements CommandExecutor {
                 }
 
                 player.sendMessage(Messages.CHANGED_MATERIAL_MODE(materialMode));
-
-                if (!properties.Brush.Mode.containsAllMaterials(properties.Brush)) {
-                    player.sendMessage(Messages.NOT_ALL_MATERIALS_APPEAR);
-                }
-
                 return true;
 
             default:
@@ -405,7 +400,6 @@ class TerraformCommand implements CommandExecutor {
                     materialMap.put(material, 0);
                     materialMap.put(material, 100);
                 } else {
-                    // Multiple materials: distribute evenly in reverse order
                     int interval = 100 / (numMaterials - 1);
                     for (int i = 0; i < materialNames.length; i++) {
                         Material material = Material.getMaterial(materialNames[i].trim().toUpperCase());
@@ -413,8 +407,7 @@ class TerraformCommand implements CommandExecutor {
                             throw new IllegalArgumentException("Invalid material: " + materialNames[i]);
                         }
 
-                        // Calculate percentage in reverse order
-                        int percentage = (i == 0) ? 100 : 100 - (i * interval);
+                        int percentage = (i == materialNames.length - 1) ? 100 : i * interval;
                         materialMap.put(material, percentage);
                     }
                 }

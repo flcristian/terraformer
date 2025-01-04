@@ -35,8 +35,9 @@ public class BrushSettings implements InventoryHolder {
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
                         .append(properties.Brush.Type.getName()));
 
-        this.inventory = plugin.getServer().createInventory(this, 54,
+        inventory = plugin.getServer().createInventory(this, 54,
                 inventoryName);
+        inventory.setMaxStackSize(100);
 
         // Size Selection
 

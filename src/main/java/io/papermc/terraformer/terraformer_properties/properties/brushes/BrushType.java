@@ -16,7 +16,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum BrushType {
-    BALL, SMOOTH, ERODE, EXTRUDE, PAINT_TOP, PAINT_WALL, PAINT_BOTTOM, RISE, DIG;
+    BALL, SMOOTH, ERODE, EXTRUDE, PAINT_TOP, PAINT_SURFACE, PAINT_WALL, PAINT_BOTTOM, RISE, DIG;
 
     public Component getName() {
         return switch (this) {
@@ -25,6 +25,7 @@ public enum BrushType {
             case ERODE -> Component.text("Erode").color(NamedTextColor.RED);
             case EXTRUDE -> Component.text("Extrude").color(NamedTextColor.LIGHT_PURPLE);
             case PAINT_TOP -> Component.text("Paint Top").color(NamedTextColor.BLUE);
+            case PAINT_SURFACE -> Component.text("Paint Surface").color(NamedTextColor.BLUE);
             case PAINT_WALL -> Component.text("Paint Wall").color(NamedTextColor.BLUE);
             case PAINT_BOTTOM -> Component.text("Paint Bottom").color(NamedTextColor.BLUE);
             case RISE -> Component.text("Rise").color(NamedTextColor.DARK_PURPLE);
@@ -39,6 +40,7 @@ public enum BrushType {
             case "erode" -> ERODE;
             case "extrude" -> EXTRUDE;
             case "painttop" -> PAINT_TOP;
+            case "paintsurface" -> PAINT_SURFACE;
             case "paintwall" -> PAINT_WALL;
             case "paintbottom" -> PAINT_BOTTOM;
             case "rise" -> RISE;
@@ -54,6 +56,7 @@ public enum BrushType {
             case ERODE -> new ItemStack(Material.WIND_CHARGE);
             case EXTRUDE -> new ItemStack(Material.REDSTONE);
             case PAINT_TOP -> new ItemStack(Material.BLUE_DYE);
+            case PAINT_SURFACE -> new ItemStack(Material.BLUE_DYE);
             case PAINT_WALL -> new ItemStack(Material.BLUE_DYE);
             case PAINT_BOTTOM -> new ItemStack(Material.BLUE_DYE);
             case RISE -> new ItemStack(Material.GUNPOWDER);
@@ -78,8 +81,11 @@ public enum BrushType {
             case ERODE -> BrushErode.brush(plugin, player, properties, targetLocation, isRedo);
             case EXTRUDE -> BrushExtrude.brush(plugin, player, properties, targetLocation, isRedo);
             case PAINT_TOP -> BrushPaint.brush(plugin, player, properties, targetLocation, isRedo);
+            case PAINT_SURFACE -> BrushPaint.brush(plugin, player, properties, targetLocation, isRedo);
             case PAINT_WALL -> BrushPaint.brush(plugin, player, properties, targetLocation, isRedo);
             case PAINT_BOTTOM -> BrushPaint.brush(plugin, player, properties, targetLocation, isRedo);
+            case RISE -> BrushRise.brush(plugin, player, properties, targetLocation, isRedo);
+            case DIG -> BrushDig.brush(plugin, player, properties, targetLocation, isRedo);
         }
     }
 
@@ -90,6 +96,7 @@ public enum BrushType {
             case ERODE -> new BrushSettings(plugin, properties, false, false);
             case EXTRUDE -> new BrushSettings(plugin, properties, false, false);
             case PAINT_TOP -> new BrushSettings(plugin, properties, true, true);
+            case PAINT_SURFACE -> new BrushSettings(plugin, properties, true, true);
             case PAINT_WALL -> new BrushSettings(plugin, properties, true, true);
             case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true, true);
             case RISE -> new BrushSettings(plugin, properties, false, true);

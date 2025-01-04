@@ -36,12 +36,4 @@ public enum MaterialMode {
             case GRADIENT -> GradientModeSingleton.getInstance().getMaterial(location, targetLocation, properties);
         };
     }
-
-    public boolean containsAllMaterials(BrushProperties properties) {
-        return switch (this) {
-            case RANDOM -> RandomModeSingleton.getInstance().containsAllMaterials(properties);
-            case LAYER -> LayerModeSingleton.getInstance().containsAllMaterials(properties);
-            case GRADIENT -> GradientModeSingleton.getInstance().containsAllMaterials(properties);
-        };
-    }
 }

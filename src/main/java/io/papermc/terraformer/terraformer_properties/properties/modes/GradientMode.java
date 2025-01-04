@@ -1,7 +1,6 @@
 package io.papermc.terraformer.terraformer_properties.properties.modes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -236,14 +235,11 @@ public class GradientMode implements Mode {
     public List<Material> generateGradient(int gradientLengthInBlocks, Map<Material, Integer> gradientBlockPositions) {
         List<Material> gradient = new ArrayList<>();
 
-        // Create a sorted map of positions to colors
         TreeMap<Integer, Color> colorPositions = new TreeMap<>();
 
-        // Add default white and black if positions 0 and 100 are not specified
         Color defaultStartColor = blockColors.get(Material.WHITE_CONCRETE);
         Color defaultEndColor = blockColors.get(Material.BLACK_CONCRETE);
 
-        // Convert block positions to colors and add to sorted map
         for (Map.Entry<Material, Integer> entry : gradientBlockPositions.entrySet()) {
             Color blockColor = blockColors.get(entry.getKey());
             if (blockColor != null && entry.getValue() >= 0 && entry.getValue() <= 100) {
@@ -251,7 +247,6 @@ public class GradientMode implements Mode {
             }
         }
 
-        // Add default colors if not specified
         if (!colorPositions.containsKey(0)) {
             colorPositions.put(0, defaultStartColor);
         }
@@ -259,11 +254,9 @@ public class GradientMode implements Mode {
             colorPositions.put(100, defaultEndColor);
         }
 
-        // Generate gradient colors
         for (int i = 0; i < gradientLengthInBlocks; i++) {
             float position = (float) i * 100 / (gradientLengthInBlocks - 1);
 
-            // Find the surrounding color positions
             Map.Entry<Integer, Color> beforeEntry = colorPositions.floorEntry((int) position);
             Map.Entry<Integer, Color> afterEntry = colorPositions.ceilingEntry((int) position);
 
@@ -271,15 +264,12 @@ public class GradientMode implements Mode {
             if (beforeEntry.getKey().equals(afterEntry.getKey())) {
                 interpolatedColor = beforeEntry.getValue();
             } else {
-                // Calculate the ratio between the two surrounding colors
                 float ratio = (position - beforeEntry.getKey()) /
                         (afterEntry.getKey() - beforeEntry.getKey());
 
-                // Interpolate between colors
                 interpolatedColor = interpolateColor(beforeEntry.getValue(), afterEntry.getValue(), ratio);
             }
 
-            // Find closest matching block
             Material closestBlock = findClosestColorBlock(interpolatedColor);
             gradient.add(closestBlock);
         }
@@ -325,11 +315,13 @@ public class GradientMode implements Mode {
         }
 
         // Check Cache
-        int totalHeight;
-        if (properties.Type == BrushType.PAINT_WALL || properties.Type == BrushType.PAINT_WALL
+        int size, totalHeight;
+        if (properties.Type == BrushType.PAINT_TOP || properties.Type == BrushType.PAINT_WALL
                 || properties.Type == BrushType.PAINT_BOTTOM) {
+            size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
             totalHeight = properties.BrushDepth;
         } else {
+            size = properties.BrushSize;
             totalHeight = properties.BrushSize * 2 - 1;
         }
 
@@ -342,37 +334,25 @@ public class GradientMode implements Mode {
             gradientCache.put(cacheKey, gradient);
         }
 
-        // Get relative Y position based on BrushType
         int relativeY;
         if (properties.Type == BrushType.PAINT_TOP) {
-            // Calculate from the top
             relativeY = targetLocation.getBlockY() - location.getBlockY();
         } else if (properties.Type == BrushType.PAINT_BOTTOM) {
-            // Calculate from the bottom
-            Collections.reverse(gradient);
-            relativeY = targetLocation.getBlockY() - location.getBlockY();
+            relativeY = location.getBlockY() - targetLocation.getBlockY();
+        } else if (properties.Type == BrushType.PAINT_WALL) {
+            if (properties.BrushDepth % 2 == 1) {
+                relativeY = targetLocation.getBlockY() - (location.getBlockY() - size);
+            } else {
+                relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
+            }
         } else {
-            // Calculate from the center
-            relativeY = location.getBlockY() - (targetLocation.getBlockY() - properties.BrushSize);
+            relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
         }
 
-        // Ensure relativeY is within bounds
         if (relativeY < 0 || relativeY >= gradient.size()) {
             return Material.STONE;
         }
 
-        // For PAINT type, invert the index since we're calculating from top
-        int gradientIndex = relativeY;
-
-        // Double-check bounds after potential inversion
-        if (gradientIndex < 0 || gradientIndex >= gradient.size()) {
-            return Material.STONE;
-        }
-
-        return gradient.get(gradientIndex);
-    }
-
-    public boolean containsAllMaterials(BrushProperties properties) {
-        return properties.Materials.keySet().size() <= properties.BrushSize * 2 - 1;
+        return gradient.get(relativeY);
     }
 }

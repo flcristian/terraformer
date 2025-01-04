@@ -1,5 +1,7 @@
 package io.papermc.terraformer.terraformer_properties.properties.brushes;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import org.bukkit.Location;
@@ -20,16 +22,14 @@ public class BrushPaint extends Brush {
         int brushSize = brushProperties.BrushSize;
         int brushDepth = brushProperties.BrushDepth;
 
-        // Check blocks in a cylinder shape
+        Map<String, Location> surfaceLocationMap = new HashMap<>();
+
         for (int x = -brushSize; x <= brushSize; x++) {
             for (int z = -brushSize; z <= brushSize; z++) {
-                // Calculate distance from center for cylinder shape
                 double distance = Math.sqrt(x * x + z * z);
                 if (distance <= brushSize) {
-                    // Determine y range based on brush type
                     switch (brushProperties.Type) {
                         case PAINT_TOP:
-                            // Current behavior - top down
                             for (int y = 0; y < brushDepth; y++) {
                                 Location loc = targetLocation.clone().add(x, -y, z);
                                 Block block = loc.getBlock();
@@ -39,9 +39,38 @@ public class BrushPaint extends Brush {
                             }
                             break;
 
+                        case PAINT_SURFACE:
+                            Location surfaceLocation = targetLocation.clone().add(x, 0, z);
+
+                            boolean foundSurface = false;
+                            for (int searchDepth = 0; searchDepth <= brushSize; searchDepth++) {
+                                Location checkLoc = surfaceLocation.clone().add(0, -searchDepth, 0);
+                                if (checkLoc.getBlock().getType().isSolid() &&
+                                        !checkLoc.clone().add(0, 1, 0).getBlock().getType().isSolid()) {
+                                    surfaceLocation = checkLoc;
+                                    foundSurface = true;
+                                    break;
+                                }
+                            }
+
+                            if (foundSurface) {
+                                surfaceLocationMap.put(
+                                        surfaceLocation.getBlockX() + "," + surfaceLocation.getBlockZ(),
+                                        surfaceLocation);
+                                for (int y = 0; y < brushDepth; y++) {
+                                    Location loc = surfaceLocation.clone().add(0, -y, 0);
+                                    Block block = loc.getBlock();
+                                    if (block.getType().isSolid()) {
+                                        states.push(block.getState());
+                                    }
+                                }
+                            }
+
+                            break;
+
                         case PAINT_WALL:
-                            // Center out
-                            for (int y = -brushDepth / 2; y <= brushDepth / 2; y++) {
+                            for (int y = brushDepth % 2 == 1 ? -brushDepth / 2 : -brushDepth / 2 + 1; y <= brushDepth
+                                    / 2; y++) {
                                 Location loc = targetLocation.clone().add(x, y, z);
                                 Block block = loc.getBlock();
                                 if (block.getType().isSolid()) {
@@ -51,7 +80,6 @@ public class BrushPaint extends Brush {
                             break;
 
                         case PAINT_BOTTOM:
-                            // Bottom up
                             for (int y = 0; y < brushDepth; y++) {
                                 Location loc = targetLocation.clone().add(x, y, z);
                                 Block block = loc.getBlock();
@@ -89,8 +117,19 @@ public class BrushPaint extends Brush {
         // Single pass: replace solid blocks with the new material
         for (BlockState state : states) {
             Block block = state.getBlock();
-            if (block.getType().isSolid()) {
-                block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
+            if (brushProperties.Type != BrushType.PAINT_SURFACE) {
+                if (block.getType().isSolid()) {
+                    block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
+                }
+            } else {
+                Location surfaceLocation = surfaceLocationMap.get(block.getLocation().getBlockX() + ","
+                        + block.getLocation().getBlockZ());
+
+                if (surfaceLocation != null) {
+                    if (block.getType().isSolid()) {
+                        block.setType(brushProperties.getMaterial(block.getLocation(), surfaceLocation));
+                    }
+                }
             }
         }
     }

@@ -22,8 +22,4 @@ public class RandomMode implements Mode {
 
         return properties.Materials.entrySet().iterator().next().getKey();
     }
-
-    public boolean containsAllMaterials(BrushProperties properties) {
-        return properties.Materials.size() > 0;
-    }
 }

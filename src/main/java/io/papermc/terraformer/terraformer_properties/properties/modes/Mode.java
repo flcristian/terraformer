@@ -7,6 +7,4 @@ import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
 
 public interface Mode {
     public Material getMaterial(Location location, Location targeLocation, BrushProperties properties);
-
-    public boolean containsAllMaterials(BrushProperties properties);
 }

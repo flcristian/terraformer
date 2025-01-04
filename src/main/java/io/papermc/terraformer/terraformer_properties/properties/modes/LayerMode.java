@@ -1,7 +1,6 @@
 package io.papermc.terraformer.terraformer_properties.properties.modes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -19,25 +18,29 @@ public class LayerMode implements Mode {
         }
 
         double layerHeight;
+        int size;
         if (properties.Type == BrushType.PAINT_TOP || properties.Type == BrushType.PAINT_WALL
                 || properties.Type == BrushType.PAINT_BOTTOM) {
+            size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
             layerHeight = (double) properties.BrushDepth / materials.size();
         } else {
+            size = properties.BrushSize;
             layerHeight = (double) (properties.BrushSize * 2 - 1) / materials.size();
         }
 
-        // Get relative Y position based on BrushType
         int relativeY;
         if (properties.Type == BrushType.PAINT_TOP) {
-            // Calculate from the top
             relativeY = targetLocation.getBlockY() - location.getBlockY();
         } else if (properties.Type == BrushType.PAINT_BOTTOM) {
-            // Calculate from the bottom
-            Collections.reverse(materials);
-            relativeY = targetLocation.getBlockY() - location.getBlockY();
+            relativeY = location.getBlockY() - targetLocation.getBlockY();
+        } else if (properties.Type == BrushType.PAINT_WALL) {
+            if (properties.BrushDepth % 2 == 1) {
+                relativeY = targetLocation.getBlockY() - (location.getBlockY() - size);
+            } else {
+                relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
+            }
         } else {
-            // Calculate from the center
-            relativeY = (targetLocation.getBlockY() + properties.BrushSize) - location.getBlockY();
+            relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
         }
 
         int materialIndex = (int) (relativeY / layerHeight);
@@ -45,9 +48,5 @@ public class LayerMode implements Mode {
         materialIndex = Math.max(0, materialIndex);
 
         return materials.get(materialIndex);
-    }
-
-    public boolean containsAllMaterials(BrushProperties properties) {
-        return properties.Materials.keySet().size() <= properties.BrushSize * 2 - 1;
     }
 }
