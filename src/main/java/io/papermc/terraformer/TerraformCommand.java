@@ -17,8 +17,8 @@ import io.papermc.terraformer.constants.Messages;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.block_history.BlockHistoryStates;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
-import io.papermc.terraformer.terraformer_properties.properties.MaterialMode;
 import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
+import io.papermc.terraformer.terraformer_properties.properties.modes.MaterialMode;
 
 class TerraformCommand implements CommandExecutor {
     private final Terraformer plugin;
@@ -266,19 +266,17 @@ class TerraformCommand implements CommandExecutor {
 
                 properties.Brush.Mode = materialMode;
 
+                properties.Brush.Materials = new LinkedHashMap<>();
                 switch (materialMode) {
                     case RANDOM:
-                        properties.Brush.Materials = new LinkedHashMap<>();
                         properties.Brush.Materials.put(Material.STONE, 100);
                         break;
                     case LAYER:
-                        properties.Brush.Materials = new LinkedHashMap<>();
                         properties.Brush.Materials.put(Material.STONE, 100);
                         break;
                     case GRADIENT:
-                        properties.Brush.Materials = new LinkedHashMap<>();
-                        properties.Brush.Materials.put(Material.STONE, 0);
-                        properties.Brush.Materials.put(Material.STONE, 100);
+                        properties.Brush.Materials.put(Material.WHITE_CONCRETE, 0);
+                        properties.Brush.Materials.put(Material.BLACK_CONCRETE, 100);
                         break;
                 }
 

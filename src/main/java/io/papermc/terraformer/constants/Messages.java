@@ -1,7 +1,7 @@
 package io.papermc.terraformer.constants;
 
-import io.papermc.terraformer.terraformer_properties.properties.MaterialMode;
 import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
+import io.papermc.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 

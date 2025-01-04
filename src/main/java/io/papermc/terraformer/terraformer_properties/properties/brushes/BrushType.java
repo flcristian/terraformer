@@ -1,6 +1,8 @@
 package io.papermc.terraformer.terraformer_properties.properties.brushes;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,6 +14,8 @@ import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.terraformer_properties.TerraformerProperties;
 import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
 import io.papermc.terraformer.terraformer_properties.properties.brush_settings.BrushSettings;
+import io.papermc.terraformer.terraformer_properties.properties.modes.MaterialMode;
+import io.papermc.terraformer.utility.SkullTexturesApplier;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -20,7 +24,7 @@ public enum BrushType {
 
     public Component getName() {
         return switch (this) {
-            case BALL -> Component.text("Ball").color(NamedTextColor.GREEN);
+            case BALL -> Component.text("Ball").color(NamedTextColor.DARK_GREEN);
             case SMOOTH -> Component.text("Smooth").color(NamedTextColor.AQUA);
             case ERODE -> Component.text("Erode").color(NamedTextColor.RED);
             case EXTRUDE -> Component.text("Extrude").color(NamedTextColor.LIGHT_PURPLE);
@@ -55,10 +59,10 @@ public enum BrushType {
             case SMOOTH -> new ItemStack(Material.SNOWBALL);
             case ERODE -> new ItemStack(Material.WIND_CHARGE);
             case EXTRUDE -> new ItemStack(Material.REDSTONE);
-            case PAINT_TOP -> new ItemStack(Material.BLUE_DYE);
-            case PAINT_SURFACE -> new ItemStack(Material.BLUE_DYE);
-            case PAINT_WALL -> new ItemStack(Material.BLUE_DYE);
-            case PAINT_BOTTOM -> new ItemStack(Material.BLUE_DYE);
+            case PAINT_TOP -> new ItemStack(Material.PLAYER_HEAD);
+            case PAINT_SURFACE -> new ItemStack(Material.PLAYER_HEAD);
+            case PAINT_WALL -> new ItemStack(Material.PLAYER_HEAD);
+            case PAINT_BOTTOM -> new ItemStack(Material.PLAYER_HEAD);
             case RISE -> new ItemStack(Material.GUNPOWDER);
             case DIG -> new ItemStack(Material.FIRE_CHARGE);
         };
@@ -66,15 +70,47 @@ public enum BrushType {
         ItemMeta meta = item.getItemMeta();
         meta.customName(brushType.getName());
         meta.lore(List.of(
-                Component.text("Set the brush size to ").color(NamedTextColor.LIGHT_PURPLE)
+                Component.text("Set the brush type to ").color(NamedTextColor.LIGHT_PURPLE)
                         .append(brushType.getName().color(NamedTextColor.LIGHT_PURPLE)),
                 Component.text("Click to select").color(NamedTextColor.LIGHT_PURPLE)));
+
+        switch (brushType) {
+            case PAINT_TOP:
+                SkullTexturesApplier.applyTextures(meta,
+                        "http://textures.minecraft.net/texture/cc5b9542ca46b00235d3dddada02993bc4d2f7e63a5bf45b04ae6e7259c73e48");
+                break;
+            case PAINT_WALL:
+                SkullTexturesApplier.applyTextures(meta,
+                        "http://textures.minecraft.net/texture/18660691d1ca029f120a3ff0eabab93a2306b37a7d61119fcd141ff2f6fcd798");
+                break;
+            case PAINT_BOTTOM:
+                SkullTexturesApplier.applyTextures(meta,
+                        "http://textures.minecraft.net/texture/960a5ab0eb3eaf4e276b8f763ee47d241c4af0091cc1b045d994cd511417af7c");
+                break;
+            case PAINT_SURFACE:
+                SkullTexturesApplier.applyTextures(meta,
+                        "http://textures.minecraft.net/texture/44f7bc1fa8217b18b323af841372a3f7c602a435c828faa403d176c6b37b605b");
+                break;
+            default:
+                break;
+        }
+
         item.setItemMeta(meta);
         return item;
     }
 
     public static void applyBrush(Terraformer plugin, Player player, BrushProperties properties,
             Location targetLocation, boolean isRedo) {
+
+        List<BrushType> materialTypes = new ArrayList<>(
+                List.of(BALL, PAINT_BOTTOM, PAINT_SURFACE, PAINT_TOP, PAINT_WALL));
+        if (materialTypes.contains(properties.Type) && properties.Mode != MaterialMode.GRADIENT
+                && IntStream.of(properties.Materials.values().stream().mapToInt(i -> i).toArray()).sum() != 100) {
+            player.sendMessage(
+                    Component.text("Material percentages must add up to 100%").color(NamedTextColor.RED));
+            return;
+        }
+
         switch (properties.Type) {
             case BALL -> BrushBall.brush(plugin, player, properties, targetLocation, isRedo);
             case SMOOTH -> BrushSmooth.brush(plugin, player, properties, targetLocation, isRedo);

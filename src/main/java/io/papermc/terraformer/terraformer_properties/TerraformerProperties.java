@@ -9,9 +9,9 @@ import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushAction;
 import io.papermc.terraformer.terraformer_properties.block_history.BrushBlockHistory;
 import io.papermc.terraformer.terraformer_properties.properties.BrushProperties;
-import io.papermc.terraformer.terraformer_properties.properties.MaterialMode;
 import io.papermc.terraformer.terraformer_properties.properties.Palette;
 import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
+import io.papermc.terraformer.terraformer_properties.properties.modes.MaterialMode;
 
 public class TerraformerProperties {
     public boolean IsTerraformer;

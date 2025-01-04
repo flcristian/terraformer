@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import io.papermc.terraformer.Terraformer;
 import io.papermc.terraformer.terraformer_properties.properties.brushes.BrushType;
+import io.papermc.terraformer.terraformer_properties.properties.modes.MaterialMode;
 
 public class BrushProperties implements Cloneable {
     public BrushType Type;

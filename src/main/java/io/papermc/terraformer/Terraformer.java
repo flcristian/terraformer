@@ -220,8 +220,13 @@ public class Terraformer extends JavaPlugin implements Listener {
         }
 
         Inventory inventory = event.getInventory();
-        if (inventory != null && inventory.getHolder() instanceof BrushSettings settings) {
-            settings.onInventoryClick(this, event, player, properties);
+        if (inventory != null) {
+            if (inventory.getHolder() instanceof BrushSettings settings) {
+                settings.onInventoryClick(this, event, player, properties);
+            }
+            if (inventory.getHolder() instanceof BrushSettings.SelectPaintMode paintMode) {
+                paintMode.onInventoryClick(this, event, player, properties);
+            }
         }
     }
 
