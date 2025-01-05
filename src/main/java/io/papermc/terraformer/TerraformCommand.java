@@ -44,7 +44,17 @@ class TerraformCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
             case "help":
-                showHelpInfo(player);
+                int page = 1;
+                if (args.length > 1) {
+                    try {
+                        page = Integer.parseInt(args[1]);
+                    } catch (NumberFormatException e) {
+                    }
+                }
+
+                page = Math.min(page, 3);
+
+                showHelpInfo(player, page);
                 return true;
 
             case "start":
@@ -131,6 +141,22 @@ class TerraformCommand implements CommandExecutor {
                 }
                 properties.Brush.Type = brushType;
                 player.sendMessage(Messages.CHANGED_BRUSH(brushType));
+                return true;
+
+            case "brushes":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                Component brushes = Component.text("All brush types: ").appendNewline();
+                for (BrushType brush : BrushType.values()) {
+                    brushes = brushes.append(Component.text(brush.toString()
+                            + (brush != BrushType.values()[BrushType.values().length - 1] ? ", " : "")));
+                }
+                brushes = brushes.color(NamedTextColor.LIGHT_PURPLE);
+
+                player.sendMessage(brushes);
+
                 return true;
 
             case "size":
@@ -283,6 +309,22 @@ class TerraformCommand implements CommandExecutor {
                 player.sendMessage(Messages.CHANGED_MATERIAL_MODE(materialMode));
                 return true;
 
+            case "materialmodes":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                Component modes = Component.text("All brush types: ").appendNewline();
+                for (MaterialMode mode : MaterialMode.values()) {
+                    modes = modes.append(Component.text(mode.toString()
+                            + (mode != MaterialMode.values()[MaterialMode.values().length - 1] ? ", " : "")));
+                }
+                modes = modes.color(NamedTextColor.LIGHT_PURPLE);
+
+                player.sendMessage(modes);
+
+                return true;
+
             default:
                 player.sendMessage(Messages.UNKNOWN_COMMAND);
                 return true;
@@ -293,62 +335,68 @@ class TerraformCommand implements CommandExecutor {
     private void showPluginInfo(Player player) {
         Component message = Component.text()
                 .append(Component.text("=-=-=-=-=-=-=-=-=-="))
-                .append(Component.newline())
+                .appendNewline()
                 .append(Component.text(plugin.getDescription().getName())
                         .color(NamedTextColor.AQUA)
-                        .append(Component.newline())
+                        .appendNewline()
                         .append(Component.text("Version: ")
                                 .color(NamedTextColor.GRAY))
                         .append(Component.text(plugin.getDescription().getVersion())
                                 .color(NamedTextColor.WHITE))
-                        .append(Component.newline())
+                        .appendNewline()
                         .append(Component.text("Created by: ")
                                 .color(NamedTextColor.GRAY))
                         .append(Component.text(plugin.getDescription().getAuthors().get(0))
                                 .color(NamedTextColor.WHITE)))
-                .append(Component.newline())
+                .appendNewline()
                 .append(Component.text("=-=-=-=-=-=-=-=-=-="))
                 .build();
 
         player.sendMessage(message);
     }
 
-    private void showHelpInfo(Player player) {
-        Component message = Component.text()
-                .append(Component.text("Terraform Command Help").color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.newline())
-                .append(Component.text("/terraform help - Show help information for terraform command")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text("/terraform start - Start terraforming mode").color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.text("/terraform stop - Stop terraforming mode").color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.text("/terraform undo - Undo last modification")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.text("/terraform redo - Redo last modification")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.text(
-                        "/terraform brush <brush> - Set terraforming brush type. Alias: /terraform b <brush>")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.text(
-                        "/terraform size <size> - Set terraforming brush size. Alias: /terraform s <size>")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.text(
-                        "/terraform depth <depth> - Set terraforming brush size. Alias: /terraform d <depth>")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.newline())
-                .append(Component.text(
-                        "/terraform materials <materials> - Set terraforming materials. Alias: /terraform m <materials>")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(
-                        "/terraform materialmode <material mode> - Set terraforming material mode. Alias: /terraform mm <material mode>. All material modes: Random, Layer, Gradient")
-                        .color(NamedTextColor.LIGHT_PURPLE))
-                .build();
+    private void showHelpInfo(Player player, int page) {
+        Map<String, Component> commands = new LinkedHashMap<>();
+        commands.put("help", Component.text("/terraform help (page) - Show help information for terraform command"));
+        commands.put("start", Component.text("/terraform start - Start terraforming mode"));
+        commands.put("stop", Component.text("/terraform stop - Stop terraforming mode"));
+        commands.put("undo", Component.text("/terraform undo - Undo last modification"));
+        commands.put("redo", Component.text("/terraform redo - Redo last modification"));
+        commands.put("brushes", Component.text("/terraform brushes - Show all brush types"));
+        commands.put("brush",
+                Component.text("/terraform brush <brush> - Set terraforming brush type.").appendNewline()
+                        .append(Component.text("Alias: /terraform b <brush>")));
+        commands.put("size",
+                Component.text("/terraform size <size> - Set terraforming brush size.").appendNewline()
+                        .append(Component.text("Alias: /terraform s <size>")));
+        commands.put("depth",
+                Component.text("/terraform depth <depth> - Set terraforming brush size.").appendNewline()
+                        .append(Component.text("Alias: /terraform d <depth>")));
+        commands.put("materials",
+                Component.text(
+                        "/terraform materials <materials> - Set terraforming materials.").appendNewline()
+                        .append(Component.text("Alias: /terraform m <materials>")));
+        commands.put("materialmode", Component.text(
+                "/terraform materialmode <material mode> - Set terraforming material mode.").appendNewline()
+                .append(Component.text("Alias: /terraform mm <material mode>")));
+        commands.put("materialmodes", Component.text("/terraform materialmodes - Show all material modes"));
+
+        Map<Integer, Component[]> pages = new LinkedHashMap<>();
+        pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
+                commands.get("undo"), commands.get("redo") });
+        pages.put(2, new Component[] { commands.get("brushes"), commands.get("brush"), commands.get("size"),
+                commands.get("depth") });
+        pages.put(3, new Component[] { commands.get("materials"), commands.get("materialmode"),
+                commands.get("materialmodes") });
+
+        Component message = Component.text("Terraform Command Help")
+                .appendNewline()
+                .appendNewline();
+
+        for (Component command : pages.get(page)) {
+            message = message.append(command).appendNewline();
+        }
+        message = message.color(NamedTextColor.LIGHT_PURPLE);
 
         player.sendMessage(message);
     }

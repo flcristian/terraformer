@@ -75,7 +75,7 @@ public class Terraformer extends JavaPlugin implements Listener {
             this.getCommand("terraform").setExecutor(new TerraformCommand(this));
             getLogger().info("Terraform command registered successfully!");
         }
-
+        getCommand("terraform").setTabCompleter(new TerraformTabCompleter());
         getLogger().info("Terraformer plugin has been enabled!");
     }
 

@@ -11,6 +11,49 @@ commands:
     description: Main command for the Terraformer plugin
     usage: /<command> [help] for more information
     permission: terraformer.use
+    aliases: [tf]
+    subcommands:
+      help:
+        description: Show help information for terraform command
+        usage: /terraform help [page]
+      start:
+        description: Start terraforming mode
+        usage: /terraform start
+      stop:
+        description: Stop terraforming mode
+        usage: /terraform stop
+      undo:
+        description: Undo last modification
+        usage: /terraform undo
+      redo:
+        description: Redo last modification
+        usage: /terraform redo
+      brushes:
+        description: Show all brush types
+        usage: /terraform brushes
+      brush:
+        description: Set terraforming brush type
+        usage: /terraform brush <brush>
+        aliases: [b]
+      size:
+        description: Set terraforming brush size
+        usage: /terraform size <size>
+        aliases: [s]
+      depth:
+        description: Set terraforming brush depth
+        usage: /terraform depth <depth>
+        aliases: [d]
+      materials:
+        description: Set terraforming materials
+        usage: /terraform materials <materials>
+        aliases: [m]
+      materialmode:
+        description: Set terraforming material mode
+        usage: /terraform materialmode <mode>
+        aliases: [mm]
+      materialmodes:
+        description: Show all material modes
+        usage: /terraform materialmodes
 
 permissions:
   terraformer.use:

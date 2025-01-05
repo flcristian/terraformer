@@ -33,6 +33,15 @@ public enum MaterialMode {
         };
     }
 
+    @Override
+    public String toString() {
+        return switch (this) {
+            case RANDOM -> "random";
+            case LAYER -> "layer";
+            case GRADIENT -> "gradient";
+        };
+    }
+
     public Material getMaterial(Location location, Location targetLocation, BrushProperties properties) {
         return switch (this) {
             case RANDOM -> RandomModeSingleton.getInstance().getMaterial(location, targetLocation, properties);

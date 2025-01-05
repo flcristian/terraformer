@@ -53,6 +53,22 @@ public enum BrushType {
         };
     }
 
+    @Override
+    public String toString() {
+        return switch (this) {
+            case BALL -> "ball";
+            case SMOOTH -> "smooth";
+            case ERODE -> "erode";
+            case EXTRUDE -> "extrude";
+            case PAINT_TOP -> "painttop";
+            case PAINT_SURFACE -> "paintsurface";
+            case PAINT_WALL -> "paintwall";
+            case PAINT_BOTTOM -> "paintbottom";
+            case RISE -> "rise";
+            case DIG -> "dig";
+        };
+    }
+
     public static ItemStack getBrushSettingsItem(BrushType brushType) {
         ItemStack item = switch (brushType) {
             case BALL -> new ItemStack(Material.SLIME_BALL);
