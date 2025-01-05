@@ -3,7 +3,7 @@ version: 1.0.0
 main: io.papermc.terraformer.Terraformer
 description: A terraforming and world editing tool.
 author: flcristian
-website: https://papermc.io
+website: https://github.com/flcristian/terraformer
 api-version: '1.21.4'
 
 commands:
