@@ -124,12 +124,14 @@ public class Terraformer extends JavaPlugin implements Listener {
         if (meta == null)
             return;
 
-        Component[] terraformerItems = TerraformItems.values();
+        if (meta.customName() != null) {
+            Component[] terraformerItems = TerraformItems.values();
 
-        for (Component item : terraformerItems) {
-            if (meta.customName().equals(item)) {
-                event.setCancelled(true);
-                return;
+            for (Component item : terraformerItems) {
+                if (meta.customName().equals(item)) {
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
     }
@@ -152,54 +154,56 @@ public class Terraformer extends JavaPlugin implements Listener {
             if (meta == null)
                 return;
 
-            if (meta.customName().equals(TerraformItems.TERRAFORMER_BRUSH)) {
-                if (event.getAction().isRightClick()) {
-                    Block targetBlock = player.getTargetBlock(null, 256);
+            if (meta.customName() != null) {
+                if (meta.customName().equals(TerraformItems.TERRAFORMER_BRUSH)) {
+                    if (event.getAction().isRightClick()) {
+                        Block targetBlock = player.getTargetBlock(null, 256);
 
-                    if (targetBlock != null) {
-                        Location targetLocation = targetBlock.getLocation();
-                        properties.Brush.applyBrush(this, player, targetLocation);
+                        if (targetBlock != null) {
+                            Location targetLocation = targetBlock.getLocation();
+                            properties.Brush.applyBrush(this, player, targetLocation);
+                        }
+                        event.setCancelled(true);
                     }
-                    event.setCancelled(true);
                 }
-            }
 
-            if (meta.customName().equals(TerraformItems.TERRAFORMER_UNDO)) {
-                if (event.getAction().isRightClick()) {
-                    BlockHistoryStates undoStates = properties.History.undo();
-                    if (undoStates == null) {
-                        player.sendMessage(Messages.NOTHING_TO_UNDO);
-                        return;
+                if (meta.customName().equals(TerraformItems.TERRAFORMER_UNDO)) {
+                    if (event.getAction().isRightClick()) {
+                        BlockHistoryStates undoStates = properties.History.undo();
+                        if (undoStates == null) {
+                            player.sendMessage(Messages.NOTHING_TO_UNDO);
+                            return;
+                        }
+                        undo(undoStates.states());
+                        player.sendMessage(Messages.UNDO_SUCCESSFUL);
+                        event.setCancelled(true);
                     }
-                    undo(undoStates.states());
-                    player.sendMessage(Messages.UNDO_SUCCESSFUL);
-                    event.setCancelled(true);
                 }
-            }
 
-            if (meta.customName().equals(TerraformItems.TERRAFORMER_REDO)) {
-                if (event.getAction().isRightClick()) {
-                    BrushAction redoAction = properties.History.redo();
-                    if (redoAction == null) {
-                        player.sendMessage(Messages.NOTHING_TO_REDO);
-                        return;
+                if (meta.customName().equals(TerraformItems.TERRAFORMER_REDO)) {
+                    if (event.getAction().isRightClick()) {
+                        BrushAction redoAction = properties.History.redo();
+                        if (redoAction == null) {
+                            player.sendMessage(Messages.NOTHING_TO_REDO);
+                            return;
+                        }
+                        properties.applyRedo(this, player, redoAction);
+                        player.sendMessage(Messages.REDO_SUCCESSFUL);
+                        event.setCancelled(true);
                     }
-                    properties.applyRedo(this, player, redoAction);
-                    player.sendMessage(Messages.REDO_SUCCESSFUL);
-                    event.setCancelled(true);
                 }
-            }
 
-            if (meta.customName().equals(TerraformItems.TERRAFORMER_LEAVE)) {
-                if (event.getAction().isRightClick()) {
-                    removeTerraformer(player);
-                    player.sendMessage(Messages.STOP_TERRAFORM);
+                if (meta.customName().equals(TerraformItems.TERRAFORMER_LEAVE)) {
+                    if (event.getAction().isRightClick()) {
+                        removeTerraformer(player);
+                        player.sendMessage(Messages.STOP_TERRAFORM);
+                    }
                 }
-            }
 
-            if (meta.customName().equals(TerraformItems.TERRAFORMER_SETTINGS)) {
-                if (event.getAction().isRightClick()) {
-                    properties.Brush.Type.openBrushSettings(this, player, properties);
+                if (meta.customName().equals(TerraformItems.TERRAFORMER_SETTINGS)) {
+                    if (event.getAction().isRightClick()) {
+                        properties.Brush.Type.openBrushSettings(this, player, properties);
+                    }
                 }
             }
         }
