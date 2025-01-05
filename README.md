@@ -1,6 +1,8 @@
 # Terraformer - Minecraft World Editing Plugin
 
-A powerful world editing plugin for Minecraft that allows terraforming and building with various brushes and material modes.
+I was annoyed of how the current mods work, so I wanted to create an all in one terraforming tool for minecraft builders.
+My focus is on making this tool as easy to use as possible, as well as extremely powerfull and with no limitations.
+I wish to implement a wide range of new features, including customizable brushes, procedural generation and advanced material application tools, so stay updated!
 
 ## Contact
 
