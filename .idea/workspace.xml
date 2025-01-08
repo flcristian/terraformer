@@ -4,24 +4,45 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3056de9f-a7dd-4d81-84fa-a7d1e473734c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/BrushType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/TerraformCommand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/Terraformer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/TerraformerProperties.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+    <list default="true" id="b174ad9d-7b34-443a-8040-d12d9780d56d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/discord.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/TerraformCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/TerraformCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/TerraformTabCompleter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/TerraformTabCompleter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/Terraformer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/Terraformer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/constants/BrushSettingsItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/constants/BrushSettingsItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/constants/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/constants/Messages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/constants/TerraformItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/constants/TerraformItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/TerraformerProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/TerraformerProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/block_history/BlockHistoryStates.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/block_history/BlockHistoryStates.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/block_history/BrushAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/block_history/BrushAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/block_history/BrushBlockHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/block_history/BrushBlockHistory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/BrushProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/BrushProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/Palette.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/Palette.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brush_settings/BrushSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brush_settings/BrushSettings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/Brush.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/Brush.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushBall.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushBall.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushDig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushDig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushErode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushErode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushExtrude.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushExtrude.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushPaint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushPaint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushRise.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushRise.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushSmooth.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushSmooth.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/brushes/BrushType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/brushes/BrushType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/GradientMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/GradientMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/GradientModeSingleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/GradientModeSingleton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/LayerMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/LayerMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/LayerModeSingleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/LayerModeSingleton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/MaterialMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/MaterialMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/Mode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/Mode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/RandomMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/RandomMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/terraformer_properties/properties/modes/RandomModeSingleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/terraformer_properties/properties/modes/RandomModeSingleton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/utility/Color.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/utility/Color.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/papermc/terraformer/utility/SkullTexturesApplier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ro/flcristian/terraformer/utility/SkullTexturesApplier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,45 +54,51 @@
       <ProjectState />
     </projectState>
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-        <option value="Enum" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 6
-}</component>
-  <component name="ProjectId" id="2qw0lv8tZ4OlOaqg8rorW4AgivJ" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="2rGcrZAEbQudbkk9zwNh6cF5E24" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
+    <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build terraformer.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "paper/1.21.4",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="ro.flcristian" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -83,14 +110,12 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3056de9f-a7dd-4d81-84fa-a7d1e473734c" name="Changes" comment="" />
-      <created>1735558486190</created>
+      <changelist id="b174ad9d-7b34-443a-8040-d12d9780d56d" name="Changes" comment="" />
+      <created>1736189052954</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1735558486190</updated>
-      <workItem from="1735558487165" duration="251000" />
-      <workItem from="1735558832059" duration="9705000" />
-      <workItem from="1735574087976" duration="132000" />
+      <updated>1736189052954</updated>
+      <workItem from="1736189054378" duration="1118000" />
     </task>
     <servers />
   </component>

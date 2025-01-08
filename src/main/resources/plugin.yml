@@ -1,6 +1,6 @@
 name: Terraformer
-version: 1.0.0
-main: io.papermc.terraformer.Terraformer
+version: 1.1.0
+main: ro.flcristian.terraformer.Terraformer
 description: A terraforming and world editing tool.
 author: flcristian
 website: https://github.com/flcristian/terraformer
