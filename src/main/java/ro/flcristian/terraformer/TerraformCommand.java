@@ -1,7 +1,10 @@
 package ro.flcristian.terraformer;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,6 +14,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.BookMeta.BookMetaBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import ro.flcristian.terraformer.constants.Messages;
@@ -55,6 +61,65 @@ class TerraformCommand implements CommandExecutor {
                 page = Math.min(page, 3);
 
                 showHelpInfo(player, page);
+                return true;
+
+            case "tutorial", "tut":
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                BookMeta bookMeta = (BookMeta) book.getItemMeta();
+                bookMeta.setAuthor("Author");
+                bookMeta.setTitle("Title");
+                BookMetaBuilder bookMetaBuilder = bookMeta.toBuilder();
+                bookMetaBuilder.author(Component.text("flcristian").color(NamedTextColor.DARK_RED));
+                bookMetaBuilder.title(
+                        Component.text("Terraformer").color(NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD));
+
+                Component page0 = Component.text("Welcome to Terraformer!").color(NamedTextColor.DARK_RED)
+                        .appendNewline().appendNewline()
+                        .append(Component.text("This plugin allows you to terraform the world around you.")
+                                .color(NamedTextColor.RED))
+                        .appendNewline().appendNewline()
+                        .append(Component.text("GitHub").color(NamedTextColor.BLACK)
+                                .decorate(TextDecoration.UNDERLINED)
+                                .clickEvent(ClickEvent.openUrl("https://github.com/flcristian/terraformer"))
+                                .hoverEvent(HoverEvent.showText(Component.text("Open GitHub repository"))))
+                        .appendNewline().appendNewline()
+                        .append(Component.text("Modrinth").color(NamedTextColor.DARK_GREEN)
+                                .decorate(TextDecoration.UNDERLINED)
+                                .clickEvent(ClickEvent.openUrl("https://modrinth.com/plugin/terraformer"))
+                                .hoverEvent(HoverEvent.showText(Component.text("Open Modrinth page"))));
+                bookMetaBuilder.addPage(page0);
+
+                Component page1 = Component.empty()
+                        .append(Component.text("Page 1").color(NamedTextColor.BLACK)
+                                .decorate(TextDecoration.UNDERLINED))
+                        .appendNewline().appendNewline()
+                        .append(Component.text("To open ").color(NamedTextColor.BLACK))
+                        .append(Component.text("BRUSH SETTINGS").color(NamedTextColor.DARK_RED))
+                        .append(Component.text(", ").color(NamedTextColor.BLACK))
+                        .append(Component.text("USE").color(NamedTextColor.DARK_RED))
+                        .append(Component.text(" the ").color(NamedTextColor.BLACK))
+                        .append(Component.text("ITEM").color(NamedTextColor.DARK_RED))
+                        .append(Component.text(" in your inventory.").color(NamedTextColor.BLACK))
+                        .appendNewline().appendNewline()
+                        .append(Component.text("To open ").color(NamedTextColor.BLACK))
+                        .append(Component.text("BRUSH MENU").color(NamedTextColor.DARK_RED))
+                        .append(Component.text(", ").color(NamedTextColor.BLACK))
+                        .append(Component.text("DROP").color(NamedTextColor.DARK_RED))
+                        .append(Component.text(" your ").color(NamedTextColor.BLACK))
+                        .append(Component.text("BRUSH").color(NamedTextColor.DARK_RED))
+                        .append(Component.text(".").color(NamedTextColor.BLACK));
+                bookMetaBuilder.addPage(page1);
+
+                Component page2 = Component.empty()
+                        .append(Component.text("Page 2").color(NamedTextColor.BLACK)
+                                .decorate(TextDecoration.UNDERLINED))
+                        .appendNewline().appendNewline()
+                        .append(Component.text("For more information, use the following command: /terraform help.")
+                                .color(NamedTextColor.BLACK));
+                bookMetaBuilder.addPage(page2);
+
+                book.setItemMeta(bookMetaBuilder.build());
+                player.openBook(book);
                 return true;
 
             case "start":
@@ -352,29 +417,42 @@ class TerraformCommand implements CommandExecutor {
 
     private void showHelpInfo(Player player, int page) {
         Map<String, Component> commands = new LinkedHashMap<>();
-        commands.put("help", Component.text("/terraform help (page) - Show help information for terraform command"));
-        commands.put("start", Component.text("/terraform start - Start terraforming mode"));
-        commands.put("stop", Component.text("/terraform stop - Stop terraforming mode"));
-        commands.put("undo", Component.text("/terraform undo - Undo last modification"));
-        commands.put("redo", Component.text("/terraform redo - Redo last modification"));
-        commands.put("brushes", Component.text("/terraform brushes - Show all brush types"));
-        commands.put("brush",
-                Component.text("/terraform brush <brush> - Set terraforming brush type.").appendNewline()
-                        .append(Component.text("Alias: /terraform b <brush>")));
-        commands.put("size",
-                Component.text("/terraform size <size> - Set terraforming brush size.").appendNewline()
-                        .append(Component.text("Alias: /terraform s <size>")));
-        commands.put("depth",
-                Component.text("/terraform depth <depth> - Set terraforming brush size.").appendNewline()
-                        .append(Component.text("Alias: /terraform d <depth>")));
-        commands.put("materials",
-                Component.text(
-                        "/terraform materials <materials> - Set terraforming materials.").appendNewline()
-                        .append(Component.text("Alias: /terraform m <materials>")));
-        commands.put("materialmode", Component.text(
-                "/terraform materialmode <material mode> - Set terraforming material mode.").appendNewline()
-                .append(Component.text("Alias: /terraform mm <material mode>")));
-        commands.put("materialmodes", Component.text("/terraform materialmodes - Show all material modes"));
+        commands.put("help", Component.text("/terraform help ", NamedTextColor.YELLOW)
+                .append(Component.text("(page) - Show help information for terraform command", NamedTextColor.WHITE)));
+        commands.put("tutorial", Component.text("/terraform tutorial ", NamedTextColor.YELLOW)
+                .append(Component.text("- Show tutorial for Terraform", NamedTextColor.WHITE)));
+        commands.put("start", Component.text("/terraform start ", NamedTextColor.YELLOW)
+                .append(Component.text("- Start terraforming mode", NamedTextColor.WHITE)));
+        commands.put("stop", Component.text("/terraform stop ", NamedTextColor.YELLOW)
+                .append(Component.text("- Stop terraforming mode", NamedTextColor.WHITE)));
+        commands.put("undo", Component.text("/terraform undo ", NamedTextColor.YELLOW)
+                .append(Component.text("- Undo last modification", NamedTextColor.WHITE)));
+        commands.put("redo", Component.text("/terraform redo ", NamedTextColor.YELLOW)
+                .append(Component.text("- Redo last modification", NamedTextColor.WHITE)));
+        commands.put("brushes", Component.text("/terraform brushes ", NamedTextColor.YELLOW)
+                .append(Component.text("- Show all brush types", NamedTextColor.WHITE)));
+        commands.put("brush", Component.text("/terraform brush <brush> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming brush type.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf b <brush>", NamedTextColor.YELLOW)));
+        commands.put("size", Component.text("/terraform size <size> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming brush size.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf s <size>", NamedTextColor.YELLOW)));
+        commands.put("depth", Component.text("/terraform depth <depth> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming brush size.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf d <depth>", NamedTextColor.YELLOW)));
+        commands.put("materials", Component.text("/terraform materials <materials> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming materials.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf m <materials>", NamedTextColor.YELLOW)));
+        commands.put("materialmode", Component.text("/terraform materialmode <material mode> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming material mode.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf mm <material mode>", NamedTextColor.YELLOW)));
+        commands.put("materialmodes", Component.text("/terraform materialmodes ", NamedTextColor.YELLOW)
+                .append(Component.text("- Show all material modes", NamedTextColor.WHITE)));
 
         Map<Integer, Component[]> pages = new LinkedHashMap<>();
         pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
@@ -384,14 +462,20 @@ class TerraformCommand implements CommandExecutor {
         pages.put(3, new Component[] { commands.get("materials"), commands.get("materialmode"),
                 commands.get("materialmodes") });
 
-        Component message = Component.text("Terraform Command Help")
+        Component message = Component.text("Terraformer Help").color(NamedTextColor.AQUA)
+                .append(Component.text(" - ").color(NamedTextColor.WHITE))
+                .append(Component.text("Page " + page).color(NamedTextColor.GOLD))
                 .appendNewline()
+                .append(Component.text("=-=-=-=-=-=-=-=-=-=-=-=").color(NamedTextColor.WHITE))
                 .appendNewline();
 
+        Component content = Component.empty();
+
         for (Component command : pages.get(page)) {
-            message = message.append(command).appendNewline();
+            content = content.append(command).appendNewline();
         }
-        message = message.color(NamedTextColor.LIGHT_PURPLE);
+
+        message = message.append(content);
 
         player.sendMessage(message);
     }

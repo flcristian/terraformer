@@ -1,5 +1,5 @@
 name: Terraformer
-version: 1.1.0
+version: 1.2.0
 main: ro.flcristian.terraformer.Terraformer
 description: A terraforming and world editing tool.
 author: flcristian
@@ -16,6 +16,9 @@ commands:
       help:
         description: Show help information for terraform command
         usage: /terraform help [page]
+      tutorial:
+        description: Show tutorial for Terraformer
+        usage: /terraform tutorial
       start:
         description: Start terraforming mode
         usage: /terraform start

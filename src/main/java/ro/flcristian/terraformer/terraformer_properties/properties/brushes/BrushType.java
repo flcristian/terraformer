@@ -163,4 +163,23 @@ public enum BrushType {
 
         player.openInventory(settings.getInventory());
     }
+
+    public void openBrushSettings(Terraformer plugin, Player player, TerraformerProperties properties,
+            int currentMaterialPage) {
+        BrushSettings settings = switch (this) {
+            case BALL -> new BrushSettings(plugin, properties, true, false, currentMaterialPage);
+            case ERASE -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
+            case SMOOTH -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
+            case ERODE -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
+            case EXTRUDE -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
+            case PAINT_TOP -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
+            case PAINT_SURFACE -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
+            case PAINT_WALL -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
+            case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
+            case RISE -> new BrushSettings(plugin, properties, false, true, currentMaterialPage);
+            case DIG -> new BrushSettings(plugin, properties, false, true, currentMaterialPage);
+        };
+
+        player.openInventory(settings.getInventory());
+    }
 }

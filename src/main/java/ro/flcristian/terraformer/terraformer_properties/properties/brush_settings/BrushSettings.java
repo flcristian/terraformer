@@ -35,15 +35,35 @@ public class BrushSettings implements InventoryHolder {
     private static final Component materialSlotEmptyPercentage = Component.text("Place a material in the empty slot")
             .color(NamedTextColor.RED);
     private static final Component materialSlotEmpty = Component.text("Empty slot").color(NamedTextColor.GRAY);
+    private static final Component nextPage = Component.text("Next Page ➡").color(NamedTextColor.GREEN);
+    private static final Component previousPage = Component.text("⬅ Previous Page").color(NamedTextColor.GREEN);
 
     private final boolean usesMaterials;
     private final boolean usesDepth;
     private final Inventory inventory;
+    private int currentMaterialPage;
 
     public BrushSettings(Terraformer plugin, TerraformerProperties properties, boolean usesMaterials,
             boolean usesDepth) {
         this.usesMaterials = usesMaterials;
         this.usesDepth = usesDepth;
+        this.currentMaterialPage = 1;
+
+        Component inventoryName = Component.text("Brush Settings").color(NamedTextColor.AQUA)
+                .append(Component.text(" - ").color(NamedTextColor.GRAY)
+                        .append(properties.Brush.Type.getName()));
+
+        inventory = plugin.getServer().createInventory(this, 54,
+                inventoryName);
+
+        setUpMenu(properties);
+    }
+
+    public BrushSettings(Terraformer plugin, TerraformerProperties properties, boolean usesMaterials,
+            boolean usesDepth, int currentMaterialPage) {
+        this.usesMaterials = usesMaterials;
+        this.usesDepth = usesDepth;
+        this.currentMaterialPage = currentMaterialPage;
 
         Component inventoryName = Component.text("Brush Settings").color(NamedTextColor.AQUA)
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
@@ -153,9 +173,19 @@ public class BrushSettings implements InventoryHolder {
             ItemStack materialPercentage = new ItemStack(Material.YELLOW_STAINED_GLASS_PANE);
             ItemMeta materialPercentageMeta = materialPercentage.getItemMeta();
 
-            int lastMaterial = 0;
-            for (int i = 0; i < materials.length; i++) {
-                lastMaterial = i + 1;
+            // Calculate pagination
+            int materialsPerPage = 9;
+            int startIndex = (currentMaterialPage - 1) * materialsPerPage;
+            int endIndex = Math.min(startIndex + materialsPerPage, materials.length);
+
+            // Clear previous materials
+            for (int i = 0; i < 18; i++) {
+                inventory.setItem(i, null);
+            }
+
+            // Add materials for current page
+            for (int i = startIndex; i < endIndex; i++) {
+                int slot = i - startIndex;
 
                 ItemMeta materialMeta = materials[i].getItemMeta();
                 String materialName = materials[i].getType().toString();
@@ -164,23 +194,41 @@ public class BrushSettings implements InventoryHolder {
                         .collect(Collectors.joining(" "));
                 materialMeta.customName(Component.text(transformed).color(NamedTextColor.DARK_GREEN));
                 materials[i].setItemMeta(materialMeta);
-                inventory.setItem(9 + i, materials[i]);
+                inventory.setItem(9 + slot, materials[i]);
 
                 materialPercentageMeta.customName(
                         Component.text(properties.Brush.Materials.get(materials[i].getType()) + "%")
                                 .color(NamedTextColor.YELLOW));
                 materialPercentage.setItemMeta(materialPercentageMeta);
-                inventory.setItem(i, materialPercentage);
+                inventory.setItem(slot, materialPercentage);
             }
 
+            // Fill empty slots
             ItemStack emptySlot = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
             ItemMeta emptySlotMeta = emptySlot.getItemMeta();
             emptySlotMeta.customName(materialSlotEmpty);
             emptySlot.setItemMeta(emptySlotMeta);
 
-            for (int i = lastMaterial; i < 9; i++) {
+            for (int i = endIndex - startIndex; i < 9; i++) {
                 inventory.setItem(i, materialSlot);
                 inventory.setItem(9 + i, emptySlot);
+            }
+
+            // Add navigation buttons
+            if (currentMaterialPage > 1) {
+                ItemStack prevButton = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+                ItemMeta prevMeta = prevButton.getItemMeta();
+                prevMeta.customName(previousPage);
+                prevButton.setItemMeta(prevMeta);
+                inventory.setItem(18, prevButton);
+            }
+
+            if (materials.length >= (currentMaterialPage * materialsPerPage)) {
+                ItemStack nextButton = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+                ItemMeta nextMeta = nextButton.getItemMeta();
+                nextMeta.customName(nextPage);
+                nextButton.setItemMeta(nextMeta);
+                inventory.setItem(26, nextButton);
             }
         } else {
             for (int i = 0; i < 18; i++) {
@@ -216,7 +264,7 @@ public class BrushSettings implements InventoryHolder {
                 if (meta.customName().equals(BrushSettingsItems.SETTINGS_BRUSH_SIZE(size))) {
                     properties.Brush.BrushSize = size;
                     player.sendMessage(Messages.CHANGED_BRUSH_SIZE(size));
-                    properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                    properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                     return;
                 }
             }
@@ -226,7 +274,7 @@ public class BrushSettings implements InventoryHolder {
                     if (meta.customName().equals(BrushSettingsItems.SETTINGS_BRUSH_DEPTH(depth))) {
                         properties.Brush.BrushDepth = depth;
                         player.sendMessage(Messages.CHANGED_BRUSH_DEPTH(depth));
-                        properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                        properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                         return;
                     }
                 }
@@ -243,13 +291,13 @@ public class BrushSettings implements InventoryHolder {
                 if (meta.customName().equals(brush.getName())) {
                     properties.Brush.Type = brush;
                     player.sendMessage(Messages.CHANGED_BRUSH(brush));
-                    properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                    properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                     return;
                 }
             }
 
             if (meta.customName().equals(paintName)) {
-                SelectPaintMode paintMode = new SelectPaintMode(plugin, properties);
+                SelectPaintMode paintMode = new SelectPaintMode(plugin, properties, currentMaterialPage);
                 player.openInventory(paintMode.getInventory());
                 return;
             }
@@ -277,12 +325,24 @@ public class BrushSettings implements InventoryHolder {
                             break;
                     }
 
-                    properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                    properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                     return;
                 }
             }
 
             // Material Selection
+
+            if (meta.customName().equals(nextPage)) {
+                currentMaterialPage++;
+                setUpMenu(properties);
+                return;
+            }
+
+            if (meta.customName().equals(previousPage)) {
+                currentMaterialPage--;
+                setUpMenu(properties);
+                return;
+            }
 
             if (event.getSlot() >= 0 && event.getSlot() < 9) {
                 Material material = inventory.getItem(event.getSlot() + 9).getType();
@@ -304,14 +364,14 @@ public class BrushSettings implements InventoryHolder {
                     default:
                         break;
                 }
-                properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                 return;
             }
 
             if (event.getSlot() >= 9 && event.getSlot() < 18) {
                 if (!meta.customName().equals(materialSlotEmpty)) {
                     properties.Brush.Materials.remove(item.getType());
-                    properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                    properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                     return;
                 } else {
                     Material materialToAdd;
@@ -324,7 +384,7 @@ public class BrushSettings implements InventoryHolder {
 
                     if (materialToAdd.isSolid()) {
                         properties.Brush.Materials.put(materialToAdd, 0);
-                        properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                        properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                         return;
                     }
                 }
@@ -339,9 +399,11 @@ public class BrushSettings implements InventoryHolder {
 
     public static class SelectPaintMode implements InventoryHolder {
         private final Inventory inventory;
+        private int currentMaterialPage;
 
-        public SelectPaintMode(Terraformer plugin, TerraformerProperties properties) {
+        public SelectPaintMode(Terraformer plugin, TerraformerProperties properties, int currentMaterialPage) {
             Component inventoryName = Component.text("Select Brush Paint Mode").color(NamedTextColor.BLUE);
+            this.currentMaterialPage = currentMaterialPage;
 
             inventory = plugin.getServer().createInventory(this, 9,
                     inventoryName);
@@ -386,7 +448,7 @@ public class BrushSettings implements InventoryHolder {
                 if (meta.customName().equals(brush.getName())) {
                     properties.Brush.Type = brush;
                     player.sendMessage(Messages.CHANGED_BRUSH(brush));
-                    properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                    properties.Brush.Type.openBrushSettings(plugin, player, properties, currentMaterialPage);
                     return;
                 }
             }
