@@ -94,20 +94,18 @@ class TerraformCommand implements CommandExecutor {
                                 .decorate(TextDecoration.UNDERLINED))
                         .appendNewline().appendNewline()
                         .append(Component.text("To open ").color(NamedTextColor.BLACK))
-                        .append(Component.text("BRUSH SETTINGS").color(NamedTextColor.DARK_RED))
+                        .append(Component.text("BRUSH SETTINGS").color(NamedTextColor.DARK_AQUA))
                         .append(Component.text(", ").color(NamedTextColor.BLACK))
-                        .append(Component.text("USE").color(NamedTextColor.DARK_RED))
-                        .append(Component.text(" the ").color(NamedTextColor.BLACK))
-                        .append(Component.text("ITEM").color(NamedTextColor.DARK_RED))
-                        .append(Component.text(" in your inventory.").color(NamedTextColor.BLACK))
+                        .append(Component.text(" use the ").color(NamedTextColor.BLACK))
+                        .append(Component.text("Open Brush Settings").color(NamedTextColor.DARK_AQUA))
+                        .append(Component.text(" item from your inventory.").color(NamedTextColor.BLACK))
                         .appendNewline().appendNewline()
                         .append(Component.text("To open ").color(NamedTextColor.BLACK))
-                        .append(Component.text("BRUSH MENU").color(NamedTextColor.DARK_RED))
+                        .append(Component.text("MATERIAL SETTINGS").color(NamedTextColor.DARK_RED))
                         .append(Component.text(", ").color(NamedTextColor.BLACK))
-                        .append(Component.text("DROP").color(NamedTextColor.DARK_RED))
-                        .append(Component.text(" your ").color(NamedTextColor.BLACK))
-                        .append(Component.text("BRUSH").color(NamedTextColor.DARK_RED))
-                        .append(Component.text(".").color(NamedTextColor.BLACK));
+                        .append(Component.text(" use the ").color(NamedTextColor.BLACK))
+                        .append(Component.text("Open Material Settings").color(NamedTextColor.DARK_RED))
+                        .append(Component.text(" item from your inventory.").color(NamedTextColor.BLACK));
                 bookMetaBuilder.addPage(page1);
 
                 Component page2 = Component.empty()

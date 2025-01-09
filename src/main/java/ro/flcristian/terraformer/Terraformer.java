@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,7 +27,9 @@ import ro.flcristian.terraformer.constants.TerraformItems;
 import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
 import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHistoryStates;
 import ro.flcristian.terraformer.terraformer_properties.block_history.BrushAction;
-import ro.flcristian.terraformer.terraformer_properties.properties.brush_settings.BrushSettings;
+import ro.flcristian.terraformer.terraformer_properties.properties.menus.BrushSettings;
+import ro.flcristian.terraformer.terraformer_properties.properties.menus.MaterialSettings;
+import ro.flcristian.terraformer.terraformer_properties.properties.menus.SelectPaintMode;
 import ro.flcristian.terraformer.utility.SkullTexturesApplier;
 
 import java.util.HashMap;
@@ -200,9 +203,15 @@ public class Terraformer extends JavaPlugin implements Listener {
                     }
                 }
 
-                if (meta.customName().equals(TerraformItems.TERRAFORMER_SETTINGS)) {
+                if (meta.customName().equals(TerraformItems.TERRAFORMER_BRUSH_SETTINGS)) {
                     if (event.getAction().isRightClick()) {
                         properties.Brush.Type.openBrushSettings(this, player, properties);
+                    }
+                }
+
+                if (meta.customName().equals(TerraformItems.TERRAFORMER_MATERIAL_SETTINGS)) {
+                    if (event.getAction().isRightClick()) {
+                        properties.Brush.Type.openMaterialSettings(this, player, properties);
                     }
                 }
             }
@@ -225,10 +234,13 @@ public class Terraformer extends JavaPlugin implements Listener {
 
         Inventory inventory = event.getInventory();
         if (inventory != null) {
-            if (inventory.getHolder() instanceof BrushSettings settings) {
+            if (inventory.getHolder() instanceof MaterialSettings settings) {
                 settings.onInventoryClick(this, event, player, properties);
             }
-            if (inventory.getHolder() instanceof BrushSettings.SelectPaintMode paintMode) {
+            if (inventory.getHolder() instanceof BrushSettings brushSettings) {
+                brushSettings.onInventoryClick(this, event, player, properties);
+            }
+            if (inventory.getHolder() instanceof SelectPaintMode paintMode) {
                 paintMode.onInventoryClick(this, event, player, properties);
             }
         }
@@ -272,13 +284,22 @@ public class Terraformer extends JavaPlugin implements Listener {
         player.getInventory().setItem(8, leave);
 
         // Open Brush Settings Item
-        ItemStack settings = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta settingsMeta = settings.getItemMeta();
-        SkullTexturesApplier.applyTextures(settingsMeta,
-                "http://textures.minecraft.net/texture/ec2ff244dfc9dd3a2cef63112e7502dc6367b0d02132950347b2b479a72366dd");
-        settingsMeta.customName(TerraformItems.TERRAFORMER_SETTINGS);
-        settings.setItemMeta(settingsMeta);
-        player.getInventory().setItem(0, settings);
+        ItemStack materialSettings = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta materialSettingsMeta = materialSettings.getItemMeta();
+        SkullTexturesApplier.applyTextures(materialSettingsMeta,
+                "http://textures.minecraft.net/texture/95d2cb38458da17fb6cdacf787161602a2493cbf93233636253cff07cd88a9c0");
+        materialSettingsMeta.customName(TerraformItems.TERRAFORMER_MATERIAL_SETTINGS);
+        materialSettings.setItemMeta(materialSettingsMeta);
+        player.getInventory().setItem(0, materialSettings);
+
+        // Open Brush Settings Item
+        ItemStack brushSettings = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta brushSettingsMeta = brushSettings.getItemMeta();
+        SkullTexturesApplier.applyTextures(brushSettingsMeta,
+                "http://textures.minecraft.net/texture/ac5d73cb4dc065314630b7dc50fd44f1833637f07dddca7feddc208c21504d65");
+        brushSettingsMeta.customName(TerraformItems.TERRAFORMER_BRUSH_SETTINGS);
+        brushSettings.setItemMeta(brushSettingsMeta);
+        player.getInventory().setItem(1, brushSettings);
     }
 
     // Undo

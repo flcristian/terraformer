@@ -13,7 +13,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import ro.flcristian.terraformer.Terraformer;
 import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
-import ro.flcristian.terraformer.terraformer_properties.properties.brush_settings.BrushSettings;
+import ro.flcristian.terraformer.terraformer_properties.properties.menus.BrushSettings;
+import ro.flcristian.terraformer.terraformer_properties.properties.menus.MaterialSettings;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import ro.flcristian.terraformer.utility.SkullTexturesApplier;
 import net.kyori.adventure.text.Component;
@@ -148,36 +149,54 @@ public enum BrushType {
 
     public void openBrushSettings(Terraformer plugin, Player player, TerraformerProperties properties) {
         BrushSettings settings = switch (this) {
-            case BALL -> new BrushSettings(plugin, properties, true, false);
-            case ERASE -> new BrushSettings(plugin, properties, false, false);
-            case SMOOTH -> new BrushSettings(plugin, properties, false, false);
-            case ERODE -> new BrushSettings(plugin, properties, false, false);
-            case EXTRUDE -> new BrushSettings(plugin, properties, false, false);
-            case PAINT_TOP -> new BrushSettings(plugin, properties, true, true);
-            case PAINT_SURFACE -> new BrushSettings(plugin, properties, true, true);
-            case PAINT_WALL -> new BrushSettings(plugin, properties, true, true);
-            case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true, true);
-            case RISE -> new BrushSettings(plugin, properties, false, true);
-            case DIG -> new BrushSettings(plugin, properties, false, true);
+            case BALL -> new BrushSettings(plugin, properties, false);
+            case ERASE -> new BrushSettings(plugin, properties, false);
+            case SMOOTH -> new BrushSettings(plugin, properties, false);
+            case ERODE -> new BrushSettings(plugin, properties, false);
+            case EXTRUDE -> new BrushSettings(plugin, properties, false);
+            case PAINT_TOP -> new BrushSettings(plugin, properties, true);
+            case PAINT_SURFACE -> new BrushSettings(plugin, properties, true);
+            case PAINT_WALL -> new BrushSettings(plugin, properties, true);
+            case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true);
+            case RISE -> new BrushSettings(plugin, properties, true);
+            case DIG -> new BrushSettings(plugin, properties, true);
         };
 
         player.openInventory(settings.getInventory());
     }
 
-    public void openBrushSettings(Terraformer plugin, Player player, TerraformerProperties properties,
+    public void openMaterialSettings(Terraformer plugin, Player player, TerraformerProperties properties) {
+        MaterialSettings settings = switch (this) {
+            case BALL -> new MaterialSettings(plugin, properties, true);
+            case ERASE -> new MaterialSettings(plugin, properties, false);
+            case SMOOTH -> new MaterialSettings(plugin, properties, false);
+            case ERODE -> new MaterialSettings(plugin, properties, false);
+            case EXTRUDE -> new MaterialSettings(plugin, properties, false);
+            case PAINT_TOP -> new MaterialSettings(plugin, properties, true);
+            case PAINT_SURFACE -> new MaterialSettings(plugin, properties, true);
+            case PAINT_WALL -> new MaterialSettings(plugin, properties, true);
+            case PAINT_BOTTOM -> new MaterialSettings(plugin, properties, true);
+            case RISE -> new MaterialSettings(plugin, properties, false);
+            case DIG -> new MaterialSettings(plugin, properties, false);
+        };
+
+        player.openInventory(settings.getInventory());
+    }
+
+    public void openMaterialSettings(Terraformer plugin, Player player, TerraformerProperties properties,
             int currentMaterialPage) {
-        BrushSettings settings = switch (this) {
-            case BALL -> new BrushSettings(plugin, properties, true, false, currentMaterialPage);
-            case ERASE -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
-            case SMOOTH -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
-            case ERODE -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
-            case EXTRUDE -> new BrushSettings(plugin, properties, false, false, currentMaterialPage);
-            case PAINT_TOP -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
-            case PAINT_SURFACE -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
-            case PAINT_WALL -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
-            case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true, true, currentMaterialPage);
-            case RISE -> new BrushSettings(plugin, properties, false, true, currentMaterialPage);
-            case DIG -> new BrushSettings(plugin, properties, false, true, currentMaterialPage);
+        MaterialSettings settings = switch (this) {
+            case BALL -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
+            case ERASE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
+            case SMOOTH -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
+            case ERODE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
+            case EXTRUDE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
+            case PAINT_TOP -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
+            case PAINT_SURFACE -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
+            case PAINT_WALL -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
+            case PAINT_BOTTOM -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
+            case RISE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
+            case DIG -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
         };
 
         player.openInventory(settings.getInventory());
