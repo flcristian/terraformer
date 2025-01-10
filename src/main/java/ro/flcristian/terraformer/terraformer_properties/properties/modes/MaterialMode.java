@@ -44,9 +44,9 @@ public enum MaterialMode {
 
     public Material getMaterial(Location location, Location targetLocation, BrushProperties properties) {
         return switch (this) {
-            case RANDOM -> RandomModeSingleton.getInstance().getMaterial(location, targetLocation, properties);
-            case LAYER -> LayerModeSingleton.getInstance().getMaterial(location, targetLocation, properties);
-            case GRADIENT -> GradientModeSingleton.getInstance().getMaterial(location, targetLocation, properties);
+            case RANDOM -> RandomMode.getInstance().getMaterial(location, targetLocation, properties);
+            case LAYER -> LayerMode.getInstance().getMaterial(location, targetLocation, properties);
+            case GRADIENT -> GradientMode.getInstance().getMaterial(location, targetLocation, properties);
         };
     }
 

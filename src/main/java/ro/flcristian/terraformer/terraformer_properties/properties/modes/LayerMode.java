@@ -2,6 +2,7 @@ package ro.flcristian.terraformer.terraformer_properties.properties.modes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,6 +11,22 @@ import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperti
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 
 public class LayerMode implements Mode {
+    private LayerMode() {
+    }
+
+    private static final Supplier<LayerMode> instance = new Supplier<>() {
+        private final LayerMode singletonInstance = new LayerMode();
+
+        @Override
+        public LayerMode get() {
+            return singletonInstance;
+        }
+    };
+
+    public static LayerMode getInstance() {
+        return instance.get();
+    }
+
     public Material getMaterial(Location location, Location targetLocation, BrushProperties properties) {
         List<Material> materials = new ArrayList<>(properties.Materials.keySet());
 

@@ -19,6 +19,6 @@ public class TerraformItems {
 
         public static Component[] values() {
                 return new Component[] { TERRAFORMER_BRUSH, TERRAFORMER_UNDO, TERRAFORMER_REDO, TERRAFORMER_LEAVE,
-                                TERRAFORMER_MATERIAL_SETTINGS };
+                                TERRAFORMER_MATERIAL_SETTINGS, TERRAFORMER_BRUSH_SETTINGS };
         }
 }
