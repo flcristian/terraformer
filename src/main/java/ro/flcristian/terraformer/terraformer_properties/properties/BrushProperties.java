@@ -48,4 +48,16 @@ public class BrushProperties implements Cloneable {
     public BrushProperties clone() {
         return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof BrushProperties))
+            return false;
+
+        BrushProperties other = (BrushProperties) obj;
+
+        return Type == other.Type && BrushSize == other.BrushSize && BrushDepth == other.BrushDepth;
+    }
 }

@@ -5,10 +5,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -19,12 +21,17 @@ import ro.flcristian.terraformer.Terraformer;
 import ro.flcristian.terraformer.constants.BrushSettingsItems;
 import ro.flcristian.terraformer.constants.Messages;
 import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
+import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 
 public class BrushSettings implements InventoryHolder {
     private static final Component paintName = Component.text("Paint").color(NamedTextColor.BLUE);
     private static final Component depthSlotBlocked = Component.text("This brush doesn't use depth")
             .color(NamedTextColor.GRAY);
+    private static final Component brushHistoryEmpty = Component
+            .text("Your brush properties will appear here.")
+            .color(NamedTextColor.DARK_AQUA);
+    private static final Component brushHistoryEntry = Component.text("Brush History").color(NamedTextColor.DARK_AQUA);
 
     private final Inventory inventory;
     private final boolean usesDepth;
@@ -36,7 +43,7 @@ public class BrushSettings implements InventoryHolder {
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
                         .append(properties.Brush.Type.getName()));
 
-        inventory = plugin.getServer().createInventory(this, 27,
+        inventory = plugin.getServer().createInventory(this, 36,
                 inventoryName);
 
         setUpMenu(properties);
@@ -48,7 +55,14 @@ public class BrushSettings implements InventoryHolder {
         List<ItemStack> brushes = Stream.of(BrushType.values())
                 .filter(brushType -> brushType != BrushType.PAINT_TOP && brushType != BrushType.PAINT_WALL
                         && brushType != BrushType.PAINT_BOTTOM && brushType != BrushType.PAINT_SURFACE)
-                .map(BrushType::getBrushSettingsItem)
+                .map(brushType -> {
+                    ItemStack item = BrushType.getBrushSettingsItem(brushType);
+                    if (brushType == properties.Brush.Type) {
+                        item.addUnsafeEnchantment(Enchantment.UNBREAKING, 1);
+                        item.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    }
+                    return item;
+                })
                 .collect(Collectors.toList());
 
         ItemStack paint = new ItemStack(Material.BLUE_DYE);
@@ -69,6 +83,10 @@ public class BrushSettings implements InventoryHolder {
 
         for (int size = 1; size <= 9; size++) {
             ItemStack brushSizeItem = new ItemStack(Material.HEART_OF_THE_SEA, size);
+            if (size == properties.Brush.BrushSize) {
+                brushSizeItem.addUnsafeEnchantment(Enchantment.UNBREAKING, 1);
+                brushSizeItem.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             ItemMeta brushSizeItemMeta = brushSizeItem.getItemMeta();
             brushSizeItemMeta.customName(BrushSettingsItems.SETTINGS_BRUSH_SIZE(size));
             brushSizeItemMeta.lore(List.of(
@@ -85,6 +103,10 @@ public class BrushSettings implements InventoryHolder {
         if (usesDepth) {
             for (int depth = 1; depth <= 9; depth++) {
                 ItemStack brushDepthItem = new ItemStack(Material.NAUTILUS_SHELL, depth);
+                if (depth == properties.Brush.BrushDepth) {
+                    brushDepthItem.addUnsafeEnchantment(Enchantment.UNBREAKING, 1);
+                    brushDepthItem.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
                 ItemMeta brushDepthItemMeta = brushDepthItem.getItemMeta();
                 brushDepthItemMeta.customName(BrushSettingsItems.SETTINGS_BRUSH_DEPTH(depth));
                 brushDepthItemMeta.lore(List.of(
@@ -105,6 +127,35 @@ public class BrushSettings implements InventoryHolder {
             for (int i = 18; i < 27; i++) {
                 inventory.setItem(i, depthSlot);
             }
+        }
+
+        // Brush History
+
+        ItemStack brushHistorySlot = new ItemStack(Material.CYAN_STAINED_GLASS_PANE);
+        ItemMeta brushHistorySlotMeta = brushHistorySlot.getItemMeta();
+        brushHistorySlotMeta.customName(brushHistoryEmpty);
+        brushHistorySlot.setItemMeta(brushHistorySlotMeta);
+        for (int i = 27; i < 36; i++) {
+            inventory.setItem(i, brushHistorySlot);
+        }
+
+        for (int i = 0; i < properties.BrushHistory.size(); i++) {
+            BrushProperties brushProperties = properties.BrushHistory.get(properties.BrushHistory.size() - 1 - i);
+            ItemStack brushHistory = new ItemStack(BrushType.getBrushSettingsItem(brushProperties.Type));
+            ItemMeta brushHistoryMeta = brushHistory.getItemMeta();
+            brushHistoryMeta.lore(List.of(
+                    Component.text("Type: ").append(brushProperties.Type.getName())
+                            .color(NamedTextColor.LIGHT_PURPLE),
+                    Component.text("Size: ")
+                            .append(Component.text(brushProperties.BrushSize).color(NamedTextColor.GOLD))
+                            .color(NamedTextColor.LIGHT_PURPLE),
+                    Component.text("Depth: ")
+                            .append(Component.text(brushProperties.BrushDepth).color(NamedTextColor.GOLD))
+                            .color(NamedTextColor.LIGHT_PURPLE),
+                    Component.text("Click to apply").color(NamedTextColor.LIGHT_PURPLE)));
+            brushHistoryMeta.customName(brushHistoryEntry);
+            brushHistory.setItemMeta(brushHistoryMeta);
+            inventory.setItem(i + 27, brushHistory);
         }
     }
 
@@ -170,6 +221,18 @@ public class BrushSettings implements InventoryHolder {
                 SelectPaintMode paintMode = new SelectPaintMode(plugin, properties);
                 player.openInventory(paintMode.getInventory());
                 return;
+            }
+
+            // Brush History
+
+            if (meta.customName().equals(brushHistoryEntry)) {
+                int index = event.getSlot() - 27;
+                if (index < properties.BrushHistory.size()) {
+                    properties
+                            .applyBrushHistory(properties.BrushHistory.get(properties.BrushHistory.size() - 1 - index));
+                    player.sendMessage(Messages.APPLIED_BRUSH_HISTORY);
+                    properties.Brush.Type.openBrushSettings(plugin, player, properties);
+                }
             }
         }
     }

@@ -6,7 +6,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public final class Messages {
-        private Messages() {}
+        private Messages() {
+        }
 
         // ERRORS
 
@@ -80,7 +81,7 @@ public final class Messages {
                 return Component.text("Changed brush size to ").append(Component.text(size).color(NamedTextColor.GOLD));
         }
 
-        public static  Component CHANGED_BRUSH_DEPTH(int depth) {
+        public static Component CHANGED_BRUSH_DEPTH(int depth) {
                 return Component.text("Changed brush depth to ")
                                 .append(Component.text(depth).color(NamedTextColor.YELLOW));
         }
@@ -95,4 +96,7 @@ public final class Messages {
                 return Component.text("Changed material mode to ")
                                 .append(mode.getName());
         }
+
+        public static final Component APPLIED_BRUSH_HISTORY = Component.text("Applied brush history");
+        public static final Component APPLIED_MATERIAL_HISTORY = Component.text("Applied material history");
 }

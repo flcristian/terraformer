@@ -132,6 +132,9 @@ public enum BrushType {
             return;
         }
 
+        TerraformerProperties terraformerProperties = plugin.getTerraformer(player);
+        terraformerProperties.addBrushHistory(properties.clone());
+
         switch (properties.Type) {
             case BALL -> BrushBall.brush(plugin, player, properties, targetLocation, isRedo);
             case ERASE -> BrushErase.brush(plugin, player, properties, targetLocation, isRedo);

@@ -50,7 +50,8 @@ public class Terraformer extends JavaPlugin implements Listener {
 
         terraformers.put(player.getUniqueId(),
                 new TerraformerProperties(true, currentProperties.Brush,
-                        currentProperties.History, currentProperties.Palette));
+                        currentProperties.BrushHistory, currentProperties.MaterialHistory, currentProperties.History,
+                        currentProperties.Palette));
     }
 
     public void removeTerraformer(Player player) {
@@ -62,7 +63,8 @@ public class Terraformer extends JavaPlugin implements Listener {
         }
 
         terraformers.put(player.getUniqueId(),
-                new TerraformerProperties(false, properties.Brush, properties.History, properties.Palette));
+                new TerraformerProperties(false, properties.Brush, properties.BrushHistory, properties.MaterialHistory,
+                        properties.History, properties.Palette));
     }
 
     public TerraformerProperties getTerraformer(Player player) {

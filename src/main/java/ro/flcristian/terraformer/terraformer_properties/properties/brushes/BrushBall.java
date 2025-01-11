@@ -32,7 +32,7 @@ public class BrushBall extends Brush {
             }
             states.push(targetLocation.getBlock().getState());
         } else {
-            double threshold = brushSize - (0.5 - 0.05 * brushSize);
+            double threshold = brushSize < 10 ? brushSize - (0.5 - 0.05 * brushSize) : brushSize - 0.5;
             for (int x = -brushSize; x <= brushSize; x++) {
                 for (int y = -brushSize; y <= brushSize; y++) {
                     for (int z = -brushSize; z <= brushSize; z++) {

@@ -1,8 +1,9 @@
 package ro.flcristian.terraformer.terraformer_properties.properties.menus;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,7 +17,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import ro.flcristian.terraformer.Terraformer;
 import ro.flcristian.terraformer.constants.Messages;
 import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
+import ro.flcristian.terraformer.terraformer_properties.material_history.MaterialHistory;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
+import ro.flcristian.terraformer.utility.MaterialNameFormatter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -26,8 +29,14 @@ public class MaterialSettings implements InventoryHolder {
     private static final Component materialSlotEmptyPercentage = Component.text("Place a material in the empty slot")
             .color(NamedTextColor.RED);
     private static final Component materialSlotEmpty = Component.text("Empty slot").color(NamedTextColor.GRAY);
+    private static final Component terraformer = Component.text("Terraformer").color(NamedTextColor.GRAY);
     private static final Component nextPage = Component.text("Next Page ➡").color(NamedTextColor.GREEN);
     private static final Component previousPage = Component.text("⬅ Previous Page").color(NamedTextColor.GREEN);
+    private static final Component materialHistoryEmpty = Component
+            .text("Your material properties will appear here.")
+            .color(NamedTextColor.DARK_RED);
+    private static final Component materialHistoryEntry = Component.text("Material History")
+            .color(NamedTextColor.DARK_RED);
 
     private final boolean usesMaterials;
     private final Inventory inventory;
@@ -41,7 +50,7 @@ public class MaterialSettings implements InventoryHolder {
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
                         .append(properties.Brush.Type.getName()));
 
-        inventory = plugin.getServer().createInventory(this, 27,
+        inventory = plugin.getServer().createInventory(this, 45,
                 inventoryName);
 
         setUpMenu(properties);
@@ -56,7 +65,7 @@ public class MaterialSettings implements InventoryHolder {
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
                         .append(properties.Brush.Type.getName()));
 
-        inventory = plugin.getServer().createInventory(this, 54,
+        inventory = plugin.getServer().createInventory(this, 45,
                 inventoryName);
 
         setUpMenu(properties);
@@ -67,15 +76,16 @@ public class MaterialSettings implements InventoryHolder {
 
         ItemStack empty = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta emptyMeta = empty.getItemMeta();
-        emptyMeta.customName(Component.text("Terraformer").color(NamedTextColor.GRAY));
+        emptyMeta.customName(terraformer);
         empty.setItemMeta(emptyMeta);
 
         for (int i = 0; i < 9; i++) {
-            inventory.setItem(18 + i, empty);
+            inventory.setItem(i, empty);
+            inventory.setItem(27 + i, empty);
         }
 
         if (usesMaterials) {
-            inventory.setItem(22, MaterialMode.getBrushSettingsItem(properties.Brush.Mode));
+            inventory.setItem(31, MaterialMode.getBrushSettingsItem(properties.Brush.Mode));
         }
 
         // Material Selection
@@ -102,7 +112,7 @@ public class MaterialSettings implements InventoryHolder {
             int endIndex = Math.min(startIndex + materialsPerPage, materials.length);
 
             // Clear previous materials
-            for (int i = 0; i < 18; i++) {
+            for (int i = 9; i < 27; i++) {
                 inventory.setItem(i, null);
             }
 
@@ -111,19 +121,16 @@ public class MaterialSettings implements InventoryHolder {
                 int slot = i - startIndex;
 
                 ItemMeta materialMeta = materials[i].getItemMeta();
-                String materialName = materials[i].getType().toString();
-                String transformed = Arrays.stream(materialName.split("_"))
-                        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                        .collect(Collectors.joining(" "));
-                materialMeta.customName(Component.text(transformed).color(NamedTextColor.DARK_GREEN));
+                materialMeta.customName(Component.text(MaterialNameFormatter.format(materials[i].getType().toString()))
+                        .color(NamedTextColor.DARK_GREEN));
                 materials[i].setItemMeta(materialMeta);
-                inventory.setItem(9 + slot, materials[i]);
+                inventory.setItem(18 + slot, materials[i]);
 
                 materialPercentageMeta.customName(
                         Component.text(properties.Brush.Materials.get(materials[i].getType()) + "%")
                                 .color(NamedTextColor.YELLOW));
                 materialPercentage.setItemMeta(materialPercentageMeta);
-                inventory.setItem(slot, materialPercentage);
+                inventory.setItem(9 + slot, materialPercentage);
             }
 
             // Fill empty slots
@@ -133,8 +140,8 @@ public class MaterialSettings implements InventoryHolder {
             emptySlot.setItemMeta(emptySlotMeta);
 
             for (int i = endIndex - startIndex; i < 9; i++) {
-                inventory.setItem(i, materialSlot);
-                inventory.setItem(9 + i, emptySlot);
+                inventory.setItem(9 + i, materialSlot);
+                inventory.setItem(18 + i, emptySlot);
             }
 
             // Add navigation buttons
@@ -143,7 +150,7 @@ public class MaterialSettings implements InventoryHolder {
                 ItemMeta prevMeta = prevButton.getItemMeta();
                 prevMeta.customName(previousPage);
                 prevButton.setItemMeta(prevMeta);
-                inventory.setItem(18, prevButton);
+                inventory.setItem(27, prevButton);
             }
 
             if (materials.length >= (currentMaterialPage * materialsPerPage)) {
@@ -151,10 +158,50 @@ public class MaterialSettings implements InventoryHolder {
                 ItemMeta nextMeta = nextButton.getItemMeta();
                 nextMeta.customName(nextPage);
                 nextButton.setItemMeta(nextMeta);
-                inventory.setItem(26, nextButton);
+                inventory.setItem(35, nextButton);
+            }
+
+            // Material History
+            ItemStack materialHistorySlot = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+            ItemMeta materialHistorySlotMeta = materialHistorySlot.getItemMeta();
+            materialHistorySlotMeta.customName(materialHistoryEmpty);
+            materialHistorySlot.setItemMeta(materialHistorySlotMeta);
+            for (int i = 36; i < 45; i++) {
+                inventory.setItem(i, materialHistorySlot);
+            }
+
+            for (int i = 0; i < properties.MaterialHistory.size(); i++) {
+                MaterialHistory materialPropertiesHistory = properties.MaterialHistory
+                        .get(properties.MaterialHistory.size() - 1 - i);
+                ItemStack materialHistory = new ItemStack(
+                        MaterialMode.getBrushSettingsItem(materialPropertiesHistory.Mode));
+                ItemMeta materialHistoryMeta = materialHistory.getItemMeta();
+                List<Component> lore = new ArrayList<>();
+                lore.add(Component.text("Mode: ").append(materialPropertiesHistory.Mode.getName())
+                        .color(NamedTextColor.GOLD));
+                lore.add(Component.empty());
+
+                // Add each material and its percentage
+                for (Map.Entry<Material, Integer> entry : materialPropertiesHistory.Materials.entrySet()) {
+                    lore.add(Component
+                            .text(MaterialNameFormatter.format(entry.getKey().toString()) + ": " + entry.getValue()
+                                    + "%")
+                            .color(NamedTextColor.GRAY));
+                }
+
+                lore.add(Component.empty());
+                lore.add(Component.text("Click to apply").color(NamedTextColor.LIGHT_PURPLE));
+
+                materialHistoryMeta.lore(lore);
+                materialHistoryMeta.customName(materialHistoryEntry);
+                materialHistory.setItemMeta(materialHistoryMeta);
+                inventory.setItem(i + 36, materialHistory);
             }
         } else {
-            for (int i = 0; i < 18; i++) {
+            for (int i = 9; i < 27; i++) {
+                inventory.setItem(i, materialSlot);
+            }
+            for (int i = 36; i < 45; i++) {
                 inventory.setItem(i, materialSlot);
             }
         }
@@ -176,8 +223,9 @@ public class MaterialSettings implements InventoryHolder {
             return;
 
         if (meta.customName() != null) {
-            if (meta.customName().equals(materialSlotBlocked)
-                    || meta.customName().equals(materialSlotEmptyPercentage)) {
+            if (meta.customName().equals(materialSlotBlocked) || meta.customName().equals(terraformer)
+                    || meta.customName().equals(materialSlotEmptyPercentage)
+                    || meta.customName().equals(materialHistoryEmpty)) {
                 return;
             }
 
@@ -223,7 +271,7 @@ public class MaterialSettings implements InventoryHolder {
                 return;
             }
 
-            if (event.getSlot() >= 0 && event.getSlot() < 9) {
+            if (event.getSlot() >= 9 && event.getSlot() < 18) {
                 Material material = inventory.getItem(event.getSlot() + 9).getType();
                 ClickType clickType = event.getClick();
 
@@ -247,7 +295,7 @@ public class MaterialSettings implements InventoryHolder {
                 return;
             }
 
-            if (event.getSlot() >= 9 && event.getSlot() < 18) {
+            if (event.getSlot() >= 18 && event.getSlot() < 27) {
                 if (!meta.customName().equals(materialSlotEmpty)) {
                     properties.Brush.Materials.remove(item.getType());
                     properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
@@ -266,6 +314,19 @@ public class MaterialSettings implements InventoryHolder {
                         properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                         return;
                     }
+                }
+            }
+
+            // Material History
+
+            if (meta.customName().equals(materialHistoryEntry)) {
+                int index = event.getSlot() - 36;
+                if (index < properties.MaterialHistory.size()) {
+                    properties
+                            .applyMaterialHistory(
+                                    properties.MaterialHistory.get(properties.MaterialHistory.size() - 1 - index));
+                    player.sendMessage(Messages.APPLIED_MATERIAL_HISTORY);
+                    properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                 }
             }
         }
