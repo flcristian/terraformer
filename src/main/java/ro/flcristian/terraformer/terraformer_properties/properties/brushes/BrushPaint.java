@@ -107,18 +107,19 @@ public class BrushPaint extends Brush {
             terraformerProperties.History.pushRedo(historyStates);
         }
 
-        // Single pass: replace non-solids with air
+        // First pass: replace non-solids with air
         for (BlockState state : states) {
             if (!state.getBlock().getType().isSolid()) {
                 state.getBlock().setType(Material.AIR);
             }
         }
 
-        // Single pass: replace solid blocks with the new material
+        // Second pass: replace solid blocks with the new material
         for (BlockState state : states) {
             Block block = state.getBlock();
             if (brushProperties.Type != BrushType.PAINT_SURFACE) {
-                if (block.getType().isSolid()) {
+                if (block.getType().isSolid() && (brushProperties.Mask.isEmpty()
+                        || brushProperties.Mask.contains(block.getType()))) {
                     block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
                 }
             } else {
@@ -126,7 +127,8 @@ public class BrushPaint extends Brush {
                         + block.getLocation().getBlockZ());
 
                 if (surfaceLocation != null) {
-                    if (block.getType().isSolid()) {
+                    if (block.getType().isSolid() && (brushProperties.Mask.isEmpty()
+                            || brushProperties.Mask.contains(block.getType()))) {
                         block.setType(brushProperties.getMaterial(block.getLocation(), surfaceLocation));
                     }
                 }

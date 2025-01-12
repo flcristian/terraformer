@@ -29,10 +29,13 @@ public class BrushDig extends Brush {
                     Location surfaceLocation = findSurface(targetLocation.clone().add(x, 0, z));
                     if (surfaceLocation != null) {
                         for (int y = 0; y < digDepth; y++) {
-                            Location loc = surfaceLocation.clone().add(0, -y, 0);
-                            Block block = loc.getBlock();
-                            states.push(block.getState());
-                            changes.put(loc, Material.AIR);
+                            if (brushProperties.Mask.isEmpty()
+                                    || brushProperties.Mask.contains(surfaceLocation.getBlock().getType())) {
+                                Location loc = surfaceLocation.clone().add(0, -y, 0);
+                                Block block = loc.getBlock();
+                                states.push(block.getState());
+                                changes.put(loc, Material.AIR);
+                            }
                         }
                     }
                 }

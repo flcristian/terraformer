@@ -63,14 +63,16 @@ public class BrushErase extends Brush {
 
         for (BlockState state : states) {
             Block block = state.getBlock();
-            if (!block.getType().isSolid()) {
+            if (!block.getType().isSolid()
+                    && (brushProperties.Mask.isEmpty() || brushProperties.Mask.contains(block.getType()))) {
                 block.setType(Material.AIR);
             }
         }
 
         for (BlockState state : states) {
             Block block = state.getBlock();
-            if (block.getType().isSolid()) {
+            if (block.getType().isSolid()
+                    && (brushProperties.Mask.isEmpty() || brushProperties.Mask.contains(block.getType()))) {
                 block.setType(Material.AIR);
             }
         }

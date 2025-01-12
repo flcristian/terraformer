@@ -46,7 +46,7 @@ public class TerraformerProperties {
         Palette = palette;
     }
 
-    public TerraformerProperties(boolean isTerraformer, BrushProperties brush, List<Material> mask,
+    public TerraformerProperties(boolean isTerraformer, BrushProperties brush,
             Stack<BrushProperties> brushHistory,
             Stack<MaterialHistory> materialHistory, BrushBlockHistory history, Palette palette) {
         IsTerraformer = isTerraformer;

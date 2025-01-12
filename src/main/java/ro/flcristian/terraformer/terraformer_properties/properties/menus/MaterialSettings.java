@@ -175,6 +175,7 @@ public class MaterialSettings implements InventoryHolder {
                         .get(properties.MaterialHistory.size() - 1 - i);
                 ItemStack materialHistory = new ItemStack(
                         MaterialMode.getBrushSettingsItem(materialPropertiesHistory.Mode));
+
                 ItemMeta materialHistoryMeta = materialHistory.getItemMeta();
                 List<Component> lore = new ArrayList<>();
                 lore.add(Component.text("Mode: ").append(materialPropertiesHistory.Mode.getName())
@@ -277,16 +278,20 @@ public class MaterialSettings implements InventoryHolder {
 
                 switch (clickType) {
                     case LEFT:
-                        properties.Brush.Materials.put(material, properties.Brush.Materials.get(material) + 1);
+                        properties.Brush.Materials.put(material,
+                                Math.max(0, properties.Brush.Materials.get(material) + 1));
                         break;
                     case SHIFT_LEFT:
-                        properties.Brush.Materials.put(material, properties.Brush.Materials.get(material) + 10);
+                        properties.Brush.Materials.put(material,
+                                Math.max(0, properties.Brush.Materials.get(material) + 10));
                         break;
                     case RIGHT:
-                        properties.Brush.Materials.put(material, properties.Brush.Materials.get(material) - 1);
+                        properties.Brush.Materials.put(material,
+                                Math.max(0, properties.Brush.Materials.get(material) - 1));
                         break;
                     case SHIFT_RIGHT:
-                        properties.Brush.Materials.put(material, properties.Brush.Materials.get(material) - 10);
+                        properties.Brush.Materials.put(material,
+                                Math.max(0, properties.Brush.Materials.get(material) - 10));
                         break;
                     default:
                         break;

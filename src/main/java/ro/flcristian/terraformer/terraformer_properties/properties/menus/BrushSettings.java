@@ -32,7 +32,6 @@ public class BrushSettings implements InventoryHolder {
             .text("Your brush properties will appear here.")
             .color(NamedTextColor.DARK_AQUA);
     private static final Component brushHistoryEntry = Component.text("Brush History").color(NamedTextColor.DARK_AQUA);
-
     private final Inventory inventory;
     private final boolean usesDepth;
 

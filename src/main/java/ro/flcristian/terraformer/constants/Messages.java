@@ -48,6 +48,9 @@ public final class Messages {
         public static final Component USAGE_BRUSH_DEPTH = Component
                         .text("Usage: '/terraform depth <d>' or '/terraform d <depth>'")
                         .color(NamedTextColor.RED);
+        public static final Component USAGE_MASK = Component
+                        .text("Usage: '/terraform mask <mask>' or '/terraform mk <mask>'")
+                        .color(NamedTextColor.RED);
 
         // WARNINGS
 

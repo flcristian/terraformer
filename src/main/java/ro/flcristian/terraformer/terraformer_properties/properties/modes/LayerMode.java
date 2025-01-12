@@ -34,30 +34,20 @@ public class LayerMode implements Mode {
             return Material.STONE;
         }
 
-        double layerHeight;
-        int size;
-        if (properties.Type == BrushType.PAINT_TOP || properties.Type == BrushType.PAINT_WALL
-                || properties.Type == BrushType.PAINT_BOTTOM) {
-            size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
-            layerHeight = (double) properties.BrushDepth / materials.size();
-        } else {
-            size = properties.BrushSize;
-            layerHeight = (double) (properties.BrushSize * 2 - 1) / materials.size();
-        }
+        int size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
+        double layerHeight = (double) properties.BrushDepth / materials.size();
 
         int relativeY;
-        if (properties.Type == BrushType.PAINT_TOP) {
+        if (properties.Type == BrushType.PAINT_TOP || properties.Type == BrushType.PAINT_SURFACE) {
             relativeY = targetLocation.getBlockY() - location.getBlockY();
         } else if (properties.Type == BrushType.PAINT_BOTTOM) {
             relativeY = location.getBlockY() - targetLocation.getBlockY();
-        } else if (properties.Type == BrushType.PAINT_WALL) {
+        } else {
             if (properties.BrushDepth % 2 == 1) {
                 relativeY = targetLocation.getBlockY() - (location.getBlockY() - size);
             } else {
                 relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
             }
-        } else {
-            relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
         }
 
         int materialIndex = (int) (relativeY / layerHeight);

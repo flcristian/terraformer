@@ -28,7 +28,7 @@ public class TerraformTabCompleter implements TabCompleter {
 
         if (args.length == 1) {
             completions.addAll(Arrays.asList("help", "tutorial", "start", "stop", "undo", "redo",
-                    "brush", "brushes", "size", "depth", "materials", "materialmode", "materialmodes"));
+                    "brush", "brushes", "size", "depth", "materials", "materialmode", "materialmodes", "mask"));
         } else if (args.length == 2) {
             switch (args[0].toLowerCase()) {
                 case "brush", "b" -> {
@@ -45,7 +45,7 @@ public class TerraformTabCompleter implements TabCompleter {
                                 .toList());
                     }
                 }
-                case "help" -> completions.addAll(Arrays.asList("1", "2", "3"));
+                case "help" -> completions.addAll(Arrays.asList("1", "2", "3", "4"));
                 case "size", "s" -> {
                     if (player.hasPermission("terraformer.mode")) {
                         completions.addAll(IntStream.rangeClosed(1, 9)

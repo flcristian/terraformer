@@ -36,8 +36,10 @@ public class BrushRise extends Brush {
 
                         Material surfaceMaterial = surfaceLocation.getBlock().getType();
                         for (int y = 1; y <= riseHeight; y++) {
-                            Location loc = surfaceLocation.clone().add(0, y, 0);
-                            changes.put(loc, surfaceMaterial);
+                            if (brushProperties.Mask.isEmpty() || brushProperties.Mask.contains(surfaceMaterial)) {
+                                Location loc = surfaceLocation.clone().add(0, y, 0);
+                                changes.put(loc, surfaceMaterial);
+                            }
                         }
                     }
                 }

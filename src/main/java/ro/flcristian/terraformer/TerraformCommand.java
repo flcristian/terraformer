@@ -6,6 +6,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHisto
 import ro.flcristian.terraformer.terraformer_properties.block_history.BrushAction;
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
+import ro.flcristian.terraformer.utility.MaterialObjectsParser;
 
 class TerraformCommand implements CommandExecutor {
     private final Terraformer plugin;
@@ -58,7 +60,7 @@ class TerraformCommand implements CommandExecutor {
                     }
                 }
 
-                page = Math.min(page, 3);
+                page = Math.min(page, 4);
 
                 showHelpInfo(player, page);
                 return true;
@@ -320,7 +322,8 @@ class TerraformCommand implements CommandExecutor {
                     for (int i = 1; i < args.length; i++) {
                         materialsString.append(args[i]);
                     }
-                    properties.Brush.Materials = parseMaterialPercentages(materialsString.toString(),
+                    properties.Brush.Materials = MaterialObjectsParser.parseMaterialPercentages(
+                            materialsString.toString(),
                             properties.Brush.Mode);
                     player.sendMessage(Component.text("Materials updated successfully!").color(NamedTextColor.GREEN));
                 } catch (IllegalArgumentException e) {
@@ -381,6 +384,41 @@ class TerraformCommand implements CommandExecutor {
 
                 player.sendMessage(modes);
 
+                return true;
+
+            case "mask", "mk":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    properties.Brush.Mask = new ArrayList<>();
+                    player.sendMessage(Component.text("Mask materials cleared!")
+                            .color(NamedTextColor.GREEN));
+                    return true;
+                }
+
+                if (args.length > 2) {
+                    player.sendMessage(Messages.USAGE_MASK);
+                    return true;
+                }
+
+                try {
+                    StringBuilder maskString = new StringBuilder();
+                    for (int i = 1; i < args.length; i++) {
+                        maskString.append(args[i]);
+                    }
+                    properties.Brush.Mask = MaterialObjectsParser.parseMaskMaterials(maskString.toString());
+                    player.sendMessage(Component.text("Mask materials updated successfully!")
+                            .color(NamedTextColor.GREEN));
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage(Component.text(e.getMessage()).color(NamedTextColor.RED));
+                }
                 return true;
 
             default:
@@ -451,6 +489,10 @@ class TerraformCommand implements CommandExecutor {
                 .append(Component.text("/tf mm <material mode>", NamedTextColor.YELLOW)));
         commands.put("materialmodes", Component.text("/terraform materialmodes ", NamedTextColor.YELLOW)
                 .append(Component.text("- Show all material modes", NamedTextColor.WHITE)));
+        commands.put("mask", Component.text("/terraform mask ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming mask blocks", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf mk <mask>", NamedTextColor.YELLOW)));
 
         Map<Integer, Component[]> pages = new LinkedHashMap<>();
         pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
@@ -459,6 +501,7 @@ class TerraformCommand implements CommandExecutor {
                 commands.get("depth") });
         pages.put(3, new Component[] { commands.get("materials"), commands.get("materialmode"),
                 commands.get("materialmodes") });
+        pages.put(4, new Component[] { commands.get("mask") });
 
         Component message = Component.text("Terraformer Help").color(NamedTextColor.AQUA)
                 .append(Component.text(" - ").color(NamedTextColor.WHITE))
@@ -476,94 +519,5 @@ class TerraformCommand implements CommandExecutor {
         message = message.append(content);
 
         player.sendMessage(message);
-    }
-
-    private Map<Material, Integer> parseMaterialPercentages(String materials, MaterialMode materialMode) {
-        Map<Material, Integer> materialMap = new LinkedHashMap<>();
-
-        // Check if using percentage format
-        if (materials.contains("%")) {
-            // Existing percentage parsing logic
-            int totalPercentage = 0;
-            String[] materialEntries = materials.split(",");
-            for (String entry : materialEntries) {
-                String[] parts = entry.trim().split("%");
-                if (parts.length != 2) {
-                    throw new IllegalArgumentException(
-                            "Invalid material format. Expected format: '70%material_name1,30%material_name2'");
-                }
-
-                int percentage = Integer.parseInt(parts[0]);
-                String materialName = parts[1].toUpperCase();
-                Material material = Material.getMaterial(materialName);
-
-                if (material == null) {
-                    throw new IllegalArgumentException("Invalid material: " + materialName);
-                }
-
-                materialMap.put(material, percentage);
-                totalPercentage += percentage;
-            }
-
-            if (totalPercentage != 100 && materialMode != MaterialMode.GRADIENT) {
-                throw new IllegalArgumentException("Material percentages must add up to 100%");
-            }
-        } else {
-            // Equal distribution logic
-            String[] materialNames = materials.split(",");
-
-            if (materialMode == MaterialMode.GRADIENT) {
-                int numMaterials = materialNames.length;
-
-                if (numMaterials == 1) {
-                    Material material = Material.getMaterial(materialNames[0].trim().toUpperCase());
-                    if (material == null) {
-                        throw new IllegalArgumentException("Invalid material: " + materialNames[0]);
-                    }
-
-                    if (!material.isSolid()) {
-                        throw new IllegalArgumentException("Material must be solid: " + materialNames[0]);
-                    }
-                    materialMap.put(material, 50);
-                } else {
-                    int interval = 100 / (numMaterials - 1);
-                    for (int i = 0; i < materialNames.length; i++) {
-                        Material material = Material.getMaterial(materialNames[i].trim().toUpperCase());
-                        if (material == null) {
-                            throw new IllegalArgumentException("Invalid material: " + materialNames[i]);
-                        }
-
-                        if (!material.isSolid()) {
-                            throw new IllegalArgumentException("Material must be solid: " + materialNames[i]);
-                        }
-
-                        int percentage = (i == materialNames.length - 1) ? 100 : i * interval;
-                        materialMap.put(material, percentage);
-                    }
-                }
-            } else {
-                // Original equal distribution logic for non-GRADIENT mode
-                int equalPercentage = 100 / materialNames.length;
-                int remainder = 100 % materialNames.length;
-
-                for (String materialName : materialNames) {
-                    Material material = Material.getMaterial(materialName.trim().toUpperCase());
-                    if (material == null) {
-                        throw new IllegalArgumentException("Invalid material: " + materialName);
-                    }
-
-                    if (!material.isSolid()) {
-                        throw new IllegalArgumentException("Material must be solid: " + materialName);
-                    }
-
-                    // Add extra 1% to first few materials if there's a remainder
-                    int percentage = equalPercentage + (remainder > 0 ? 1 : 0);
-                    remainder--;
-                    materialMap.put(material, percentage);
-                }
-            }
-        }
-
-        return materialMap;
     }
 }

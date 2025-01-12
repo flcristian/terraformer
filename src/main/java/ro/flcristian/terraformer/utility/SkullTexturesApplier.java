@@ -13,6 +13,9 @@ import org.bukkit.profile.PlayerTextures;
 import com.destroystokyo.paper.profile.PlayerProfile;
 
 public class SkullTexturesApplier {
+    private SkullTexturesApplier() {
+    }
+
     public static void applyTextures(ItemMeta meta, String textureURL) {
         SkullMeta skullMeta = (SkullMeta) meta;
         PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());

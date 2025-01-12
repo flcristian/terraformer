@@ -118,15 +118,8 @@ public class GradientMode implements Mode {
         }
 
         // Check Cache
-        int size, totalHeight;
-        if (properties.Type == BrushType.PAINT_TOP || properties.Type == BrushType.PAINT_WALL
-                || properties.Type == BrushType.PAINT_BOTTOM) {
-            size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
-            totalHeight = properties.BrushDepth;
-        } else {
-            size = properties.BrushSize;
-            totalHeight = properties.BrushSize * 2 - 1;
-        }
+        int size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
+        int totalHeight = properties.BrushDepth;
 
         GradientCacheKey cacheKey = new GradientCacheKey(properties.Materials, totalHeight);
         List<Material> gradient;
@@ -138,18 +131,16 @@ public class GradientMode implements Mode {
         }
 
         int relativeY;
-        if (properties.Type == BrushType.PAINT_TOP) {
+        if (properties.Type == BrushType.PAINT_TOP || properties.Type == BrushType.PAINT_SURFACE) {
             relativeY = targetLocation.getBlockY() - location.getBlockY();
         } else if (properties.Type == BrushType.PAINT_BOTTOM) {
             relativeY = location.getBlockY() - targetLocation.getBlockY();
-        } else if (properties.Type == BrushType.PAINT_WALL) {
+        } else {
             if (properties.BrushDepth % 2 == 1) {
                 relativeY = targetLocation.getBlockY() - (location.getBlockY() - size);
             } else {
                 relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
             }
-        } else {
-            relativeY = targetLocation.getBlockY() - (location.getBlockY() - size) - 1;
         }
 
         if (relativeY < 0 || relativeY >= gradient.size()) {

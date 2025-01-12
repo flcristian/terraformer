@@ -62,7 +62,8 @@ public class BrushBall extends Brush {
         // Process non-solid blocks first
         for (BlockState state : states) {
             Block block = state.getBlock();
-            if (!block.getType().isSolid()) {
+            if (!block.getType().isSolid()
+                    && (brushProperties.Mask.isEmpty() || brushProperties.Mask.contains(block.getType()))) {
                 block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
             }
         }
@@ -70,7 +71,8 @@ public class BrushBall extends Brush {
         // Then process solid blocks
         for (BlockState state : states) {
             Block block = state.getBlock();
-            if (block.getType().isSolid()) {
+            if (block.getType().isSolid()
+                    && (brushProperties.Mask.isEmpty() || brushProperties.Mask.contains(block.getType()))) {
                 block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
             }
         }

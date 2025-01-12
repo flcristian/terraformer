@@ -57,6 +57,10 @@ commands:
       materialmodes:
         description: Show all material modes
         usage: /terraform materialmodes
+      mask:
+        description: Set terraforming mask blocks
+        usage: /terraform mask <mask>
+        aliases: [mk]
 
 permissions:
   terraformer.use:
