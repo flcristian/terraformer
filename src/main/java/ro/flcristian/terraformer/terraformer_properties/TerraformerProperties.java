@@ -1,6 +1,7 @@
 package ro.flcristian.terraformer.terraformer_properties;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -34,17 +35,19 @@ public class TerraformerProperties {
     }
 
     public TerraformerProperties(boolean isTerraformer, BrushType brushType, int brushSize, int brushDepth,
-            Map<Material, Integer> materials, MaterialMode materialsMode, Stack<BrushProperties> brushHistory,
+            Map<Material, Integer> materials, MaterialMode materialsMode, List<Material> mask,
+            Stack<BrushProperties> brushHistory,
             Stack<MaterialHistory> materialHistory, BrushBlockHistory history, Palette palette) {
         IsTerraformer = isTerraformer;
-        Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode);
+        Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode, mask);
         BrushHistory = brushHistory;
         MaterialHistory = materialHistory;
         History = history;
         Palette = palette;
     }
 
-    public TerraformerProperties(boolean isTerraformer, BrushProperties brush, Stack<BrushProperties> brushHistory,
+    public TerraformerProperties(boolean isTerraformer, BrushProperties brush, List<Material> mask,
+            Stack<BrushProperties> brushHistory,
             Stack<MaterialHistory> materialHistory, BrushBlockHistory history, Palette palette) {
         IsTerraformer = isTerraformer;
         Brush = brush;
@@ -92,7 +95,7 @@ public class TerraformerProperties {
     public void applyBrushHistory(BrushProperties brushProperties) {
         BrushProperties toApply = brushProperties.clone();
         Brush = new BrushProperties(toApply.Type, toApply.BrushSize, toApply.BrushDepth, Brush.Materials,
-                Brush.Mode);
+                Brush.Mode, Brush.Mask);
     }
 
     public void applyMaterialHistory(MaterialHistory materialHistory) {

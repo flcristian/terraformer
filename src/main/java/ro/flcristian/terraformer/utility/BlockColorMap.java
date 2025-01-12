@@ -27,7 +27,6 @@ public class BlockColorMap {
         BlockColors.put(Material.WARPED_STEM, new Color(58, 59, 78));
         BlockColors.put(Material.WARPED_PLANKS, new Color(43, 105, 99));
         BlockColors.put(Material.WARPED_NYLIUM, new Color(98, 38, 38));
-        BlockColors.put(Material.VERDANT_FROGLIGHT, new Color(217, 238, 215));
         BlockColors.put(Material.TUFF, new Color(108, 110, 103));
         BlockColors.put(Material.TUBE_CORAL_BLOCK, new Color(49, 88, 207));
         BlockColors.put(Material.TNT, new Color(180, 93, 90));
@@ -54,7 +53,6 @@ public class BlockColorMap {
         BlockColors.put(Material.SMOOTH_STONE, new Color(161, 161, 161));
         BlockColors.put(Material.SMOOTH_BASALT, new Color(72, 72, 78));
         BlockColors.put(Material.SHROOMLIGHT, new Color(242, 151, 75));
-        BlockColors.put(Material.SEA_LANTERN, new Color(182, 207, 198));
         BlockColors.put(Material.SCULK, new Color(13, 18, 23));
         BlockColors.put(Material.SANDSTONE, new Color(216, 203, 156));
         BlockColors.put(Material.ROOTED_DIRT, new Color(144, 103, 76));
@@ -64,7 +62,6 @@ public class BlockColorMap {
         BlockColors.put(Material.RED_TERRACOTTA, new Color(143, 61, 47));
         BlockColors.put(Material.RED_SANDSTONE, new Color(187, 99, 29));
         BlockColors.put(Material.RED_NETHER_BRICKS, new Color(70, 7, 9));
-        BlockColors.put(Material.RED_MUSHROOM_BLOCK, new Color(201, 48, 46));
         BlockColors.put(Material.RED_GLAZED_TERRACOTTA, new Color(182, 59, 52));
         BlockColors.put(Material.RESIN_BLOCK, new Color(176, 74, 25));
         BlockColors.put(Material.RESIN_BRICKS, new Color(164, 59, 24));
@@ -98,7 +95,6 @@ public class BlockColorMap {
         BlockColors.put(Material.PINK_TERRACOTTA, new Color(162, 78, 79));
         BlockColors.put(Material.PINK_GLAZED_TERRACOTTA, new Color(237, 156, 182));
         BlockColors.put(Material.PINK_CONCRETE, new Color(214, 101, 143));
-        BlockColors.put(Material.PEARLESCENT_FROGLIGHT, new Color(239, 230, 232));
         BlockColors.put(Material.PACKED_MUD, new Color(143, 107, 80));
         BlockColors.put(Material.PACKED_ICE, new Color(141, 180, 251));
         BlockColors.put(Material.OXIDIZED_CUT_COPPER, new Color(80, 154, 127));
@@ -107,7 +103,6 @@ public class BlockColorMap {
         BlockColors.put(Material.ORANGE_TERRACOTTA, new Color(162, 84, 38));
         BlockColors.put(Material.ORANGE_GLAZED_TERRACOTTA, new Color(162, 146, 87));
         BlockColors.put(Material.ORANGE_CONCRETE, new Color(224, 97, 1));
-        BlockColors.put(Material.OCHRE_FROGLIGHT, new Color(247, 238, 189));
         BlockColors.put(Material.OBSIDIAN, new Color(15, 11, 25));
         BlockColors.put(Material.OAK_PLANKS, new Color(162, 131, 79));
         BlockColors.put(Material.OAK_LOG, new Color(109, 85, 51));
@@ -129,7 +124,6 @@ public class BlockColorMap {
         BlockColors.put(Material.MELON, new Color(114, 146, 30));
         BlockColors.put(Material.MANGROVE_PLANKS, new Color(118, 54, 49));
         BlockColors.put(Material.MANGROVE_LOG, new Color(84, 67, 41));
-        BlockColors.put(Material.MAGMA_BLOCK, new Color(141, 62, 31));
         BlockColors.put(Material.MAGENTA_WOOL, new Color(189, 69, 180));
         BlockColors.put(Material.MAGENTA_TERRACOTTA, new Color(150, 88, 109));
         BlockColors.put(Material.MAGENTA_GLAZED_TERRACOTTA, new Color(207, 100, 190));
@@ -166,7 +160,6 @@ public class BlockColorMap {
         BlockColors.put(Material.GRANITE, new Color(149, 103, 86));
         BlockColors.put(Material.GOLD_ORE, new Color(147, 135, 105));
         BlockColors.put(Material.GOLD_BLOCK, new Color(248, 211, 62));
-        BlockColors.put(Material.GLOWSTONE, new Color(173, 132, 85));
         BlockColors.put(Material.GILDED_BLACKSTONE, new Color(56, 43, 39));
         BlockColors.put(Material.FIRE_CORAL_BLOCK, new Color(164, 35, 47));
         BlockColors.put(Material.EXPOSED_CUT_COPPER, new Color(155, 122, 101));

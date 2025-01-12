@@ -90,9 +90,27 @@ public enum BrushType {
 
         ItemMeta meta = item.getItemMeta();
         meta.customName(brushType.getName());
+
+        boolean hasMaterialSettings = List
+                .of(BrushType.BALL, BrushType.PAINT_TOP, BrushType.PAINT_BOTTOM, BrushType.PAINT_WALL,
+                        BrushType.PAINT_SURFACE)
+                .contains(brushType);
+        boolean hasMaskSettings = List
+                .of(BrushType.BALL, BrushType.ERASE, BrushType.RISE, BrushType.DIG, BrushType.PAINT_TOP,
+                        BrushType.PAINT_BOTTOM, BrushType.PAINT_WALL, BrushType.PAINT_SURFACE)
+                .contains(brushType);
         meta.lore(List.of(
                 Component.text("Set the brush type to ").color(NamedTextColor.LIGHT_PURPLE)
                         .append(brushType.getName().color(NamedTextColor.LIGHT_PURPLE)),
+                Component.text("Materials ").color(NamedTextColor.LIGHT_PURPLE)
+                        .append(Component
+                                .text(hasMaterialSettings ? "affect this brush"
+                                        : "do not affect this brush")
+                                .color(hasMaterialSettings ? NamedTextColor.GREEN : NamedTextColor.RED)),
+                Component.text("Mask ").color(NamedTextColor.LIGHT_PURPLE)
+                        .append(Component
+                                .text(hasMaskSettings ? "affects this brush" : "do not affect this brush")
+                                .color(hasMaskSettings ? NamedTextColor.GREEN : NamedTextColor.RED)),
                 Component.text("Click to select").color(NamedTextColor.LIGHT_PURPLE)));
 
         switch (brushType) {

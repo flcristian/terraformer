@@ -71,6 +71,10 @@ public class BrushSettings implements InventoryHolder {
         paintMeta.lore(List.of(
                 Component.text("Set the brush type to ").color(NamedTextColor.LIGHT_PURPLE)
                         .append(paintName.color(NamedTextColor.LIGHT_PURPLE)),
+                Component.text("Materials ").color(NamedTextColor.LIGHT_PURPLE)
+                        .append(Component.text("affect this brush").color(NamedTextColor.GREEN)),
+                Component.text("Mask ").color(NamedTextColor.LIGHT_PURPLE)
+                        .append(Component.text("affects this brush").color(NamedTextColor.GREEN)),
                 Component.text("Click to select").color(NamedTextColor.LIGHT_PURPLE)));
         paint.setItemMeta(paintMeta);
         brushes.add(paint);
