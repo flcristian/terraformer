@@ -118,8 +118,15 @@ public class GradientMode implements Mode {
         }
 
         // Check Cache
-        int size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
-        int totalHeight = properties.BrushDepth;
+        int size;
+        int totalHeight;
+        if (properties.Type == BrushType.BALL) {
+            size = properties.BrushSize;
+            totalHeight = properties.BrushSize * 2 - 1;
+        } else {
+            size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
+            totalHeight = properties.BrushDepth;
+        }
 
         GradientCacheKey cacheKey = new GradientCacheKey(properties.Materials, totalHeight);
         List<Material> gradient;

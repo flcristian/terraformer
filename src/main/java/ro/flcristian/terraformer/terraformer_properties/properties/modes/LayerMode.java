@@ -34,8 +34,15 @@ public class LayerMode implements Mode {
             return Material.STONE;
         }
 
-        int size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
-        double layerHeight = (double) properties.BrushDepth / materials.size();
+        double layerHeight;
+        int size;
+        if (properties.Type == BrushType.BALL) {
+            size = properties.BrushSize;
+            layerHeight = (double) (properties.BrushSize * 2 - 1) / materials.size();
+        } else {
+            size = properties.BrushDepth % 2 == 1 ? properties.BrushDepth / 2 : properties.BrushDepth / 2 + 1;
+            layerHeight = (double) properties.BrushDepth / materials.size();
+        }
 
         int relativeY;
         if (properties.Type == BrushType.PAINT_TOP || properties.Type == BrushType.PAINT_SURFACE) {
