@@ -28,7 +28,8 @@ public class TerraformTabCompleter implements TabCompleter {
 
         if (args.length == 1) {
             completions.addAll(Arrays.asList("help", "start", "stop", "undo", "redo",
-                    "brush", "brushes", "size", "depth", "materials", "materialmode", "materialmodes", "mask"));
+                    "brush", "brushes", "size", "depth", "materials", "materialmode", "materialmodes", "mask",
+                    "randomheight"));
         } else if (args.length == 2) {
             switch (args[0].toLowerCase()) {
                 case "brush", "b" -> {

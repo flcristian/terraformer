@@ -20,6 +20,7 @@ public class BrushProperties implements Cloneable {
     public Map<Material, Integer> Materials;
     public MaterialMode Mode;
     public List<Material> Mask;
+    public boolean RandomHeightFoliage;
 
     public BrushProperties() {
         Type = BrushType.BALL;
@@ -29,16 +30,18 @@ public class BrushProperties implements Cloneable {
         Materials.put(Material.STONE, 100);
         Mode = MaterialMode.RANDOM;
         Mask = new ArrayList<>();
+        RandomHeightFoliage = false;
     }
 
     public BrushProperties(BrushType brushType, int brushSize, int brushDepth, Map<Material, Integer> materials,
-            MaterialMode materialsMode, List<Material> mask) {
+            MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage) {
         Type = brushType;
         BrushSize = brushSize;
         BrushDepth = brushDepth;
         Materials = new LinkedHashMap<>(materials);
         Mode = materialsMode;
         Mask = mask;
+        RandomHeightFoliage = false;
     }
 
     public void applyBrush(Terraformer plugin, Player player, Location targetLocation) {
@@ -52,7 +55,7 @@ public class BrushProperties implements Cloneable {
     @Override
     public BrushProperties clone() {
         return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode,
-                new ArrayList<>(Mask));
+                new ArrayList<>(Mask), RandomHeightFoliage);
     }
 
     @Override

@@ -139,10 +139,15 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.INVALID_BRUSH_TYPE);
                     return true;
                 }
+
+                BrushType oldBrushType = properties.Brush.Type;
                 properties.Brush.Type = brushType;
-                if (brushType == BrushType.FOLIAGE) {
+                if (oldBrushType != BrushType.FOLIAGE && brushType == BrushType.FOLIAGE) {
                     properties.Brush.setMode(MaterialMode.RANDOM);
+                } else if (oldBrushType == BrushType.FOLIAGE && brushType != BrushType.FOLIAGE) {
+                    properties.Brush.setMode(properties.Brush.Mode);
                 }
+
                 player.sendMessage(Messages.CHANGED_BRUSH(brushType));
                 return true;
 
@@ -268,6 +273,7 @@ class TerraformCommand implements CommandExecutor {
                         materialsString.append(args[i]);
                     }
                     properties.Brush.Materials = MaterialObjectsParser.parseMaterialPercentages(
+                            properties.Brush.Type,
                             materialsString.toString(),
                             properties.Brush.Mode);
                     player.sendMessage(Component.text("Materials updated successfully!").color(NamedTextColor.GREEN));
@@ -350,7 +356,19 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Component.text(e.getMessage()).color(NamedTextColor.RED));
                 }
                 return true;
+            case "randomheight", "rh":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
 
+                properties.Brush.RandomHeightFoliage = !properties.Brush.RandomHeightFoliage;
+                player.sendMessage(Messages.CHANGED_RANDOM_HEIGHT(properties.Brush.RandomHeightFoliage));
+                return true;
             default:
                 player.sendMessage(Messages.UNKNOWN_COMMAND);
                 return true;
@@ -421,6 +439,11 @@ class TerraformCommand implements CommandExecutor {
                 .append(Component.text("- Set terraforming mask blocks", NamedTextColor.WHITE)).appendNewline()
                 .append(Component.text("Alias: ", NamedTextColor.WHITE))
                 .append(Component.text("/tf mk <mask>", NamedTextColor.YELLOW)));
+        commands.put("randomheight", Component.text("/terraform randomheight ", NamedTextColor.YELLOW)
+                .append(Component.text("- Toggle random height for foliage brushes", NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf rh", NamedTextColor.YELLOW)));
 
         Map<Integer, Component[]> pages = new LinkedHashMap<>();
         pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),

@@ -36,10 +36,11 @@ public class TerraformerProperties {
 
     public TerraformerProperties(boolean isTerraformer, BrushType brushType, int brushSize, int brushDepth,
             Map<Material, Integer> materials, MaterialMode materialsMode, List<Material> mask,
-            Stack<BrushProperties> brushHistory,
-            Stack<MaterialHistory> materialHistory, BrushBlockHistory history, Palette palette) {
+            Stack<BrushProperties> brushHistory, Stack<MaterialHistory> materialHistory, BrushBlockHistory history,
+            Palette palette, boolean randomHeightFoliage) {
         IsTerraformer = isTerraformer;
-        Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode, mask);
+        Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode, mask,
+                randomHeightFoliage);
         BrushHistory = brushHistory;
         MaterialHistory = materialHistory;
         History = history;
@@ -95,7 +96,7 @@ public class TerraformerProperties {
     public void applyBrushHistory(BrushProperties brushProperties) {
         BrushProperties toApply = brushProperties.clone();
         Brush = new BrushProperties(toApply.Type, toApply.BrushSize, toApply.BrushDepth, Brush.Materials,
-                Brush.Mode, Brush.Mask);
+                Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage);
     }
 
     public void applyMaterialHistory(MaterialHistory materialHistory) {

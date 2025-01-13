@@ -7,13 +7,15 @@ import java.util.Map;
 
 import org.bukkit.Material;
 
+import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 
 public class MaterialObjectsParser {
     private MaterialObjectsParser() {
     }
 
-    public static Map<Material, Integer> parseMaterialPercentages(String materials, MaterialMode materialMode) {
+    public static Map<Material, Integer> parseMaterialPercentages(BrushType brushType, String materials,
+            MaterialMode materialMode) {
         Map<Material, Integer> materialMap = new LinkedHashMap<>();
 
         // Check if using percentage format
@@ -56,7 +58,7 @@ public class MaterialObjectsParser {
                         throw new IllegalArgumentException("Invalid material: " + materialNames[0]);
                     }
 
-                    if (!material.isSolid() && material != Material.WATER && material != Material.LAVA) {
+                    if (!isValidMaterial(brushType, material)) {
                         throw new IllegalArgumentException("Material must be solid: " + materialNames[0]);
                     }
                     materialMap.put(material, 50);
@@ -68,7 +70,7 @@ public class MaterialObjectsParser {
                             throw new IllegalArgumentException("Invalid material: " + materialNames[i]);
                         }
 
-                        if (!material.isSolid() && material != Material.WATER && material != Material.LAVA) {
+                        if (!isValidMaterial(brushType, material)) {
                             throw new IllegalArgumentException("Material must be solid: " + materialNames[i]);
                         }
 
@@ -87,7 +89,7 @@ public class MaterialObjectsParser {
                         throw new IllegalArgumentException("Invalid material: " + materialName);
                     }
 
-                    if (!material.isSolid() && material != Material.WATER && material != Material.LAVA) {
+                    if (!isValidMaterial(brushType, material)) {
                         throw new IllegalArgumentException("Material must be solid: " + materialName);
                     }
 
@@ -115,5 +117,22 @@ public class MaterialObjectsParser {
         }
 
         return maskMaterials;
+    }
+
+    public static boolean isValidMaterial(BrushType brushType, Material material) {
+        if (!material.isBlock())
+            return false;
+
+        if (brushType == BrushType.FOLIAGE
+                && !material.isSolid() && material != Material.WATER && material != Material.LAVA) {
+            return true;
+        }
+
+        if (brushType != BrushType.FOLIAGE
+                && (material.isSolid() || material == Material.WATER || material == Material.LAVA)) {
+            return true;
+        }
+
+        return false;
     }
 }

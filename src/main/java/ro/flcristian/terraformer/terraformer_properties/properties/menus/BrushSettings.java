@@ -23,6 +23,7 @@ import ro.flcristian.terraformer.constants.Messages;
 import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
+import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 
 public class BrushSettings implements InventoryHolder {
     private static final Component paintName = Component.text("Paint").color(NamedTextColor.BLUE);
@@ -213,7 +214,13 @@ public class BrushSettings implements InventoryHolder {
 
             for (BrushType brush : brushTypes) {
                 if (meta.customName().equals(brush.getName())) {
+                    BrushType oldBrushType = properties.Brush.Type;
                     properties.Brush.Type = brush;
+                    if (oldBrushType != BrushType.FOLIAGE && brush == BrushType.FOLIAGE) {
+                        properties.Brush.setMode(MaterialMode.RANDOM);
+                    } else if (oldBrushType == BrushType.FOLIAGE && brush != BrushType.FOLIAGE) {
+                        properties.Brush.setMode(properties.Brush.Mode);
+                    }
                     player.sendMessage(Messages.CHANGED_BRUSH(brush));
                     properties.Brush.Type.openBrushSettings(plugin, player, properties);
                     return;

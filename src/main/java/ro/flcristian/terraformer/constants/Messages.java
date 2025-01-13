@@ -100,6 +100,12 @@ public final class Messages {
                                 .append(mode.getName());
         }
 
+        public static Component CHANGED_RANDOM_HEIGHT(boolean randomHeightFoliage) {
+                return Component.text("Changed random height foliage to ")
+                                .append(Component.text(randomHeightFoliage ? "enabled" : "disabled").color(
+                                                randomHeightFoliage ? NamedTextColor.GREEN : NamedTextColor.RED));
+        }
+
         public static final Component APPLIED_BRUSH_HISTORY = Component.text("Applied brush history");
         public static final Component APPLIED_MATERIAL_HISTORY = Component.text("Applied material history");
 
