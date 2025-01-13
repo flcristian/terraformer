@@ -102,4 +102,9 @@ public final class Messages {
 
         public static final Component APPLIED_BRUSH_HISTORY = Component.text("Applied brush history");
         public static final Component APPLIED_MATERIAL_HISTORY = Component.text("Applied material history");
+
+        public static final Component CLEARED_MATERIALS = Component.text("Materials reset!")
+                        .color(NamedTextColor.GREEN);
+        public static final Component CLEARED_MASK = Component.text("Mask materials cleared!")
+                        .color(NamedTextColor.GREEN);
 }

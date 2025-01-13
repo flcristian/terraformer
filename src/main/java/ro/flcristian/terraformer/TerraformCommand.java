@@ -313,6 +313,24 @@ class TerraformCommand implements CommandExecutor {
                 }
 
                 if (args.length < 2) {
+                    properties.Brush.Materials = new LinkedHashMap<>();
+                    switch (properties.Brush.Mode) {
+                        case RANDOM:
+                            properties.Brush.Materials.put(Material.STONE, 100);
+                            break;
+                        case LAYER:
+                            properties.Brush.Materials.put(Material.STONE, 100);
+                            break;
+                        case GRADIENT:
+                            properties.Brush.Materials.put(Material.WHITE_CONCRETE, 0);
+                            properties.Brush.Materials.put(Material.BLACK_CONCRETE, 100);
+                            break;
+                    }
+                    player.sendMessage(Messages.CLEARED_MATERIALS);
+                    return true;
+                }
+
+                if (args.length > 2) {
                     player.sendMessage(Messages.USAGE_MATERIALS);
                     return true;
                 }
@@ -398,8 +416,7 @@ class TerraformCommand implements CommandExecutor {
 
                 if (args.length < 2) {
                     properties.Brush.Mask = new ArrayList<>();
-                    player.sendMessage(Component.text("Mask materials cleared!")
-                            .color(NamedTextColor.GREEN));
+                    player.sendMessage(Messages.CLEARED_MASK);
                     return true;
                 }
 
