@@ -19,8 +19,11 @@ public class BrushBall extends Brush {
             { 0, 0, 1 }, { 0, 0, -1 }
     };
 
-    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+    public static boolean brush(Terraformer plugin, Player player, BrushProperties brushProperties,
             Location targetLocation, boolean isRedo) {
+        if (checkMaterialPercentages(brushProperties, player))
+            return false;
+
         Stack<BlockState> states = new Stack<>();
         int brushSize = brushProperties.BrushSize;
 
@@ -76,5 +79,7 @@ public class BrushBall extends Brush {
                 block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
             }
         }
+
+        return true;
     }
 }

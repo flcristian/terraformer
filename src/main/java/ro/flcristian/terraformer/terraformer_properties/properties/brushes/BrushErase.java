@@ -20,7 +20,7 @@ public class BrushErase extends Brush {
             { 0, 0, 1 }, { 0, 0, -1 }
     };
 
-    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+    public static boolean brush(Terraformer plugin, Player player, BrushProperties brushProperties,
             Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         int brushSize = brushProperties.BrushSize;
@@ -76,5 +76,7 @@ public class BrushErase extends Brush {
                 block.setType(Material.AIR);
             }
         }
+
+        return true;
     }
 }

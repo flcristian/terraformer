@@ -1,7 +1,6 @@
 package ro.flcristian.terraformer.terraformer_properties.properties.menus;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +17,7 @@ import ro.flcristian.terraformer.Terraformer;
 import ro.flcristian.terraformer.constants.Messages;
 import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
 import ro.flcristian.terraformer.terraformer_properties.material_history.MaterialHistory;
+import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import ro.flcristian.terraformer.utility.MaterialNameFormatter;
 import ro.flcristian.terraformer.utility.SkullTexturesApplier;
@@ -83,8 +83,6 @@ public class MaterialSettings implements InventoryHolder {
     }
 
     private void setUpMenu(TerraformerProperties properties) {
-        // Material Mode Selection
-
         ItemStack empty = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta emptyMeta = empty.getItemMeta();
         emptyMeta.customName(terraformer);
@@ -309,26 +307,14 @@ public class MaterialSettings implements InventoryHolder {
 
             // Material Mode Selection
 
-            MaterialMode[] materialModes = MaterialMode.values();
+            MaterialMode[] materialModes = properties.Brush.Type == BrushType.FOLIAGE
+                    ? new MaterialMode[] { MaterialMode.RANDOM }
+                    : MaterialMode.values();
 
             for (int i = 0; i < materialModes.length; i++) {
                 if (meta.customName().equals(materialModes[i].getName())) {
-                    properties.Brush.Mode = materialModes[(i + 1) % materialModes.length];
+                    properties.Brush.setMode(materialModes[(i + 1) % materialModes.length]);
                     player.sendMessage(Messages.CHANGED_MATERIAL_MODE(properties.Brush.Mode));
-
-                    properties.Brush.Materials = new LinkedHashMap<>();
-                    switch (properties.Brush.Mode) {
-                        case RANDOM:
-                            properties.Brush.Materials.put(Material.STONE, 100);
-                            break;
-                        case LAYER:
-                            properties.Brush.Materials.put(Material.STONE, 100);
-                            break;
-                        case GRADIENT:
-                            properties.Brush.Materials.put(Material.WHITE_CONCRETE, 0);
-                            properties.Brush.Materials.put(Material.BLACK_CONCRETE, 100);
-                            break;
-                    }
 
                     properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                     return;
@@ -443,19 +429,7 @@ public class MaterialSettings implements InventoryHolder {
             }
 
             if (meta.customName().equals(materialResetAll)) {
-                properties.Brush.Materials = new LinkedHashMap<>();
-                switch (properties.Brush.Mode) {
-                    case RANDOM:
-                        properties.Brush.Materials.put(Material.STONE, 100);
-                        break;
-                    case LAYER:
-                        properties.Brush.Materials.put(Material.STONE, 100);
-                        break;
-                    case GRADIENT:
-                        properties.Brush.Materials.put(Material.WHITE_CONCRETE, 0);
-                        properties.Brush.Materials.put(Material.BLACK_CONCRETE, 100);
-                        break;
-                }
+                properties.Brush.setMode(properties.Brush.Mode);
                 properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                 return;
             }

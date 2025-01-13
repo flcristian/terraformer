@@ -16,8 +16,11 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHisto
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushPaint extends Brush {
-    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+    public static boolean brush(Terraformer plugin, Player player, BrushProperties brushProperties,
             Location targetLocation, boolean isRedo) {
+        if (checkMaterialPercentages(brushProperties, player))
+            return false;
+
         Stack<BlockState> states = new Stack<>();
         int brushSize = brushProperties.BrushSize;
         int brushDepth = brushProperties.BrushDepth;
@@ -89,7 +92,7 @@ public class BrushPaint extends Brush {
                             }
                             break;
                         default:
-                            return;
+                            return false;
                     }
                 }
             }
@@ -134,5 +137,7 @@ public class BrushPaint extends Brush {
                 }
             }
         }
+
+        return true;
     }
 }

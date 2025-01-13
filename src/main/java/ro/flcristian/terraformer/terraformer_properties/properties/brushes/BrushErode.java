@@ -20,7 +20,7 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHisto
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushErode extends Brush {
-    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+    public static boolean brush(Terraformer plugin, Player player, BrushProperties brushProperties,
             Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         Map<Location, BlockData> erodedBlocks = new HashMap<>();
@@ -95,5 +95,7 @@ public class BrushErode extends Brush {
         for (Map.Entry<Location, BlockData> entry : erodedBlocks.entrySet()) {
             entry.getKey().getBlock().setBlockData(entry.getValue());
         }
+
+        return true;
     }
 }

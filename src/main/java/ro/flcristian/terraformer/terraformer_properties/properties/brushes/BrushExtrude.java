@@ -18,7 +18,7 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHisto
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushExtrude extends Brush {
-    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+    public static boolean brush(Terraformer plugin, Player player, BrushProperties brushProperties,
             Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         HashMap<Location, BlockData> extrudeedBlocks = new HashMap<>();
@@ -80,6 +80,8 @@ public class BrushExtrude extends Brush {
         for (Map.Entry<Location, BlockData> entry : extrudeedBlocks.entrySet()) {
             entry.getKey().getBlock().setBlockData(entry.getValue());
         }
+
+        return true;
     }
 
     private static boolean shouldExtrude(BlockData current, List<BlockData> neighbors) {

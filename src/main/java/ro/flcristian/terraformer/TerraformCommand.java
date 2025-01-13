@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -141,6 +140,9 @@ class TerraformCommand implements CommandExecutor {
                     return true;
                 }
                 properties.Brush.Type = brushType;
+                if (brushType == BrushType.FOLIAGE) {
+                    properties.Brush.setMode(MaterialMode.RANDOM);
+                }
                 player.sendMessage(Messages.CHANGED_BRUSH(brushType));
                 return true;
 
@@ -250,19 +252,7 @@ class TerraformCommand implements CommandExecutor {
                 }
 
                 if (args.length < 2) {
-                    properties.Brush.Materials = new LinkedHashMap<>();
-                    switch (properties.Brush.Mode) {
-                        case RANDOM:
-                            properties.Brush.Materials.put(Material.STONE, 100);
-                            break;
-                        case LAYER:
-                            properties.Brush.Materials.put(Material.STONE, 100);
-                            break;
-                        case GRADIENT:
-                            properties.Brush.Materials.put(Material.WHITE_CONCRETE, 0);
-                            properties.Brush.Materials.put(Material.BLACK_CONCRETE, 100);
-                            break;
-                    }
+                    properties.Brush.setMode(properties.Brush.Mode);
                     player.sendMessage(Messages.CLEARED_MATERIALS);
                     return true;
                 }
@@ -306,21 +296,7 @@ class TerraformCommand implements CommandExecutor {
                     return true;
                 }
 
-                properties.Brush.Mode = materialMode;
-
-                properties.Brush.Materials = new LinkedHashMap<>();
-                switch (materialMode) {
-                    case RANDOM:
-                        properties.Brush.Materials.put(Material.STONE, 100);
-                        break;
-                    case LAYER:
-                        properties.Brush.Materials.put(Material.STONE, 100);
-                        break;
-                    case GRADIENT:
-                        properties.Brush.Materials.put(Material.WHITE_CONCRETE, 0);
-                        properties.Brush.Materials.put(Material.BLACK_CONCRETE, 100);
-                        break;
-                }
+                properties.Brush.setMode(materialMode);
 
                 player.sendMessage(Messages.CHANGED_MATERIAL_MODE(materialMode));
                 return true;

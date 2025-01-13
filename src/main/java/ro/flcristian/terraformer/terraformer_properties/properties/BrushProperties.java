@@ -66,4 +66,26 @@ public class BrushProperties implements Cloneable {
 
         return Type == other.Type && BrushSize == other.BrushSize && BrushDepth == other.BrushDepth;
     }
+
+    public void setMode(MaterialMode mode) {
+        Mode = mode;
+
+        Materials = new LinkedHashMap<>();
+        switch (Mode) {
+            case RANDOM:
+                if (Type == BrushType.FOLIAGE) {
+                    Materials.put(Material.SHORT_GRASS, 50);
+                } else {
+                    Materials.put(Material.STONE, 100);
+                }
+                break;
+            case LAYER:
+                Materials.put(Material.STONE, 100);
+                break;
+            case GRADIENT:
+                Materials.put(Material.WHITE_CONCRETE, 0);
+                Materials.put(Material.BLACK_CONCRETE, 100);
+                break;
+        }
+    }
 }

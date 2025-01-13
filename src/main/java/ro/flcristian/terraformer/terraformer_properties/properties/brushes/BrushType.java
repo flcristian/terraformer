@@ -1,8 +1,6 @@
 package ro.flcristian.terraformer.terraformer_properties.properties.brushes;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,13 +13,12 @@ import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.menus.BrushSettings;
 import ro.flcristian.terraformer.terraformer_properties.properties.menus.MaterialSettings;
-import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import ro.flcristian.terraformer.utility.SkullTexturesApplier;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum BrushType {
-    BALL, ERASE, SMOOTH, ERODE, EXTRUDE, PAINT_TOP, PAINT_SURFACE, PAINT_WALL, PAINT_BOTTOM, RISE, DIG;
+    BALL, ERASE, SMOOTH, ERODE, EXTRUDE, PAINT_TOP, PAINT_SURFACE, PAINT_WALL, PAINT_BOTTOM, RISE, DIG, FOLIAGE;
 
     public Component getName() {
         return switch (this) {
@@ -36,6 +33,7 @@ public enum BrushType {
             case PAINT_BOTTOM -> Component.text("Paint Bottom").color(NamedTextColor.BLUE);
             case RISE -> Component.text("Rise").color(NamedTextColor.DARK_PURPLE);
             case DIG -> Component.text("Dig").color(NamedTextColor.DARK_RED);
+            case FOLIAGE -> Component.text("Foliage").color(NamedTextColor.DARK_GREEN);
         };
     }
 
@@ -52,6 +50,7 @@ public enum BrushType {
             case "paintbottom" -> PAINT_BOTTOM;
             case "rise" -> RISE;
             case "dig" -> DIG;
+            case "foliage" -> FOLIAGE;
             default -> null;
         };
     }
@@ -70,6 +69,7 @@ public enum BrushType {
             case PAINT_BOTTOM -> "paintbottom";
             case RISE -> "rise";
             case DIG -> "dig";
+            case FOLIAGE -> "foliage";
         };
     }
 
@@ -86,6 +86,7 @@ public enum BrushType {
             case PAINT_BOTTOM -> new ItemStack(Material.PLAYER_HEAD);
             case RISE -> new ItemStack(Material.GUNPOWDER);
             case DIG -> new ItemStack(Material.FIRE_CHARGE);
+            case FOLIAGE -> new ItemStack(Material.OAK_LEAVES);
         };
 
         ItemMeta meta = item.getItemMeta();
@@ -140,20 +141,9 @@ public enum BrushType {
 
     public static void applyBrush(Terraformer plugin, Player player, BrushProperties properties,
             Location targetLocation, boolean isRedo) {
-
-        List<BrushType> materialTypes = new ArrayList<>(
-                List.of(BALL, PAINT_BOTTOM, PAINT_SURFACE, PAINT_TOP, PAINT_WALL));
-        if (materialTypes.contains(properties.Type) && properties.Mode != MaterialMode.GRADIENT
-                && IntStream.of(properties.Materials.values().stream().mapToInt(i -> i).toArray()).sum() != 100) {
-            player.sendMessage(
-                    Component.text("Material percentages must add up to 100%").color(NamedTextColor.RED));
-            return;
-        }
-
         TerraformerProperties terraformerProperties = plugin.getTerraformer(player);
-        terraformerProperties.addBrushHistory(properties.clone());
 
-        switch (properties.Type) {
+        boolean applied = switch (properties.Type) {
             case BALL -> BrushBall.brush(plugin, player, properties, targetLocation, isRedo);
             case ERASE -> BrushErase.brush(plugin, player, properties, targetLocation, isRedo);
             case SMOOTH -> BrushSmooth.brush(plugin, player, properties, targetLocation, isRedo);
@@ -165,6 +155,11 @@ public enum BrushType {
             case PAINT_BOTTOM -> BrushPaint.brush(plugin, player, properties, targetLocation, isRedo);
             case RISE -> BrushRise.brush(plugin, player, properties, targetLocation, isRedo);
             case DIG -> BrushDig.brush(plugin, player, properties, targetLocation, isRedo);
+            case FOLIAGE -> BrushFoliage.brush(plugin, player, properties, targetLocation, isRedo);
+        };
+
+        if (applied) {
+            terraformerProperties.addBrushHistory(properties.clone());
         }
     }
 
@@ -181,6 +176,7 @@ public enum BrushType {
             case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true);
             case RISE -> new BrushSettings(plugin, properties, true);
             case DIG -> new BrushSettings(plugin, properties, true);
+            case FOLIAGE -> new BrushSettings(plugin, properties, false);
         };
 
         player.openInventory(settings.getInventory());
@@ -199,6 +195,7 @@ public enum BrushType {
             case PAINT_BOTTOM -> new MaterialSettings(plugin, properties, true);
             case RISE -> new MaterialSettings(plugin, properties, false);
             case DIG -> new MaterialSettings(plugin, properties, false);
+            case FOLIAGE -> new MaterialSettings(plugin, properties, true);
         };
 
         player.openInventory(settings.getInventory());
@@ -218,6 +215,7 @@ public enum BrushType {
             case PAINT_BOTTOM -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
             case RISE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
             case DIG -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
+            case FOLIAGE -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
         };
 
         player.openInventory(settings.getInventory());

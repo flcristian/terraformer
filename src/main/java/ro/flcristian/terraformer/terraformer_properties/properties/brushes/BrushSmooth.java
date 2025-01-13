@@ -20,7 +20,7 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHisto
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushSmooth extends Brush {
-    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+    public static boolean brush(Terraformer plugin, Player player, BrushProperties brushProperties,
             Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         int brushSize = brushProperties.BrushSize;
@@ -108,6 +108,8 @@ public class BrushSmooth extends Brush {
         for (Block block : allBlocks) {
             smoothBlock(block);
         }
+
+        return true;
     }
 
     private static void erodeBlock(Block centerBlock) {

@@ -16,7 +16,7 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHisto
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 
 public class BrushRise extends Brush {
-    public static void brush(Terraformer plugin, Player player, BrushProperties brushProperties,
+    public static boolean brush(Terraformer plugin, Player player, BrushProperties brushProperties,
             Location targetLocation, boolean isRedo) {
         Stack<BlockState> states = new Stack<>();
         Map<Location, Material> changes = new HashMap<>();
@@ -61,6 +61,8 @@ public class BrushRise extends Brush {
         for (Map.Entry<Location, Material> entry : changes.entrySet()) {
             entry.getKey().getBlock().setType(entry.getValue());
         }
+
+        return true;
     }
 
     private static Location findSurface(Location location) {
