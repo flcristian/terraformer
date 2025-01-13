@@ -16,9 +16,6 @@ commands:
       help:
         description: Show help information for terraform command
         usage: /terraform help [page]
-      tutorial:
-        description: Show tutorial for Terraformer
-        usage: /terraform tutorial
       start:
         description: Start terraforming mode
         usage: /terraform start

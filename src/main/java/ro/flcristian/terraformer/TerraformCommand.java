@@ -1,10 +1,7 @@
 package ro.flcristian.terraformer;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -15,9 +12,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.BookMeta.BookMetaBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import ro.flcristian.terraformer.constants.Messages;
@@ -63,63 +57,6 @@ class TerraformCommand implements CommandExecutor {
                 page = Math.min(page, 4);
 
                 showHelpInfo(player, page);
-                return true;
-
-            case "tutorial", "tut":
-                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-                BookMeta bookMeta = (BookMeta) book.getItemMeta();
-                bookMeta.setAuthor("Author");
-                bookMeta.setTitle("Title");
-                BookMetaBuilder bookMetaBuilder = bookMeta.toBuilder();
-                bookMetaBuilder.author(Component.text("flcristian").color(NamedTextColor.DARK_RED));
-                bookMetaBuilder.title(
-                        Component.text("Terraformer").color(NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD));
-
-                Component page0 = Component.text("Welcome to Terraformer!").color(NamedTextColor.DARK_RED)
-                        .appendNewline().appendNewline()
-                        .append(Component.text("This plugin allows you to terraform the world around you.")
-                                .color(NamedTextColor.RED))
-                        .appendNewline().appendNewline()
-                        .append(Component.text("GitHub").color(NamedTextColor.BLACK)
-                                .decorate(TextDecoration.UNDERLINED)
-                                .clickEvent(ClickEvent.openUrl("https://github.com/flcristian/terraformer"))
-                                .hoverEvent(HoverEvent.showText(Component.text("Open GitHub repository"))))
-                        .appendNewline().appendNewline()
-                        .append(Component.text("Modrinth").color(NamedTextColor.DARK_GREEN)
-                                .decorate(TextDecoration.UNDERLINED)
-                                .clickEvent(ClickEvent.openUrl("https://modrinth.com/plugin/terraformer"))
-                                .hoverEvent(HoverEvent.showText(Component.text("Open Modrinth page"))));
-                bookMetaBuilder.addPage(page0);
-
-                Component page1 = Component.empty()
-                        .append(Component.text("Page 1").color(NamedTextColor.BLACK)
-                                .decorate(TextDecoration.UNDERLINED))
-                        .appendNewline().appendNewline()
-                        .append(Component.text("To open ").color(NamedTextColor.BLACK))
-                        .append(Component.text("BRUSH SETTINGS").color(NamedTextColor.DARK_AQUA))
-                        .append(Component.text(", ").color(NamedTextColor.BLACK))
-                        .append(Component.text(" use the ").color(NamedTextColor.BLACK))
-                        .append(Component.text("Open Brush Settings").color(NamedTextColor.DARK_AQUA))
-                        .append(Component.text(" item from your inventory.").color(NamedTextColor.BLACK))
-                        .appendNewline().appendNewline()
-                        .append(Component.text("To open ").color(NamedTextColor.BLACK))
-                        .append(Component.text("MATERIAL SETTINGS").color(NamedTextColor.DARK_RED))
-                        .append(Component.text(", ").color(NamedTextColor.BLACK))
-                        .append(Component.text(" use the ").color(NamedTextColor.BLACK))
-                        .append(Component.text("Open Material Settings").color(NamedTextColor.DARK_RED))
-                        .append(Component.text(" item from your inventory.").color(NamedTextColor.BLACK));
-                bookMetaBuilder.addPage(page1);
-
-                Component page2 = Component.empty()
-                        .append(Component.text("Page 2").color(NamedTextColor.BLACK)
-                                .decorate(TextDecoration.UNDERLINED))
-                        .appendNewline().appendNewline()
-                        .append(Component.text("For more information, use the following command: /terraform help.")
-                                .color(NamedTextColor.BLACK));
-                bookMetaBuilder.addPage(page2);
-
-                book.setItemMeta(bookMetaBuilder.build());
-                player.openBook(book);
                 return true;
 
             case "start":
@@ -472,8 +409,6 @@ class TerraformCommand implements CommandExecutor {
         Map<String, Component> commands = new LinkedHashMap<>();
         commands.put("help", Component.text("/terraform help ", NamedTextColor.YELLOW)
                 .append(Component.text("(page) - Show help information for terraform command", NamedTextColor.WHITE)));
-        commands.put("tutorial", Component.text("/terraform tutorial ", NamedTextColor.YELLOW)
-                .append(Component.text("- Show tutorial for Terraform", NamedTextColor.WHITE)));
         commands.put("start", Component.text("/terraform start ", NamedTextColor.YELLOW)
                 .append(Component.text("- Start terraforming mode", NamedTextColor.WHITE)));
         commands.put("stop", Component.text("/terraform stop ", NamedTextColor.YELLOW)
