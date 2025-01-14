@@ -1,12 +1,17 @@
 # Terraformer - Minecraft World Editing Plugin
 
-I was annoyed of how the current mods work, so I wanted to create an all in one terraforming tool for minecraft builders.
+- _Join the Discord server, to see the current progress on the mod!_ [Discord Server Link]([https://discord.gg/FPPJsk3QJN](https://discord.gg/FPPJsk3QJN))
+
+- **I will come up with videos on how to abuse this plugin as much as you can, the logic each brush has, tutorials and such once I have a version I'm happy with.**
+
+- _I was annoyed of how the current mods work, so I wanted to create an all in one terraforming tool for minecraft builders.
 My focus is on making this tool as easy to use as possible, as well as extremely powerfull and with no limitations.
-I wish to implement a wide range of new features, including customizable brushes, procedural generation and advanced material application tools, so stay updated!
+I wish to implement a wide range of new features, including customizable brushes, procedural generation and advanced material application tools, so stay updated!_
 
 ## Contact
 
 - Questions - Discord: ruskizeu
+            - Or join the Discord server! [Discord Server Link]([https://discord.gg/FPPJsk3QJN](https://discord.gg/FPPJsk3QJN))
 - Issues - [GitHub](https://github.com/flcristian/terraformer/issues)
 
 ## Commands
