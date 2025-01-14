@@ -21,7 +21,6 @@ public class MaterialObjectsParser {
         // Check if using percentage format
         if (materials.contains("%")) {
             // Existing percentage parsing logic
-            int totalPercentage = 0;
             String[] materialEntries = materials.split(",");
             for (String entry : materialEntries) {
                 String[] parts = entry.trim().split("%");
@@ -39,11 +38,6 @@ public class MaterialObjectsParser {
                 }
 
                 materialMap.put(material, percentage);
-                totalPercentage += percentage;
-            }
-
-            if (totalPercentage != 100 && materialMode != MaterialMode.GRADIENT) {
-                throw new IllegalArgumentException("Material percentages must add up to 100%");
             }
         } else {
             // Equal distribution logic
@@ -54,24 +48,17 @@ public class MaterialObjectsParser {
 
                 if (numMaterials == 1) {
                     Material material = Material.getMaterial(materialNames[0].trim().toUpperCase());
-                    if (material == null) {
+                    if (material == null || !isValidMaterial(brushType, material)) {
                         throw new IllegalArgumentException("Invalid material: " + materialNames[0]);
                     }
 
-                    if (!isValidMaterial(brushType, material)) {
-                        throw new IllegalArgumentException("Material must be solid: " + materialNames[0]);
-                    }
                     materialMap.put(material, 50);
                 } else {
                     int interval = 100 / (numMaterials - 1);
                     for (int i = 0; i < materialNames.length; i++) {
                         Material material = Material.getMaterial(materialNames[i].trim().toUpperCase());
-                        if (material == null) {
+                        if (material == null || !isValidMaterial(brushType, material)) {
                             throw new IllegalArgumentException("Invalid material: " + materialNames[i]);
-                        }
-
-                        if (!isValidMaterial(brushType, material)) {
-                            throw new IllegalArgumentException("Material must be solid: " + materialNames[i]);
                         }
 
                         int percentage = (i == materialNames.length - 1) ? 100 : i * interval;
@@ -85,12 +72,8 @@ public class MaterialObjectsParser {
 
                 for (String materialName : materialNames) {
                     Material material = Material.getMaterial(materialName.trim().toUpperCase());
-                    if (material == null) {
+                    if (material == null || !isValidMaterial(brushType, material)) {
                         throw new IllegalArgumentException("Invalid material: " + materialName);
-                    }
-
-                    if (!isValidMaterial(brushType, material)) {
-                        throw new IllegalArgumentException("Material must be solid: " + materialName);
                     }
 
                     // Add extra 1% to first few materials if there's a remainder
@@ -123,16 +106,10 @@ public class MaterialObjectsParser {
         if (!material.isBlock())
             return false;
 
-        if (brushType == BrushType.FOLIAGE
-                && !material.isSolid() && material != Material.WATER && material != Material.LAVA) {
-            return true;
+        if (brushType == BrushType.FOLIAGE) {
+            return !material.isSolid() && material != Material.WATER && material != Material.LAVA;
+        } else {
+            return material.isSolid() || material == Material.WATER || material == Material.LAVA;
         }
-
-        if (brushType != BrushType.FOLIAGE
-                && (material.isSolid() || material == Material.WATER || material == Material.LAVA)) {
-            return true;
-        }
-
-        return false;
     }
 }

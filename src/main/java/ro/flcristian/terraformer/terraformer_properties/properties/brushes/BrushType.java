@@ -176,7 +176,7 @@ public enum BrushType {
             case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true);
             case RISE -> new BrushSettings(plugin, properties, true);
             case DIG -> new BrushSettings(plugin, properties, true);
-            case FOLIAGE -> new BrushSettings(plugin, properties, false);
+            case FOLIAGE -> new BrushSettings(plugin, properties, true);
         };
 
         player.openInventory(settings.getInventory());

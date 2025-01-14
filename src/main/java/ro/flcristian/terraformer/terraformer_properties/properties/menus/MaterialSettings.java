@@ -20,6 +20,7 @@ import ro.flcristian.terraformer.terraformer_properties.material_history.Materia
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import ro.flcristian.terraformer.utility.MaterialNameFormatter;
+import ro.flcristian.terraformer.utility.MaterialObjectsParser;
 import ro.flcristian.terraformer.utility.SkullTexturesApplier;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -403,7 +404,7 @@ public class MaterialSettings implements InventoryHolder {
                             break;
                     }
 
-                    if (material.isSolid() || material == Material.WATER || material == Material.LAVA) {
+                    if (MaterialObjectsParser.isValidMaterial(properties.Brush.Type, material)) {
                         properties.Brush.Materials.put(material, 0);
                         properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                         return;
@@ -457,11 +458,25 @@ public class MaterialSettings implements InventoryHolder {
             if (meta.customName().equals(materialHistoryEntry)) {
                 int index = event.getSlot() - 36;
                 if (index < properties.MaterialHistory.size()) {
-                    properties
-                            .applyMaterialHistory(
-                                    properties.MaterialHistory.get(properties.MaterialHistory.size() - 1 - index));
-                    player.sendMessage(Messages.APPLIED_MATERIAL_HISTORY);
-                    properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
+                    int materialHistoryIndex = properties.MaterialHistory.size() - 1 - index;
+
+                    boolean validMaterials = true;
+                    for (Material material : properties.MaterialHistory.get(materialHistoryIndex).Materials.keySet()) {
+                        if (!MaterialObjectsParser.isValidMaterial(properties.Brush.Type, material)) {
+                            validMaterials = false;
+                            break;
+                        }
+                    }
+
+                    if (validMaterials) {
+                        properties
+                                .applyMaterialHistory(
+                                        properties.MaterialHistory.get(materialHistoryIndex));
+                        player.sendMessage(Messages.APPLIED_MATERIAL_HISTORY);
+                        properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
+                    } else {
+                        player.sendMessage(Messages.CANT_APPLY_MATERIAL_HISTORY);
+                    }
                 }
             }
         }
