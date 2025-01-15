@@ -22,7 +22,7 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BrushActio
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import ro.flcristian.terraformer.utility.MaterialObjectsParser;
-import ro.flcristian.terraformer.utility.schematics.SpongeV1Parser;
+import ro.flcristian.terraformer.utility.schematics.SchematicParserImpl;
 import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
 class TerraformCommand implements CommandExecutor {
@@ -446,7 +446,8 @@ class TerraformCommand implements CommandExecutor {
                         }
 
                         try {
-                            SchematicData schematicData = SpongeV1Parser.getInstance().readSchematicFile(schematicFile);
+                            SchematicData schematicData = SchematicParserImpl.getInstance()
+                                    .readSchematicFile(schematicFile);
                             properties.Brush.LoadedSchematicData = schematicData;
                             player.sendMessage(Component.text("Loaded schematic: " + schematicFile.getName())
                                     .color(NamedTextColor.GREEN));

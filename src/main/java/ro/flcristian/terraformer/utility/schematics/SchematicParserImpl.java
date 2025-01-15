@@ -16,20 +16,20 @@ import ro.flcristian.terraformer.utility.schematics.records.Pair;
 import ro.flcristian.terraformer.utility.schematics.records.SchematicBlockPos;
 import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
-public class SpongeV1Parser implements SchematicParser {
-    private SpongeV1Parser() {
+public class SchematicParserImpl implements SchematicParser {
+    private SchematicParserImpl() {
     }
 
-    private static final Supplier<SpongeV1Parser> instance = new Supplier<>() {
-        private final SpongeV1Parser singletonInstance = new SpongeV1Parser();
+    private static final Supplier<SchematicParserImpl> instance = new Supplier<>() {
+        private final SchematicParserImpl singletonInstance = new SchematicParserImpl();
 
         @Override
-        public SpongeV1Parser get() {
+        public SchematicParserImpl get() {
             return singletonInstance;
         }
     };
 
-    public static SpongeV1Parser getInstance() {
+    public static SchematicParserImpl getInstance() {
         return instance.get();
     }
 
@@ -39,22 +39,31 @@ public class SpongeV1Parser implements SchematicParser {
         NamedTag namedTag = deserializer.fromFile(file);
         CompoundTag root = (CompoundTag) namedTag.getTag();
 
-        // Navigate to Schematic tag
-        CompoundTag schematic = root.getCompoundTag("Schematic");
+        // Get the schematic tag - either the root itself or its child
+        CompoundTag schematic = root.containsKey("Schematic")
+                ? root.getCompoundTag("Schematic")
+                : root;
 
         // Get dimensions
         int width = schematic.getShort("Width");
         int height = schematic.getShort("Height");
         int length = schematic.getShort("Length");
 
-        // Navigate to Blocks tag
-        CompoundTag blocks = schematic.getCompoundTag("Blocks");
+        // Get block data - handle both formats
+        CompoundTag blockContainer = schematic.containsKey("Blocks")
+                ? schematic.getCompoundTag("Blocks")
+                : schematic;
 
-        // Get block data array
-        byte[] blockData = blocks.getByteArray("Data");
+        // Get block data array - handle both formats
+        byte[] blockData = blockContainer.containsKey("Data")
+                ? blockContainer.getByteArray("Data")
+                : blockContainer.getByteArray("BlockData");
 
-        // Get palette
-        CompoundTag palette = blocks.getCompoundTag("Palette");
+        // Get palette - handle both formats
+        CompoundTag palette = blockContainer.containsKey("Palette")
+                ? blockContainer.getCompoundTag("Palette")
+                : schematic.getCompoundTag("Palette");
+
         Map<Integer, String> paletteMap = new HashMap<>();
         paletteMap.put(0, "minecraft:air");
 
@@ -66,6 +75,7 @@ public class SpongeV1Parser implements SchematicParser {
                 }
             });
         }
+
         // Parse blocks
         List<Pair<SchematicBlockPos, String>> blocksList = new ArrayList<>();
 
@@ -88,7 +98,7 @@ public class SpongeV1Parser implements SchematicParser {
     }
 
     public static void main(String[] args) {
-        SpongeV1Parser parser = new SpongeV1Parser();
+        SchematicParserImpl parser = new SchematicParserImpl();
 
         try {
             File testFile = new File("D:\\Terraformer Development\\terraformer\\src\\test\\resources\\tree.schem");

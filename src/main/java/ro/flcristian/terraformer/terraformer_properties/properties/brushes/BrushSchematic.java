@@ -103,7 +103,7 @@ public class BrushSchematic extends Brush {
                             block.setType(material, false);
                             if (block.getBlockData() instanceof Leaves leaves) {
                                 leaves.setPersistent(true);
-                                block.setBlockData((BlockData) leaves);
+                                block.setBlockData((BlockData) leaves, false);
                             }
                         }
                     } catch (IllegalArgumentException e) {
