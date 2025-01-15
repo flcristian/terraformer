@@ -28,7 +28,9 @@ public class BrushSchematic extends Brush {
         }
 
         try {
-            targetLocation = targetLocation.clone().add(0, 1, 0);
+            if (targetLocation.getBlock().getType().isSolid()) {
+                targetLocation = targetLocation.clone().add(0, 1, 0);
+            }
             Stack<BlockState> states = new Stack<>();
 
             // Validate schematic dimensions
@@ -88,8 +90,15 @@ public class BrushSchematic extends Brush {
                         int colonIndex = blockData.indexOf(":");
                         int bracketIndex = blockData.indexOf("[");
 
-                        if (colonIndex != -1 && bracketIndex != -1 && colonIndex < bracketIndex) {
-                            String materialName = blockData.substring(colonIndex + 1, bracketIndex);
+                        if (colonIndex != -1) {
+                            String materialName;
+                            if (bracketIndex != -1) {
+                                // Case with metadata: "minecraft:oak_leaves[persistent=true]"
+                                materialName = blockData.substring(colonIndex + 1, bracketIndex);
+                            } else {
+                                // Case without metadata: "minecraft:air"
+                                materialName = blockData.substring(colonIndex + 1);
+                            }
                             Material material = Material.valueOf(materialName.toUpperCase());
                             block.setType(material, false);
                             if (block.getBlockData() instanceof Leaves leaves) {
