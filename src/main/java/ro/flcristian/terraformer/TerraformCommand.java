@@ -447,7 +447,7 @@ class TerraformCommand implements CommandExecutor {
 
                         try {
                             SchematicData schematicData = SchematicParserImpl.getInstance()
-                                    .readSchematicFile(schematicFile);
+                                    .readSchematicFile(player, schematicFile);
                             properties.Brush.LoadedSchematicData = schematicData;
                             player.sendMessage(Component.text("Loaded schematic: " + schematicFile.getName())
                                     .color(NamedTextColor.GREEN));

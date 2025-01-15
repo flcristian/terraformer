@@ -107,12 +107,10 @@ public class BrushSchematic extends Brush {
                             }
                         }
                     } catch (IllegalArgumentException e) {
-                        player.sendMessage(
-                                Component.text("Invalid block material in schematic").color(NamedTextColor.RED));
+
                     }
                 }
             }
-
         } catch (Exception e) {
             player.sendMessage(Component.text("Error placing schematic: " + e.getMessage()).color(NamedTextColor.RED));
             e.printStackTrace();

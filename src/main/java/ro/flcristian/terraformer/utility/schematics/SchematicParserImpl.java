@@ -8,6 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Leaves;
+import org.bukkit.entity.Player;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
@@ -34,7 +43,7 @@ public class SchematicParserImpl implements SchematicParser {
     }
 
     @Override
-    public SchematicData readSchematicFile(File file) throws IOException {
+    public SchematicData readSchematicFile(Player player, File file) throws IOException {
         NBTDeserializer deserializer = new NBTDeserializer();
         NamedTag namedTag = deserializer.fromFile(file);
         CompoundTag root = (CompoundTag) namedTag.getTag();
@@ -94,24 +103,36 @@ public class SchematicParserImpl implements SchematicParser {
             }
         }
 
-        return new SchematicData(width, height, length, blocksList);
-    }
+        boolean invalidMaterials = false;
+        for (var blockPair : blocksList) {
+            String checkBlockData = blockPair.getSecond();
 
-    public static void main(String[] args) {
-        SchematicParserImpl parser = new SchematicParserImpl();
+            try {
+                int colonIndex = checkBlockData.indexOf(":");
+                int bracketIndex = checkBlockData.indexOf("[");
 
-        try {
-            File testFile = new File("D:\\Terraformer Development\\terraformer\\src\\test\\resources\\tree.schem");
-            SchematicData data = parser.readSchematicFile(testFile);
-
-            // Print parsed data to verify
-            System.out.println("Schematic Dimensions: " + data.width() + "x" + data.height() + "x" + data.length());
-            System.out.println("Parsed Blocks: " + data.blocks().size());
-            data.blocks()
-                    .forEach(block -> System.out.println("Block at " + block.getFirst() + ": " + block.getSecond()));
-
-        } catch (IOException e) {
-            e.printStackTrace();
+                if (colonIndex != -1) {
+                    String materialName;
+                    if (bracketIndex != -1) {
+                        // Case with metadata: "minecraft:oak_leaves[persistent=true]"
+                        materialName = checkBlockData.substring(colonIndex + 1, bracketIndex);
+                    } else {
+                        // Case without metadata: "minecraft:air"
+                        materialName = checkBlockData.substring(colonIndex + 1);
+                    }
+                    Material material = Material.valueOf(materialName.toUpperCase());
+                }
+            } catch (IllegalArgumentException e) {
+                invalidMaterials = true;
+            }
         }
+        if (invalidMaterials) {
+            player.sendMessage(
+                    Component.text(
+                            "Invalid blocks in schematic, probably from older versions or mods. The schematic will still work, but might not look the same as it should have.")
+                            .color(NamedTextColor.RED));
+        }
+
+        return new SchematicData(width, height, length, blocksList);
     }
 }
