@@ -18,7 +18,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum BrushType {
-    BALL, ERASE, SMOOTH, ERODE, EXTRUDE, PAINT_TOP, PAINT_SURFACE, PAINT_WALL, PAINT_BOTTOM, RISE, DIG, FOLIAGE;
+    BALL, ERASE, SMOOTH, ERODE, EXTRUDE, PAINT_TOP, PAINT_SURFACE, PAINT_WALL, PAINT_BOTTOM, RISE, DIG, FOLIAGE,
+    SCHEMATIC;
 
     public Component getName() {
         return switch (this) {
@@ -34,6 +35,7 @@ public enum BrushType {
             case RISE -> Component.text("Rise").color(NamedTextColor.DARK_PURPLE);
             case DIG -> Component.text("Dig").color(NamedTextColor.DARK_RED);
             case FOLIAGE -> Component.text("Foliage").color(NamedTextColor.DARK_GREEN);
+            case SCHEMATIC -> Component.text("Schematic").color(NamedTextColor.YELLOW);
         };
     }
 
@@ -51,6 +53,7 @@ public enum BrushType {
             case "rise" -> RISE;
             case "dig" -> DIG;
             case "foliage" -> FOLIAGE;
+            case "schematic" -> SCHEMATIC;
             default -> null;
         };
     }
@@ -70,6 +73,7 @@ public enum BrushType {
             case RISE -> "rise";
             case DIG -> "dig";
             case FOLIAGE -> "foliage";
+            case SCHEMATIC -> "schematic";
         };
     }
 
@@ -87,6 +91,7 @@ public enum BrushType {
             case RISE -> new ItemStack(Material.GUNPOWDER);
             case DIG -> new ItemStack(Material.FIRE_CHARGE);
             case FOLIAGE -> new ItemStack(Material.OAK_LEAVES);
+            case SCHEMATIC -> new ItemStack(Material.PAPER);
         };
 
         ItemMeta meta = item.getItemMeta();
@@ -156,6 +161,7 @@ public enum BrushType {
             case RISE -> BrushRise.brush(plugin, player, properties, targetLocation, isRedo);
             case DIG -> BrushDig.brush(plugin, player, properties, targetLocation, isRedo);
             case FOLIAGE -> BrushFoliage.brush(plugin, player, properties, targetLocation, isRedo);
+            case SCHEMATIC -> BrushSchematic.brush(plugin, player, properties, targetLocation, isRedo);
         };
 
         if (applied) {
@@ -165,18 +171,9 @@ public enum BrushType {
 
     public void openBrushSettings(Terraformer plugin, Player player, TerraformerProperties properties) {
         BrushSettings settings = switch (this) {
-            case BALL -> new BrushSettings(plugin, properties, false);
-            case ERASE -> new BrushSettings(plugin, properties, false);
-            case SMOOTH -> new BrushSettings(plugin, properties, false);
-            case ERODE -> new BrushSettings(plugin, properties, false);
-            case EXTRUDE -> new BrushSettings(plugin, properties, false);
-            case PAINT_TOP -> new BrushSettings(plugin, properties, true);
-            case PAINT_SURFACE -> new BrushSettings(plugin, properties, true);
-            case PAINT_WALL -> new BrushSettings(plugin, properties, true);
-            case PAINT_BOTTOM -> new BrushSettings(plugin, properties, true);
-            case RISE -> new BrushSettings(plugin, properties, true);
-            case DIG -> new BrushSettings(plugin, properties, true);
-            case FOLIAGE -> new BrushSettings(plugin, properties, true);
+            case PAINT_TOP, PAINT_BOTTOM, PAINT_WALL, PAINT_SURFACE, RISE, DIG, FOLIAGE -> new BrushSettings(plugin,
+                    properties, true);
+            default -> new BrushSettings(plugin, properties, false);
         };
 
         player.openInventory(settings.getInventory());
@@ -184,18 +181,9 @@ public enum BrushType {
 
     public void openMaterialSettings(Terraformer plugin, Player player, TerraformerProperties properties) {
         MaterialSettings settings = switch (this) {
-            case BALL -> new MaterialSettings(plugin, properties, true);
-            case ERASE -> new MaterialSettings(plugin, properties, false);
-            case SMOOTH -> new MaterialSettings(plugin, properties, false);
-            case ERODE -> new MaterialSettings(plugin, properties, false);
-            case EXTRUDE -> new MaterialSettings(plugin, properties, false);
-            case PAINT_TOP -> new MaterialSettings(plugin, properties, true);
-            case PAINT_SURFACE -> new MaterialSettings(plugin, properties, true);
-            case PAINT_WALL -> new MaterialSettings(plugin, properties, true);
-            case PAINT_BOTTOM -> new MaterialSettings(plugin, properties, true);
-            case RISE -> new MaterialSettings(plugin, properties, false);
-            case DIG -> new MaterialSettings(plugin, properties, false);
-            case FOLIAGE -> new MaterialSettings(plugin, properties, true);
+            case BALL, PAINT_TOP, PAINT_BOTTOM, PAINT_WALL, PAINT_SURFACE, FOLIAGE ->
+                new MaterialSettings(plugin, properties, true);
+            default -> new MaterialSettings(plugin, properties, false);
         };
 
         player.openInventory(settings.getInventory());
@@ -204,18 +192,9 @@ public enum BrushType {
     public void openMaterialSettings(Terraformer plugin, Player player, TerraformerProperties properties,
             int currentMaterialPage) {
         MaterialSettings settings = switch (this) {
-            case BALL -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
-            case ERASE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
-            case SMOOTH -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
-            case ERODE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
-            case EXTRUDE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
-            case PAINT_TOP -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
-            case PAINT_SURFACE -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
-            case PAINT_WALL -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
-            case PAINT_BOTTOM -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
-            case RISE -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
-            case DIG -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
-            case FOLIAGE -> new MaterialSettings(plugin, properties, true, currentMaterialPage);
+            case BALL, PAINT_TOP, PAINT_BOTTOM, PAINT_WALL, PAINT_SURFACE, FOLIAGE ->
+                new MaterialSettings(plugin, properties, true, currentMaterialPage);
+            default -> new MaterialSettings(plugin, properties, false, currentMaterialPage);
         };
 
         player.openInventory(settings.getInventory());

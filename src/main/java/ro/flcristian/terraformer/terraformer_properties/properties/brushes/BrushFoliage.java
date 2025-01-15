@@ -39,7 +39,7 @@ public class BrushFoliage extends Brush {
                         Material blockAbove = checkLoc.clone().add(0, 1, 0).getBlock().getType();
 
                         if ((currentBlock.isSolid() || currentBlock == Material.WATER || currentBlock == Material.LAVA)
-                                && blockAbove == Material.AIR) {
+                                && !blockAbove.isSolid()) {
                             surfaceLocation = checkLoc;
                             foundSurface = true;
                             break;
@@ -51,7 +51,7 @@ public class BrushFoliage extends Brush {
                         int availableAirBlocks = 0;
                         for (int y = 1; y <= brushProperties.BrushDepth; y++) {
                             Location checkLoc = surfaceLocation.clone().add(0, y, 0);
-                            if (checkLoc.getBlock().getType() == Material.AIR) {
+                            if (!checkLoc.getBlock().getType().isSolid()) {
                                 availableAirBlocks++;
                             } else {
                                 break;
@@ -102,7 +102,8 @@ public class BrushFoliage extends Brush {
 
                 Material material = brushProperties.getMaterial(location, location);
 
-                if (material == Material.SUGAR_CANE || material == Material.BAMBOO || material == Material.CACTUS) {
+                if (material == Material.SUGAR_CANE || material == Material.BAMBOO || material == Material.CACTUS
+                        || material == Material.AIR) {
                     // Place first block where it's always AIR
                     Block block = location.getBlock();
                     block.setType(material, false);
@@ -110,7 +111,9 @@ public class BrushFoliage extends Brush {
 
                     // Check the rest of the blocks and place if there's AIR
                     for (int y = 2; y <= brushProperties.BrushDepth; y++) {
-                        if (location.getBlock().getType() == Material.AIR) {
+                        if (location.getBlock().getType() == Material.AIR
+                                || (material == Material.AIR && location.getBlock().getType() != Material.AIR
+                                        && !location.getBlock().getType().isSolid())) {
                             block = location.getBlock();
                             block.setType(material, false);
                             location = location.clone().add(0, 1, 0);
@@ -127,11 +130,13 @@ public class BrushFoliage extends Brush {
 
                     location = location.clone().add(0, 1, 0);
 
-                    block = location.getBlock();
-                    block.setType(material, false);
-                    data = (Bisected) block.getBlockData();
-                    data.setHalf(Bisected.Half.TOP);
-                    block.setBlockData(data, false);
+                    if (location.getBlock().getType() == Material.AIR) {
+                        block = location.getBlock();
+                        block.setType(material, false);
+                        data = (Bisected) block.getBlockData();
+                        data.setHalf(Bisected.Half.TOP);
+                        block.setBlockData(data, false);
+                    }
                 } else {
                     Block block = location.getBlock();
                     block.setType(material, false);

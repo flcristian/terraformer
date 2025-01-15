@@ -1,5 +1,6 @@
 package ro.flcristian.terraformer.terraformer_properties.properties;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ public class BrushProperties implements Cloneable {
     public MaterialMode Mode;
     public List<Material> Mask;
     public boolean RandomHeightFoliage;
+    public File loadedSchematic;
 
     public BrushProperties() {
         Type = BrushType.BALL;
@@ -31,10 +33,11 @@ public class BrushProperties implements Cloneable {
         Mode = MaterialMode.RANDOM;
         Mask = new ArrayList<>();
         RandomHeightFoliage = false;
+        loadedSchematic = null;
     }
 
     public BrushProperties(BrushType brushType, int brushSize, int brushDepth, Map<Material, Integer> materials,
-            MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage) {
+            MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage, File loadedSchematic) {
         Type = brushType;
         BrushSize = brushSize;
         BrushDepth = brushDepth;
@@ -42,6 +45,7 @@ public class BrushProperties implements Cloneable {
         Mode = materialsMode;
         Mask = mask;
         RandomHeightFoliage = false;
+        this.loadedSchematic = loadedSchematic;
     }
 
     public void applyBrush(Terraformer plugin, Player player, Location targetLocation) {
@@ -55,7 +59,7 @@ public class BrushProperties implements Cloneable {
     @Override
     public BrushProperties clone() {
         return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode,
-                new ArrayList<>(Mask), RandomHeightFoliage);
+                new ArrayList<>(Mask), RandomHeightFoliage, loadedSchematic);
     }
 
     @Override

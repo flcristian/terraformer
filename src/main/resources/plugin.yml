@@ -58,6 +58,14 @@ commands:
         description: Set terraforming mask blocks
         usage: /terraform mask <mask>
         aliases: [mk]
+      randomheight:
+        description: Toggle random height mode (for foliage brush)
+        usage: /terraform randomheight
+        aliases: [rh]
+      schematic:
+        description: List all schematics / Load a schematic
+        usage: /terraform schematic <list/load>
+        aliases: [schem]
 
 permissions:
   terraformer.use:

@@ -84,6 +84,9 @@ public class MaterialObjectsParser {
             }
         }
 
+        materialMap.remove(Material.AIR);
+        materialMap.remove(Material.FIRE);
+
         return materialMap;
     }
 
@@ -107,7 +110,8 @@ public class MaterialObjectsParser {
             return false;
 
         if (brushType == BrushType.FOLIAGE) {
-            return !material.isSolid() && material != Material.WATER && material != Material.LAVA;
+            return !material.isSolid() && material != Material.WATER && material != Material.LAVA
+                    || material == Material.CACTUS;
         } else {
             return material.isSolid() || material == Material.WATER || material == Material.LAVA;
         }

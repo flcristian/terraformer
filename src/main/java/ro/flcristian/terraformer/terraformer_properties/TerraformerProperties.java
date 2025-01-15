@@ -1,5 +1,6 @@
 package ro.flcristian.terraformer.terraformer_properties;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +38,10 @@ public class TerraformerProperties {
     public TerraformerProperties(boolean isTerraformer, BrushType brushType, int brushSize, int brushDepth,
             Map<Material, Integer> materials, MaterialMode materialsMode, List<Material> mask,
             Stack<BrushProperties> brushHistory, Stack<MaterialHistory> materialHistory, BrushBlockHistory history,
-            Palette palette, boolean randomHeightFoliage) {
+            Palette palette, boolean randomHeightFoliage, File loadedSchematic) {
         IsTerraformer = isTerraformer;
         Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode, mask,
-                randomHeightFoliage);
+                randomHeightFoliage, loadedSchematic);
         BrushHistory = brushHistory;
         MaterialHistory = materialHistory;
         History = history;
@@ -96,7 +97,7 @@ public class TerraformerProperties {
     public void applyBrushHistory(BrushProperties brushProperties) {
         BrushProperties toApply = brushProperties.clone();
         Brush = new BrushProperties(toApply.Type, toApply.BrushSize, toApply.BrushDepth, Brush.Materials,
-                Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage);
+                Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage, Brush.loadedSchematic);
     }
 
     public void applyMaterialHistory(MaterialHistory materialHistory) {

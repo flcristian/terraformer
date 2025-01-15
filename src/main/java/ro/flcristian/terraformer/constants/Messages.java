@@ -51,6 +51,9 @@ public final class Messages {
         public static final Component USAGE_MASK = Component
                         .text("Usage: '/terraform mask <mask>' or '/terraform mk <mask>'")
                         .color(NamedTextColor.RED);
+        public static final Component USAGE_SCHEMATIC = Component
+                        .text("Usage: '/terraform schematic <list/load>' or '/terraform schem <li/ld>'")
+                        .color(NamedTextColor.RED);
 
         // WARNINGS
 

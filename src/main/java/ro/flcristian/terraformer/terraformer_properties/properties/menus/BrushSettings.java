@@ -43,7 +43,7 @@ public class BrushSettings implements InventoryHolder {
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
                         .append(properties.Brush.Type.getName()));
 
-        inventory = plugin.getServer().createInventory(this, 36,
+        inventory = plugin.getServer().createInventory(this, 45,
                 inventoryName);
 
         setUpMenu(properties);
@@ -99,7 +99,7 @@ public class BrushSettings implements InventoryHolder {
                     Component.text("Works for all brushes").color(NamedTextColor.DARK_GRAY)
                             .decorate(TextDecoration.ITALIC)));
             brushSizeItem.setItemMeta(brushSizeItemMeta);
-            inventory.setItem(9 + size - 1, brushSizeItem);
+            inventory.setItem(18 + size - 1, brushSizeItem);
         }
 
         // Depth Selection
@@ -120,7 +120,7 @@ public class BrushSettings implements InventoryHolder {
                         Component.text("Works for: Paint, Rise, Dig").color(NamedTextColor.DARK_GRAY)
                                 .decorate(TextDecoration.ITALIC)));
                 brushDepthItem.setItemMeta(brushDepthItemMeta);
-                inventory.setItem(18 + depth - 1, brushDepthItem);
+                inventory.setItem(27 + depth - 1, brushDepthItem);
             }
         } else {
             ItemStack depthSlot = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
@@ -128,7 +128,7 @@ public class BrushSettings implements InventoryHolder {
             depthSlotMeta.customName(depthSlotBlocked);
             depthSlot.setItemMeta(depthSlotMeta);
 
-            for (int i = 18; i < 27; i++) {
+            for (int i = 27; i < 36; i++) {
                 inventory.setItem(i, depthSlot);
             }
         }
@@ -139,7 +139,7 @@ public class BrushSettings implements InventoryHolder {
         ItemMeta brushHistorySlotMeta = brushHistorySlot.getItemMeta();
         brushHistorySlotMeta.customName(brushHistoryEmpty);
         brushHistorySlot.setItemMeta(brushHistorySlotMeta);
-        for (int i = 27; i < 36; i++) {
+        for (int i = 36; i < 45; i++) {
             inventory.setItem(i, brushHistorySlot);
         }
 
@@ -159,7 +159,7 @@ public class BrushSettings implements InventoryHolder {
                     Component.text("Click to apply").color(NamedTextColor.LIGHT_PURPLE)));
             brushHistoryMeta.customName(brushHistoryEntry);
             brushHistory.setItemMeta(brushHistoryMeta);
-            inventory.setItem(i + 27, brushHistory);
+            inventory.setItem(i + 36, brushHistory);
         }
     }
 
@@ -236,7 +236,7 @@ public class BrushSettings implements InventoryHolder {
             // Brush History
 
             if (meta.customName().equals(brushHistoryEntry)) {
-                int index = event.getSlot() - 27;
+                int index = event.getSlot() - 36;
                 if (index < properties.BrushHistory.size()) {
                     properties
                             .applyBrushHistory(properties.BrushHistory.get(properties.BrushHistory.size() - 1 - index));

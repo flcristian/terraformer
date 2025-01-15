@@ -3,6 +3,7 @@ package ro.flcristian.terraformer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -369,6 +370,88 @@ class TerraformCommand implements CommandExecutor {
                 properties.Brush.RandomHeightFoliage = !properties.Brush.RandomHeightFoliage;
                 player.sendMessage(Messages.CHANGED_RANDOM_HEIGHT(properties.Brush.RandomHeightFoliage));
                 return true;
+            case "schematic", "schem":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(Messages.USAGE_SCHEMATIC);
+                    return true;
+                }
+
+                switch (args[1].toLowerCase()) {
+                    case "list", "li":
+                        File schematicsFolder = new File(plugin.getDataFolder(), "Schematics");
+                        if (!schematicsFolder.exists() || !schematicsFolder.isDirectory()) {
+                            player.sendMessage(
+                                    Component.text("Schematics folder not found!").color(NamedTextColor.RED));
+                            return true;
+                        }
+
+                        File[] schemFiles = schematicsFolder
+                                .listFiles((dir, name) -> name.toLowerCase().endsWith(".schem")
+                                        || name.toLowerCase().endsWith(".schematic"));
+
+                        if (schemFiles == null || schemFiles.length == 0) {
+                            player.sendMessage(Component.text("No schematics found!").color(NamedTextColor.YELLOW));
+                            return true;
+                        }
+
+                        Component message = Component.text("Available schematics:").color(NamedTextColor.GREEN)
+                                .appendNewline();
+                        for (int i = 0; i < schemFiles.length; i++) {
+                            message = message.append(Component.text("- " + schemFiles[i].getName())
+                                    .color(NamedTextColor.GRAY));
+                            if (i != schemFiles.length - 1) {
+                                message = message.appendNewline();
+                            }
+                        }
+                        player.sendMessage(message);
+                        return true;
+
+                    case "load", "ld":
+                        if (args.length < 3) {
+                            player.sendMessage(Component.text("Usage: /terraform schematic load <filename>")
+                                    .color(NamedTextColor.RED));
+                            return true;
+                        }
+
+                        String fileName = args[2];
+                        File schematicsDir = new File(plugin.getDataFolder(), "Schematics");
+                        File schematicFile = new File(schematicsDir, fileName);
+
+                        // Try with .schem extension if file doesn't exist
+                        if (!schematicFile.exists()) {
+                            schematicFile = new File(schematicsDir, fileName + ".schem");
+                        }
+
+                        // Try with .schematic extension if still doesn't exist
+                        if (!schematicFile.exists()) {
+                            schematicFile = new File(schematicsDir, fileName + ".schematic");
+                        }
+
+                        if (!schematicFile.exists()) {
+                            player.sendMessage(Component.text("Schematic file not found: " + fileName)
+                                    .color(NamedTextColor.RED));
+                            return true;
+                        }
+
+                        properties.Brush.loadedSchematic = schematicFile;
+                        player.sendMessage(Component.text("Loaded schematic: " + schematicFile.getName())
+                                .color(NamedTextColor.GREEN));
+                        return true;
+
+                    default:
+                        player.sendMessage(Component.text("Invalid schematic command. Use 'list' or 'load'.")
+                                .color(NamedTextColor.RED));
+                        return true;
+                }
             default:
                 player.sendMessage(Messages.UNKNOWN_COMMAND);
                 return true;
@@ -440,10 +523,19 @@ class TerraformCommand implements CommandExecutor {
                 .append(Component.text("Alias: ", NamedTextColor.WHITE))
                 .append(Component.text("/tf mk <mask>", NamedTextColor.YELLOW)));
         commands.put("randomheight", Component.text("/terraform randomheight ", NamedTextColor.YELLOW)
-                .append(Component.text("- Toggle random height for foliage brushes", NamedTextColor.WHITE))
+                .append(Component.text("- Toggle random height for foliage brush", NamedTextColor.WHITE))
                 .appendNewline()
                 .append(Component.text("Alias: ", NamedTextColor.WHITE))
                 .append(Component.text("/tf rh", NamedTextColor.YELLOW)));
+        commands.put("schematic", Component.text("/terraform schematic <list/load>", NamedTextColor.YELLOW)
+                .append(Component.text("- List all the schematics / Load a schematic", NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf schem <li/ld>", NamedTextColor.YELLOW))
+                .appendNewline()
+                .append(Component.text(
+                        "- You also need to provide the schematic name, ex: /tf schem ld tree (or tree.schem)",
+                        NamedTextColor.WHITE)));
 
         Map<Integer, Component[]> pages = new LinkedHashMap<>();
         pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
@@ -452,7 +544,7 @@ class TerraformCommand implements CommandExecutor {
                 commands.get("depth") });
         pages.put(3, new Component[] { commands.get("materials"), commands.get("materialmode"),
                 commands.get("materialmodes") });
-        pages.put(4, new Component[] { commands.get("mask") });
+        pages.put(4, new Component[] { commands.get("mask"), commands.get("randomheight"), commands.get("schematic") });
 
         Component message = Component.text("Terraformer Help").color(NamedTextColor.AQUA)
                 .append(Component.text(" - ").color(NamedTextColor.WHITE))

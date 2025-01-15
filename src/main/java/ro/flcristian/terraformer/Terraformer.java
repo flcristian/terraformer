@@ -31,6 +31,7 @@ import ro.flcristian.terraformer.terraformer_properties.properties.menus.Materia
 import ro.flcristian.terraformer.terraformer_properties.properties.menus.SelectPaintMode;
 import ro.flcristian.terraformer.utility.SkullTexturesApplier;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -73,13 +74,32 @@ public class Terraformer extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        File pluginFolder = getDataFolder();
+        File schematicsFolder = new File(pluginFolder, "Schematics");
+
+        if (!pluginFolder.exists()) {
+            if (pluginFolder.mkdirs()) {
+                getLogger().info("Created Terraformer directory!");
+            } else {
+                getLogger().severe("Failed to create Terraformer directory!");
+            }
+        }
+
+        if (!schematicsFolder.exists()) {
+            if (schematicsFolder.mkdirs()) {
+                getLogger().info("Created Schematics directory!");
+            } else {
+                getLogger().severe("Failed to create Schematics directory!");
+            }
+        }
+
         Bukkit.getPluginManager().registerEvents(this, this);
 
         if (this.getCommand("terraform") != null) {
             this.getCommand("terraform").setExecutor(new TerraformCommand(this));
             getLogger().info("Terraform command registered successfully!");
         }
-        getCommand("terraform").setTabCompleter(new TerraformTabCompleter());
+        getCommand("terraform").setTabCompleter(new TerraformTabCompleter(this));
         getLogger().info("Terraformer plugin has been enabled!");
     }
 

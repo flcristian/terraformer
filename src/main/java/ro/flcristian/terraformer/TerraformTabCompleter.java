@@ -1,5 +1,6 @@
 package ro.flcristian.terraformer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,12 @@ import ro.flcristian.terraformer.terraformer_properties.properties.brushes.Brush
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 
 public class TerraformTabCompleter implements TabCompleter {
+    private final Terraformer plugin;
+
+    public TerraformTabCompleter(Terraformer plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -29,7 +36,7 @@ public class TerraformTabCompleter implements TabCompleter {
         if (args.length == 1) {
             completions.addAll(Arrays.asList("help", "start", "stop", "undo", "redo",
                     "brush", "brushes", "size", "depth", "materials", "materialmode", "materialmodes", "mask",
-                    "randomheight"));
+                    "randomheight", "schematic"));
         } else if (args.length == 2) {
             switch (args[0].toLowerCase()) {
                 case "brush", "b" -> {
@@ -58,6 +65,26 @@ public class TerraformTabCompleter implements TabCompleter {
                     if (player.hasPermission("terraformer.mode")) {
                         completions.addAll(IntStream.rangeClosed(1, 20)
                                 .mapToObj(Integer::toString)
+                                .toList());
+                    }
+                }
+                case "schematic", "schem" -> {
+                    if (player.hasPermission("terraformer.mode")) {
+                        completions.addAll(Arrays.asList("list", "load"));
+                    }
+                }
+            }
+        } else if (args.length == 3) {
+            if ((args[0].equalsIgnoreCase("schematic") || args[0].equalsIgnoreCase("schem"))
+                    && args[1].equalsIgnoreCase("load")) {
+                File schematicsFolder = new File(plugin.getDataFolder(), "Schematics");
+                if (schematicsFolder.exists() && schematicsFolder.isDirectory()) {
+                    File[] schemFiles = schematicsFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".schem")
+                            || name.toLowerCase().endsWith(".schematic"));
+                    if (schemFiles != null) {
+                        completions.addAll(Arrays.stream(schemFiles)
+                                .map(File::getName)
+                                .map(name -> name.replaceAll("\\.(schem|schematic)$", ""))
                                 .toList());
                     }
                 }
