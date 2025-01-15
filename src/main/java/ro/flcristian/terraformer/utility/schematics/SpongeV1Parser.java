@@ -3,16 +3,35 @@ package ro.flcristian.terraformer.utility.schematics;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.IntTag;
 import ro.flcristian.terraformer.utility.schematics.records.Pair;
 import ro.flcristian.terraformer.utility.schematics.records.SchematicBlockPos;
 import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
 public class SpongeV1Parser implements SchematicParser {
+    private SpongeV1Parser() {
+    }
+
+    private static final Supplier<SpongeV1Parser> instance = new Supplier<>() {
+        private final SpongeV1Parser singletonInstance = new SpongeV1Parser();
+
+        @Override
+        public SpongeV1Parser get() {
+            return singletonInstance;
+        }
+    };
+
+    public static SpongeV1Parser getInstance() {
+        return instance.get();
+    }
 
     @Override
     public SchematicData readSchematicFile(File file) throws IOException {
@@ -36,12 +55,17 @@ public class SpongeV1Parser implements SchematicParser {
 
         // Get palette
         CompoundTag palette = blocks.getCompoundTag("Palette");
-        List<String> blockTypes = new ArrayList<>();
+        Map<Integer, String> paletteMap = new HashMap<>();
+        paletteMap.put(0, "minecraft:air");
 
         if (palette != null) {
-            palette.forEach((key, value) -> blockTypes.add(key));
+            palette.forEach((key, value) -> {
+                if (value instanceof IntTag) {
+                    int id = ((IntTag) value).asInt();
+                    paletteMap.put(id, key);
+                }
+            });
         }
-
         // Parse blocks
         List<Pair<SchematicBlockPos, String>> blocksList = new ArrayList<>();
 
@@ -52,12 +76,9 @@ public class SpongeV1Parser implements SchematicParser {
 
                     if (index < blockData.length) {
                         int blockId = blockData[index] & 0xFF;
-
-                        if (blockId != 0) {
-                            SchematicBlockPos pos = new SchematicBlockPos(x, y, z);
-                            String blockType = blockTypes.get(blockId);
-                            blocksList.add(new Pair<>(pos, blockType));
-                        }
+                        SchematicBlockPos pos = new SchematicBlockPos(x, y, z);
+                        String blockType = paletteMap.get(blockId);
+                        blocksList.add(new Pair<>(pos, blockType));
                     }
                 }
             }
@@ -70,7 +91,7 @@ public class SpongeV1Parser implements SchematicParser {
         SpongeV1Parser parser = new SpongeV1Parser();
 
         try {
-            File testFile = new File("/Users/Cristian/Sites/Personal/terraformer/src/test/resources/tree.schem");
+            File testFile = new File("D:\\Terraformer Development\\terraformer\\src\\test\\resources\\tree.schem");
             SchematicData data = parser.readSchematicFile(testFile);
 
             // Print parsed data to verify

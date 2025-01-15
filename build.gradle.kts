@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "ro.flcristian"
@@ -29,5 +30,21 @@ java {
 tasks.jar {
     manifest {
         attributes["paperweight-mappings-namespace"] = "mojang"
+    }
+}
+
+
+tasks {
+    shadowJar {
+        manifest {
+            attributes["paperweight-mappings-namespace"] = "mojang"
+        }
+        dependencies {
+            include(dependency("com.github.Querz:NBT:6.1"))
+        }
+    }
+    
+    jar {
+        dependsOn(shadowJar)
     }
 }

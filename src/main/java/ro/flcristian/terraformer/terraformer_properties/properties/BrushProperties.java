@@ -1,6 +1,5 @@
 package ro.flcristian.terraformer.terraformer_properties.properties;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.bukkit.entity.Player;
 import ro.flcristian.terraformer.Terraformer;
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
+import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
 public class BrushProperties implements Cloneable {
     public BrushType Type;
@@ -22,7 +22,7 @@ public class BrushProperties implements Cloneable {
     public MaterialMode Mode;
     public List<Material> Mask;
     public boolean RandomHeightFoliage;
-    public File loadedSchematic;
+    public SchematicData LoadedSchematicData;
 
     public BrushProperties() {
         Type = BrushType.BALL;
@@ -33,11 +33,12 @@ public class BrushProperties implements Cloneable {
         Mode = MaterialMode.RANDOM;
         Mask = new ArrayList<>();
         RandomHeightFoliage = false;
-        loadedSchematic = null;
+        LoadedSchematicData = null;
     }
 
     public BrushProperties(BrushType brushType, int brushSize, int brushDepth, Map<Material, Integer> materials,
-            MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage, File loadedSchematic) {
+            MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage,
+            SchematicData loadedSchematicData) {
         Type = brushType;
         BrushSize = brushSize;
         BrushDepth = brushDepth;
@@ -45,7 +46,7 @@ public class BrushProperties implements Cloneable {
         Mode = materialsMode;
         Mask = mask;
         RandomHeightFoliage = false;
-        this.loadedSchematic = loadedSchematic;
+        LoadedSchematicData = loadedSchematicData;
     }
 
     public void applyBrush(Terraformer plugin, Player player, Location targetLocation) {
@@ -59,7 +60,7 @@ public class BrushProperties implements Cloneable {
     @Override
     public BrushProperties clone() {
         return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode,
-                new ArrayList<>(Mask), RandomHeightFoliage, loadedSchematic);
+                new ArrayList<>(Mask), RandomHeightFoliage, LoadedSchematicData.clone());
     }
 
     @Override

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,6 +22,8 @@ import ro.flcristian.terraformer.terraformer_properties.block_history.BrushActio
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import ro.flcristian.terraformer.utility.MaterialObjectsParser;
+import ro.flcristian.terraformer.utility.schematics.SpongeV1Parser;
+import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
 class TerraformCommand implements CommandExecutor {
     private final Terraformer plugin;
@@ -442,9 +445,17 @@ class TerraformCommand implements CommandExecutor {
                             return true;
                         }
 
-                        properties.Brush.loadedSchematic = schematicFile;
-                        player.sendMessage(Component.text("Loaded schematic: " + schematicFile.getName())
-                                .color(NamedTextColor.GREEN));
+                        try {
+                            SchematicData schematicData = SpongeV1Parser.getInstance().readSchematicFile(schematicFile);
+                            properties.Brush.LoadedSchematicData = schematicData;
+                            player.sendMessage(Component.text("Loaded schematic: " + schematicFile.getName())
+                                    .color(NamedTextColor.GREEN));
+                        } catch (IOException e) {
+                            player.sendMessage(Component.text("Error reading schematic file: " + fileName)
+                                    .color(NamedTextColor.RED));
+                            return true;
+                        }
+
                         return true;
 
                     default:

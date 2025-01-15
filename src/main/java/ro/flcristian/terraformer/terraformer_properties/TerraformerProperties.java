@@ -1,6 +1,5 @@
 package ro.flcristian.terraformer.terraformer_properties;
 
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +16,7 @@ import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperti
 import ro.flcristian.terraformer.terraformer_properties.properties.Palette;
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
+import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
 public class TerraformerProperties {
     public boolean IsTerraformer;
@@ -38,10 +38,10 @@ public class TerraformerProperties {
     public TerraformerProperties(boolean isTerraformer, BrushType brushType, int brushSize, int brushDepth,
             Map<Material, Integer> materials, MaterialMode materialsMode, List<Material> mask,
             Stack<BrushProperties> brushHistory, Stack<MaterialHistory> materialHistory, BrushBlockHistory history,
-            Palette palette, boolean randomHeightFoliage, File loadedSchematic) {
+            Palette palette, boolean randomHeightFoliage, SchematicData loadedSchematicData) {
         IsTerraformer = isTerraformer;
         Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode, mask,
-                randomHeightFoliage, loadedSchematic);
+                randomHeightFoliage, loadedSchematicData);
         BrushHistory = brushHistory;
         MaterialHistory = materialHistory;
         History = history;
@@ -97,7 +97,7 @@ public class TerraformerProperties {
     public void applyBrushHistory(BrushProperties brushProperties) {
         BrushProperties toApply = brushProperties.clone();
         Brush = new BrushProperties(toApply.Type, toApply.BrushSize, toApply.BrushDepth, Brush.Materials,
-                Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage, Brush.loadedSchematic);
+                Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage, Brush.LoadedSchematicData);
     }
 
     public void applyMaterialHistory(MaterialHistory materialHistory) {
