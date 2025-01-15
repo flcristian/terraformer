@@ -8,11 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Leaves;
 import org.bukkit.entity.Player;
 
 import net.kyori.adventure.text.Component;
@@ -120,7 +116,7 @@ public class SchematicParserImpl implements SchematicParser {
                         // Case without metadata: "minecraft:air"
                         materialName = checkBlockData.substring(colonIndex + 1);
                     }
-                    Material material = Material.valueOf(materialName.toUpperCase());
+                    Material.valueOf(materialName.toUpperCase());
                 }
             } catch (IllegalArgumentException e) {
                 invalidMaterials = true;
