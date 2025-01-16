@@ -1,6 +1,6 @@
 # Terraformer - Minecraft World Editing Plugin
 
-- _Join the Discord server, to see the current progress on the mod!_ [Discord Server Link]([https://discord.gg/FPPJsk3QJN](https://discord.gg/FPPJsk3QJN))
+- _Join the Discord server, to see the current progress on the mod!_ [Discord Server Link](https://discord.gg/FPPJsk3QJN)
 
 - **I will come up with videos on how to abuse this plugin as much as you can, the logic each brush has, tutorials and such once I have a version I'm happy with.**
 
@@ -11,7 +11,7 @@ I wish to implement a wide range of new features, including customizable brushes
 ## Contact
 
 - Questions - Discord: ruskizeu
-            - Or join the Discord server! [Discord Server Link]([https://discord.gg/FPPJsk3QJN](https://discord.gg/FPPJsk3QJN))
+            - Or join the Discord server! [Discord Server Link](https://discord.gg/FPPJsk3QJN)
 - Issues - [GitHub](https://github.com/flcristian/terraformer/issues)
 
 ## Commands
@@ -27,16 +27,27 @@ I wish to implement a wide range of new features, including customizable brushes
 - `/terraformer materialmode <mode>` or `/tf mm <mode>` - Set material mode
 - `/terraformer materialmodes` - Show all material modes
 - `/terraformer brushes` - Show all brush types
+- `/terraformer mask` - Set the mask materials
+- `/terraformer randomheight` - Toggle random height mode for foliage brush
+- `/terraform randomrotation` - Toggle random rotation for schematic brush
+- `/terraform schematic list` - See all available schematics
+- `/terraform schematic load <schematics>` - Load specified schematics
+
+- Using the `-f` flag for brush size and depth forces that value to be set.
+- Example: `/tf s 20 -f` - Sets the brush size to 20
 
 ## Brushes
 
 ### Basic Brushes
 - **Ball** - Creates a spherical shape
+- **Erase** - Erase the blocks in a spherical area
 - **Smooth** - Smooths terrain by averaging nearby blocks
 - **Erode** - Erodes terrain by removing protruding blocks
 - **Extrude** - Extrudes terrain outward based on surrounding blocks
 - **Rise** - Raises terrain by specified depth
 - **Dig** - Removes blocks down to specified depth
+- **Foliage** - Places foliage
+- **Schematic** - Places the schematic at the target block
 
 ### Paint Brushes
 - **Paint Top** - Paints blocks from top down
