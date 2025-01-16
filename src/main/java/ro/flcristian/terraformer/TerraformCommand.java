@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.command.Command;
@@ -27,9 +28,81 @@ import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
 class TerraformCommand implements CommandExecutor {
     private final Terraformer plugin;
+    Map<String, Component> commands;
+    Map<Integer, Component[]> pages;
 
     public TerraformCommand(Terraformer plugin) {
         this.plugin = plugin;
+
+        commands = new LinkedHashMap<>();
+        commands.put("help", Component.text("/terraform help ", NamedTextColor.YELLOW)
+                .append(Component.text("(page) - Show help information for terraform command", NamedTextColor.WHITE)));
+        commands.put("start", Component.text("/terraform start ", NamedTextColor.YELLOW)
+                .append(Component.text("- Start terraforming mode", NamedTextColor.WHITE)));
+        commands.put("stop", Component.text("/terraform stop ", NamedTextColor.YELLOW)
+                .append(Component.text("- Stop terraforming mode", NamedTextColor.WHITE)));
+        commands.put("undo", Component.text("/terraform undo ", NamedTextColor.YELLOW)
+                .append(Component.text("- Undo last modification", NamedTextColor.WHITE)));
+        commands.put("redo", Component.text("/terraform redo ", NamedTextColor.YELLOW)
+                .append(Component.text("- Redo last modification", NamedTextColor.WHITE)));
+        commands.put("brushes", Component.text("/terraform brushes ", NamedTextColor.YELLOW)
+                .append(Component.text("- Show all brush types", NamedTextColor.WHITE)));
+        commands.put("brush", Component.text("/terraform brush <brush> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming brush type.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf b <brush>", NamedTextColor.YELLOW)));
+        commands.put("size", Component.text("/terraform size <size> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming brush size.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf s <size>", NamedTextColor.YELLOW)));
+        commands.put("depth", Component.text("/terraform depth <depth> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming brush size.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf d <depth>", NamedTextColor.YELLOW)));
+        commands.put("materials", Component.text("/terraform materials <materials> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming materials.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf m <materials>", NamedTextColor.YELLOW)));
+        commands.put("materialmode", Component.text("/terraform materialmode <material mode> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming material mode.", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf mm <material mode>", NamedTextColor.YELLOW)));
+        commands.put("materialmodes", Component.text("/terraform materialmodes ", NamedTextColor.YELLOW)
+                .append(Component.text("- Show all material modes", NamedTextColor.WHITE)));
+        commands.put("mask", Component.text("/terraform mask ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set terraforming mask blocks", NamedTextColor.WHITE)).appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf mk <mask>", NamedTextColor.YELLOW)));
+        commands.put("randomheight", Component.text("/terraform randomheight ", NamedTextColor.YELLOW)
+                .append(Component.text("- Toggle random height for foliage brush", NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf rh", NamedTextColor.YELLOW)));
+        commands.put("schematic", Component.text("/terraform schematic <list/load>", NamedTextColor.YELLOW)
+                .append(Component.text("- List all the schematics / Load a schematic", NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf schem <li/ld>", NamedTextColor.YELLOW))
+                .appendNewline()
+                .append(Component.text(
+                        "- You also need to provide the schematic name/s, ex: /tf schem ld tree,tree2",
+                        NamedTextColor.WHITE)));
+        commands.put("randomrotation", Component.text("/terraform randomrotation ", NamedTextColor.YELLOW)
+                .append(Component.text("- Toggle random rotation for schematic brush", NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf rr", NamedTextColor.YELLOW)));
+
+        pages = new LinkedHashMap<>();
+        pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
+                commands.get("undo"), commands.get("redo") });
+        pages.put(2, new Component[] { commands.get("brushes"), commands.get("brush"), commands.get("size"),
+                commands.get("depth") });
+        pages.put(3, new Component[] { commands.get("materials"), commands.get("materialmode"),
+                commands.get("materialmodes") });
+        pages.put(4,
+                new Component[] { commands.get("mask"), commands.get("randomheight"), commands.get("randomrotation") });
+        pages.put(5, new Component[] { commands.get("schematic") });
     }
 
     @Override
@@ -57,7 +130,7 @@ class TerraformCommand implements CommandExecutor {
                     }
                 }
 
-                page = Math.min(page, 4);
+                page = Math.min(page, pages.keySet().size());
 
                 showHelpInfo(player, page);
                 return true;
@@ -373,6 +446,21 @@ class TerraformCommand implements CommandExecutor {
                 properties.Brush.RandomHeightFoliage = !properties.Brush.RandomHeightFoliage;
                 player.sendMessage(Messages.CHANGED_RANDOM_HEIGHT(properties.Brush.RandomHeightFoliage));
                 return true;
+
+            case "randomrotation", "rr":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                properties.Brush.RandomSchematicRotation = !properties.Brush.RandomSchematicRotation;
+                player.sendMessage(Messages.CHANGED_RANDOM_ROTATION(properties.Brush.RandomSchematicRotation));
+                return true;
+
             case "schematic", "schem":
                 if (!player.hasPermission("terraformer.mode")) {
                     player.sendMessage(Messages.NO_PERMISSION);
@@ -419,40 +507,44 @@ class TerraformCommand implements CommandExecutor {
                         return true;
 
                     case "load", "ld":
-                        if (args.length < 3) {
-                            player.sendMessage(Component.text("Usage: /terraform schematic load <filename>")
-                                    .color(NamedTextColor.RED));
-                            return true;
-                        }
-
-                        String fileName = args[2];
+                        String[] fileNames = args[2].split(",");
+                        List<File> validatedFiles = new ArrayList<>();
                         File schematicsDir = new File(plugin.getDataFolder(), "Schematics");
-                        File schematicFile = new File(schematicsDir, fileName);
 
-                        // Try with .schem extension if file doesn't exist
-                        if (!schematicFile.exists()) {
-                            schematicFile = new File(schematicsDir, fileName + ".schem");
+                        // Validate all files first
+                        for (String fileName : fileNames) {
+                            fileName = fileName.trim();
+                            File schematicFile = new File(schematicsDir, fileName);
+
+                            if (!schematicFile.exists()) {
+                                schematicFile = new File(schematicsDir, fileName + ".schem");
+                            }
+                            if (!schematicFile.exists()) {
+                                schematicFile = new File(schematicsDir, fileName + ".schematic");
+                            }
+                            if (!schematicFile.exists()) {
+                                player.sendMessage(Component.text("Schematic file not found: " + fileName)
+                                        .color(NamedTextColor.RED));
+                                return true;
+                            }
+                            validatedFiles.add(schematicFile);
                         }
 
-                        // Try with .schematic extension if still doesn't exist
-                        if (!schematicFile.exists()) {
-                            schematicFile = new File(schematicsDir, fileName + ".schematic");
-                        }
-
-                        if (!schematicFile.exists()) {
-                            player.sendMessage(Component.text("Schematic file not found: " + fileName)
-                                    .color(NamedTextColor.RED));
-                            return true;
-                        }
-
+                        // Try to load all files
+                        List<SchematicData> loadedSchematics = new ArrayList<>();
                         try {
-                            SchematicData schematicData = SchematicParserImpl.getInstance()
-                                    .readSchematicFile(player, schematicFile);
-                            properties.Brush.LoadedSchematicData = schematicData;
-                            player.sendMessage(Component.text("Loaded schematic: " + schematicFile.getName())
-                                    .color(NamedTextColor.GREEN));
+                            for (File file : validatedFiles) {
+                                SchematicData schematicData = SchematicParserImpl.getInstance()
+                                        .readSchematicFile(player, file);
+                                loadedSchematics.add(schematicData);
+                                player.sendMessage(Component.text("Loaded schematic: " + file.getName())
+                                        .color(NamedTextColor.GREEN));
+                            }
+
+                            // Only set properties if all loads were successful
+                            properties.Brush.LoadedSchematicsData = loadedSchematics;
                         } catch (IOException e) {
-                            player.sendMessage(Component.text("Error reading schematic file: " + fileName)
+                            player.sendMessage(Component.text("Error loading schematics. No changes applied.")
                                     .color(NamedTextColor.RED));
                             return true;
                         }
@@ -495,72 +587,9 @@ class TerraformCommand implements CommandExecutor {
     }
 
     private void showHelpInfo(Player player, int page) {
-        Map<String, Component> commands = new LinkedHashMap<>();
-        commands.put("help", Component.text("/terraform help ", NamedTextColor.YELLOW)
-                .append(Component.text("(page) - Show help information for terraform command", NamedTextColor.WHITE)));
-        commands.put("start", Component.text("/terraform start ", NamedTextColor.YELLOW)
-                .append(Component.text("- Start terraforming mode", NamedTextColor.WHITE)));
-        commands.put("stop", Component.text("/terraform stop ", NamedTextColor.YELLOW)
-                .append(Component.text("- Stop terraforming mode", NamedTextColor.WHITE)));
-        commands.put("undo", Component.text("/terraform undo ", NamedTextColor.YELLOW)
-                .append(Component.text("- Undo last modification", NamedTextColor.WHITE)));
-        commands.put("redo", Component.text("/terraform redo ", NamedTextColor.YELLOW)
-                .append(Component.text("- Redo last modification", NamedTextColor.WHITE)));
-        commands.put("brushes", Component.text("/terraform brushes ", NamedTextColor.YELLOW)
-                .append(Component.text("- Show all brush types", NamedTextColor.WHITE)));
-        commands.put("brush", Component.text("/terraform brush <brush> ", NamedTextColor.YELLOW)
-                .append(Component.text("- Set terraforming brush type.", NamedTextColor.WHITE)).appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf b <brush>", NamedTextColor.YELLOW)));
-        commands.put("size", Component.text("/terraform size <size> ", NamedTextColor.YELLOW)
-                .append(Component.text("- Set terraforming brush size.", NamedTextColor.WHITE)).appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf s <size>", NamedTextColor.YELLOW)));
-        commands.put("depth", Component.text("/terraform depth <depth> ", NamedTextColor.YELLOW)
-                .append(Component.text("- Set terraforming brush size.", NamedTextColor.WHITE)).appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf d <depth>", NamedTextColor.YELLOW)));
-        commands.put("materials", Component.text("/terraform materials <materials> ", NamedTextColor.YELLOW)
-                .append(Component.text("- Set terraforming materials.", NamedTextColor.WHITE)).appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf m <materials>", NamedTextColor.YELLOW)));
-        commands.put("materialmode", Component.text("/terraform materialmode <material mode> ", NamedTextColor.YELLOW)
-                .append(Component.text("- Set terraforming material mode.", NamedTextColor.WHITE)).appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf mm <material mode>", NamedTextColor.YELLOW)));
-        commands.put("materialmodes", Component.text("/terraform materialmodes ", NamedTextColor.YELLOW)
-                .append(Component.text("- Show all material modes", NamedTextColor.WHITE)));
-        commands.put("mask", Component.text("/terraform mask ", NamedTextColor.YELLOW)
-                .append(Component.text("- Set terraforming mask blocks", NamedTextColor.WHITE)).appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf mk <mask>", NamedTextColor.YELLOW)));
-        commands.put("randomheight", Component.text("/terraform randomheight ", NamedTextColor.YELLOW)
-                .append(Component.text("- Toggle random height for foliage brush", NamedTextColor.WHITE))
-                .appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf rh", NamedTextColor.YELLOW)));
-        commands.put("schematic", Component.text("/terraform schematic <list/load>", NamedTextColor.YELLOW)
-                .append(Component.text("- List all the schematics / Load a schematic", NamedTextColor.WHITE))
-                .appendNewline()
-                .append(Component.text("Alias: ", NamedTextColor.WHITE))
-                .append(Component.text("/tf schem <li/ld>", NamedTextColor.YELLOW))
-                .appendNewline()
-                .append(Component.text(
-                        "- You also need to provide the schematic name, ex: /tf schem ld tree (or tree.schem)",
-                        NamedTextColor.WHITE)));
-
-        Map<Integer, Component[]> pages = new LinkedHashMap<>();
-        pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
-                commands.get("undo"), commands.get("redo") });
-        pages.put(2, new Component[] { commands.get("brushes"), commands.get("brush"), commands.get("size"),
-                commands.get("depth") });
-        pages.put(3, new Component[] { commands.get("materials"), commands.get("materialmode"),
-                commands.get("materialmodes") });
-        pages.put(4, new Component[] { commands.get("mask"), commands.get("randomheight"), commands.get("schematic") });
-
         Component message = Component.text("Terraformer Help").color(NamedTextColor.AQUA)
                 .append(Component.text(" - ").color(NamedTextColor.WHITE))
-                .append(Component.text("Page " + page).color(NamedTextColor.GOLD))
+                .append(Component.text("Page " + page + "/" + pages.keySet().size()).color(NamedTextColor.GOLD))
                 .appendNewline()
                 .append(Component.text("=-=-=-=-=-=-=-=-=-=-=-=").color(NamedTextColor.WHITE))
                 .appendNewline();

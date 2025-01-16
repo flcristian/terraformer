@@ -36,7 +36,7 @@ public class TerraformTabCompleter implements TabCompleter {
         if (args.length == 1) {
             completions.addAll(Arrays.asList("help", "start", "stop", "undo", "redo",
                     "brush", "brushes", "size", "depth", "materials", "materialmode", "materialmodes", "mask",
-                    "randomheight", "schematic"));
+                    "randomheight", "randomrotation", "schematic"));
         } else if (args.length == 2) {
             switch (args[0].toLowerCase()) {
                 case "brush", "b" -> {
@@ -81,11 +81,21 @@ public class TerraformTabCompleter implements TabCompleter {
                 if (schematicsFolder.exists() && schematicsFolder.isDirectory()) {
                     File[] schemFiles = schematicsFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".schem")
                             || name.toLowerCase().endsWith(".schematic"));
+
                     if (schemFiles != null) {
-                        completions.addAll(Arrays.stream(schemFiles)
+                        String currentArg = args[2];
+                        String[] parts = currentArg.split(",");
+                        String prefix = String.join(",", Arrays.copyOfRange(parts, 0, parts.length - 1));
+                        String lastPart = parts[parts.length - 1].trim();
+
+                        List<String> matchingFiles = Arrays.stream(schemFiles)
                                 .map(File::getName)
                                 .map(name -> name.replaceAll("\\.(schem|schematic)$", ""))
-                                .toList());
+                                .filter(name -> name.toLowerCase().startsWith(lastPart.toLowerCase()))
+                                .map(match -> prefix.isEmpty() ? match : prefix + "," + match)
+                                .toList();
+
+                        completions.addAll(matchingFiles);
                     }
                 }
             }

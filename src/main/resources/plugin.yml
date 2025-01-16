@@ -66,6 +66,10 @@ commands:
         description: List all schematics / Load a schematic
         usage: /terraform schematic <list/load>
         aliases: [schem]
+      randomrotation:
+        description: Toggle random rotation mode (for schematic brush)
+        usage: /terraform randomrotation
+        aliases: [rr]
 
 permissions:
   terraformer.use:

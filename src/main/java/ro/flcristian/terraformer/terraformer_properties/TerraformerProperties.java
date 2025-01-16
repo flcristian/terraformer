@@ -1,11 +1,8 @@
 package ro.flcristian.terraformer.terraformer_properties;
 
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import ro.flcristian.terraformer.Terraformer;
@@ -15,8 +12,6 @@ import ro.flcristian.terraformer.terraformer_properties.material_history.Materia
 import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.Palette;
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
-import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
-import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 
 public class TerraformerProperties {
     public boolean IsTerraformer;
@@ -33,19 +28,6 @@ public class TerraformerProperties {
         MaterialHistory = new Stack<MaterialHistory>();
         History = new BrushBlockHistory();
         Palette = new Palette();
-    }
-
-    public TerraformerProperties(boolean isTerraformer, BrushType brushType, int brushSize, int brushDepth,
-            Map<Material, Integer> materials, MaterialMode materialsMode, List<Material> mask,
-            Stack<BrushProperties> brushHistory, Stack<MaterialHistory> materialHistory, BrushBlockHistory history,
-            Palette palette, boolean randomHeightFoliage, SchematicData loadedSchematicData) {
-        IsTerraformer = isTerraformer;
-        Brush = new BrushProperties(brushType, brushSize, brushDepth, materials, materialsMode, mask,
-                randomHeightFoliage, loadedSchematicData);
-        BrushHistory = brushHistory;
-        MaterialHistory = materialHistory;
-        History = history;
-        Palette = palette;
     }
 
     public TerraformerProperties(boolean isTerraformer, BrushProperties brush,
@@ -97,7 +79,8 @@ public class TerraformerProperties {
     public void applyBrushHistory(BrushProperties brushProperties) {
         BrushProperties toApply = brushProperties.clone();
         Brush = new BrushProperties(toApply.Type, toApply.BrushSize, toApply.BrushDepth, Brush.Materials,
-                Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage, Brush.LoadedSchematicData);
+                Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage, Brush.RandomSchematicRotation,
+                Brush.LoadedSchematicsData);
     }
 
     public void applyMaterialHistory(MaterialHistory materialHistory) {

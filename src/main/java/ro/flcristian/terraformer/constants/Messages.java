@@ -109,6 +109,12 @@ public final class Messages {
                                                 randomHeightFoliage ? NamedTextColor.GREEN : NamedTextColor.RED));
         }
 
+        public static Component CHANGED_RANDOM_ROTATION(boolean randomSchematicRotation) {
+                return Component.text("Changed random schematic rotation to ")
+                                .append(Component.text(randomSchematicRotation ? "enabled" : "disabled").color(
+                                                randomSchematicRotation ? NamedTextColor.GREEN : NamedTextColor.RED));
+        }
+
         public static final Component APPLIED_BRUSH_HISTORY = Component.text("Applied brush history");
         public static final Component APPLIED_MATERIAL_HISTORY = Component.text("Applied material history");
         public static final Component CANT_APPLY_MATERIAL_HISTORY = Component

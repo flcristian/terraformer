@@ -22,7 +22,8 @@ public class BrushProperties implements Cloneable {
     public MaterialMode Mode;
     public List<Material> Mask;
     public boolean RandomHeightFoliage;
-    public SchematicData LoadedSchematicData;
+    public boolean RandomSchematicRotation;
+    public List<SchematicData> LoadedSchematicsData;
 
     public BrushProperties() {
         Type = BrushType.BALL;
@@ -33,20 +34,22 @@ public class BrushProperties implements Cloneable {
         Mode = MaterialMode.RANDOM;
         Mask = new ArrayList<>();
         RandomHeightFoliage = false;
-        LoadedSchematicData = null;
+        RandomSchematicRotation = false;
+        LoadedSchematicsData = new ArrayList<>();
     }
 
     public BrushProperties(BrushType brushType, int brushSize, int brushDepth, Map<Material, Integer> materials,
             MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage,
-            SchematicData loadedSchematicData) {
+            boolean randomSchematicRotation, List<SchematicData> loadedSchematicsData) {
         Type = brushType;
         BrushSize = brushSize;
         BrushDepth = brushDepth;
         Materials = new LinkedHashMap<>(materials);
         Mode = materialsMode;
         Mask = mask;
-        RandomHeightFoliage = false;
-        LoadedSchematicData = loadedSchematicData;
+        RandomHeightFoliage = randomHeightFoliage;
+        RandomSchematicRotation = randomSchematicRotation;
+        LoadedSchematicsData = loadedSchematicsData;
     }
 
     public void applyBrush(Terraformer plugin, Player player, Location targetLocation) {
@@ -60,7 +63,8 @@ public class BrushProperties implements Cloneable {
     @Override
     public BrushProperties clone() {
         return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode,
-                new ArrayList<>(Mask), RandomHeightFoliage, LoadedSchematicData.clone());
+                new ArrayList<>(Mask), RandomHeightFoliage, RandomSchematicRotation,
+                new ArrayList<>(LoadedSchematicsData));
     }
 
     @Override
