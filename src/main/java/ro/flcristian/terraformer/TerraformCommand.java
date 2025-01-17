@@ -108,7 +108,8 @@ class TerraformCommand implements CommandExecutor {
                 commands.get("materialmodes") });
         pages.put(4,
                 new Component[] { commands.get("mask"), commands.get("randomheight"), commands.get("randomrotation") });
-        pages.put(5, new Component[] { commands.get("schematic"), commands.get("blockupdates") });
+        pages.put(5, new Component[] { commands.get("schematic") });
+        pages.put(6, new Component[] { commands.get("blockupdates") });
     }
 
     @Override
