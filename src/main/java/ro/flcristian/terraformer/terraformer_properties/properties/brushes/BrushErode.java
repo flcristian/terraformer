@@ -93,7 +93,7 @@ public class BrushErode extends Brush {
 
         // Apply changes
         for (Map.Entry<Location, BlockData> entry : erodedBlocks.entrySet()) {
-            entry.getKey().getBlock().setBlockData(entry.getValue());
+            entry.getKey().getBlock().setBlockData(entry.getValue(), brushProperties.BlockUpdates);
         }
 
         return true;

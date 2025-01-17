@@ -67,7 +67,8 @@ public class BrushBall extends Brush {
             Block block = state.getBlock();
             if (!block.getType().isSolid()
                     && (brushProperties.Mask.isEmpty() || brushProperties.Mask.contains(block.getType()))) {
-                block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
+                block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation),
+                        brushProperties.BlockUpdates);
             }
         }
 
@@ -76,7 +77,8 @@ public class BrushBall extends Brush {
             Block block = state.getBlock();
             if (block.getType().isSolid()
                     && (brushProperties.Mask.isEmpty() || brushProperties.Mask.contains(block.getType()))) {
-                block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
+                block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation),
+                        brushProperties.BlockUpdates);
             }
         }
 

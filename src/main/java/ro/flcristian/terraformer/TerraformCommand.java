@@ -92,6 +92,12 @@ class TerraformCommand implements CommandExecutor {
                 .appendNewline()
                 .append(Component.text("Alias: ", NamedTextColor.WHITE))
                 .append(Component.text("/tf rr", NamedTextColor.YELLOW)));
+        commands.put("blockupdates", Component.text("/terraform blockupdates ", NamedTextColor.YELLOW)
+                .append(Component.text("- Toggle block updates for all brushes except foliage and schematic",
+                        NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf bu", NamedTextColor.YELLOW)));
 
         pages = new LinkedHashMap<>();
         pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
@@ -102,7 +108,7 @@ class TerraformCommand implements CommandExecutor {
                 commands.get("materialmodes") });
         pages.put(4,
                 new Component[] { commands.get("mask"), commands.get("randomheight"), commands.get("randomrotation") });
-        pages.put(5, new Component[] { commands.get("schematic") });
+        pages.put(5, new Component[] { commands.get("schematic"), commands.get("blockupdates") });
     }
 
     @Override
@@ -175,7 +181,7 @@ class TerraformCommand implements CommandExecutor {
                     player.sendMessage(Messages.NOTHING_TO_UNDO);
                     return true;
                 }
-                plugin.undo(undoStates.states());
+                plugin.undo(undoStates.states(), properties.Brush.BlockUpdates);
                 player.sendMessage(Messages.UNDO_SUCCESSFUL);
                 return true;
 
@@ -556,6 +562,20 @@ class TerraformCommand implements CommandExecutor {
                                 .color(NamedTextColor.RED));
                         return true;
                 }
+
+            case "blockupdates", "bu":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                properties.Brush.BlockUpdates = !properties.Brush.BlockUpdates;
+                player.sendMessage(Messages.CHANGED_BLOCK_UPDATES(properties.Brush.BlockUpdates));
+                return true;
             default:
                 player.sendMessage(Messages.UNKNOWN_COMMAND);
                 return true;

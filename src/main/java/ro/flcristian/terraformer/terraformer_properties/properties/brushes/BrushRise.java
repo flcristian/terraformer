@@ -59,7 +59,7 @@ public class BrushRise extends Brush {
         }
 
         for (Map.Entry<Location, Material> entry : changes.entrySet()) {
-            entry.getKey().getBlock().setType(entry.getValue());
+            entry.getKey().getBlock().setType(entry.getValue(), brushProperties.BlockUpdates);
         }
 
         return true;

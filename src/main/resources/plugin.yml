@@ -1,5 +1,5 @@
 name: Terraformer
-version: 1.3.0
+version: 1.4.0
 main: ro.flcristian.terraformer.Terraformer
 description: A terraforming and world editing tool.
 author: flcristian
@@ -70,6 +70,10 @@ commands:
         description: Toggle random rotation mode (for schematic brush)
         usage: /terraform randomrotation
         aliases: [rr]
+      blockupdates:
+        description: Toggle block updates when brushing
+        usage: /terraform blockupdates
+        aliases: [bu]
 
 permissions:
   terraformer.use:

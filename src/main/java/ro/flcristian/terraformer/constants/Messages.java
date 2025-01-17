@@ -115,6 +115,12 @@ public final class Messages {
                                                 randomSchematicRotation ? NamedTextColor.GREEN : NamedTextColor.RED));
         }
 
+        public static Component CHANGED_BLOCK_UPDATES(boolean blockUpdates) {
+                return Component.text("Changed block updates to ")
+                                .append(Component.text(blockUpdates ? "enabled" : "disabled").color(
+                                                blockUpdates ? NamedTextColor.GREEN : NamedTextColor.RED));
+        }
+
         public static final Component APPLIED_BRUSH_HISTORY = Component.text("Applied brush history");
         public static final Component APPLIED_MATERIAL_HISTORY = Component.text("Applied material history");
         public static final Component CANT_APPLY_MATERIAL_HISTORY = Component

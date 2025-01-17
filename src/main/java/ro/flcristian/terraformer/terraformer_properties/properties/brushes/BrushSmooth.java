@@ -64,7 +64,7 @@ public class BrushSmooth extends Brush {
 
         for (Block block : allBlocks) {
             if (!block.getType().isSolid() && block.getType() != Material.WATER && block.getType() != Material.LAVA) {
-                block.setType(Material.AIR);
+                block.setType(Material.AIR, brushProperties.BlockUpdates);
             }
         }
 
@@ -85,7 +85,7 @@ public class BrushSmooth extends Brush {
                 }
 
                 if (areEdgesSolid(edgePositions)) {
-                    fillInterior(targetLocation, radius, y, blocksByLevel.get(y));
+                    fillInterior(targetLocation, radius, y, blocksByLevel.get(y), brushProperties.BlockUpdates);
                 }
             }
         }
@@ -93,26 +93,26 @@ public class BrushSmooth extends Brush {
         // First pass: Identify and remove protruding blocks
         for (Block block : allBlocks) {
             if (block.getType().isSolid()) {
-                erodeBlock(block);
+                erodeBlock(block, brushProperties.BlockUpdates);
             }
         }
 
         // Second pass: Fill holes
         for (Block block : allBlocks) {
             if (!block.getType().isSolid()) {
-                fillHole(block);
+                fillHole(block, brushProperties.BlockUpdates);
             }
         }
 
         // Final pass: Smooth remaining blocks
         for (Block block : allBlocks) {
-            smoothBlock(block);
+            smoothBlock(block, brushProperties.BlockUpdates);
         }
 
         return true;
     }
 
-    private static void erodeBlock(Block centerBlock) {
+    private static void erodeBlock(Block centerBlock, boolean blockUpdates) {
         int[][] directions = {
                 { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, // Cardinal directions
                 { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } // Diagonal directions
@@ -177,7 +177,7 @@ public class BrushSmooth extends Brush {
         }
 
         if (isProtrusion) {
-            centerBlock.setType(Material.AIR);
+            centerBlock.setType(Material.AIR, blockUpdates);
         }
     }
 
@@ -191,7 +191,8 @@ public class BrushSmooth extends Brush {
         return !block.getRelative(0, 1, 0).getType().isSolid();
     }
 
-    private static void fillInterior(Location targetLocation, double brushSize, int y, List<Block> edgeBlocks) {
+    private static void fillInterior(Location targetLocation, double brushSize, int y, List<Block> edgeBlocks,
+            boolean blockUpdates) {
         int radius = (int) Math.ceil(brushSize);
 
         // Filter to only blocks exposed to air
@@ -215,14 +216,14 @@ public class BrushSmooth extends Brush {
                     Location interior = targetLocation.clone().add(x, y - targetLocation.getY(), z);
                     // Only fill if exposed to air
                     if (isExposedToAir(interior.getBlock())) {
-                        interior.getBlock().setType(mostCommonBlock.getMaterial());
+                        interior.getBlock().setType(mostCommonBlock.getMaterial(), blockUpdates);
                     }
                 }
             }
         }
     }
 
-    private static void fillHole(Block centerBlock) {
+    private static void fillHole(Block centerBlock, boolean blockUpdates) {
         int solidNeighbors = 0;
         Material commonSolid = null;
         Map<Material, Integer> solidMaterials = new HashMap<>();
@@ -250,11 +251,11 @@ public class BrushSmooth extends Brush {
         }
 
         if (solidNeighbors >= 14 && commonSolid != null) {
-            centerBlock.setType(commonSolid);
+            centerBlock.setType(commonSolid, blockUpdates);
         }
     }
 
-    private static void smoothBlock(Block centerBlock) {
+    private static void smoothBlock(Block centerBlock, boolean blockUpdates) {
 
         Map<Material, Integer> materialCounts = new HashMap<>();
 
@@ -289,7 +290,7 @@ public class BrushSmooth extends Brush {
             int mostCommonCount = materialCounts.get(mostCommon);
 
             if (mostCommonCount >= 18) {
-                centerBlock.setType(mostCommon);
+                centerBlock.setType(mostCommon, blockUpdates);
             }
         }
     }

@@ -24,6 +24,7 @@ public class BrushProperties implements Cloneable {
     public boolean RandomHeightFoliage;
     public boolean RandomSchematicRotation;
     public List<SchematicData> LoadedSchematicsData;
+    public boolean BlockUpdates;
 
     public BrushProperties() {
         Type = BrushType.BALL;
@@ -36,11 +37,12 @@ public class BrushProperties implements Cloneable {
         RandomHeightFoliage = false;
         RandomSchematicRotation = false;
         LoadedSchematicsData = new ArrayList<>();
+        BlockUpdates = true;
     }
 
     public BrushProperties(BrushType brushType, int brushSize, int brushDepth, Map<Material, Integer> materials,
             MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage,
-            boolean randomSchematicRotation, List<SchematicData> loadedSchematicsData) {
+            boolean randomSchematicRotation, List<SchematicData> loadedSchematicsData, boolean blockUpdates) {
         Type = brushType;
         BrushSize = brushSize;
         BrushDepth = brushDepth;
@@ -50,6 +52,7 @@ public class BrushProperties implements Cloneable {
         RandomHeightFoliage = randomHeightFoliage;
         RandomSchematicRotation = randomSchematicRotation;
         LoadedSchematicsData = loadedSchematicsData;
+        BlockUpdates = blockUpdates;
     }
 
     public void applyBrush(Terraformer plugin, Player player, Location targetLocation) {
@@ -64,7 +67,7 @@ public class BrushProperties implements Cloneable {
     public BrushProperties clone() {
         return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode,
                 new ArrayList<>(Mask), RandomHeightFoliage, RandomSchematicRotation,
-                new ArrayList<>(LoadedSchematicsData));
+                new ArrayList<>(LoadedSchematicsData), BlockUpdates);
     }
 
     @Override

@@ -32,6 +32,7 @@ I wish to implement a wide range of new features, including customizable brushes
 - `/terraform randomrotation` - Toggle random rotation for schematic brush
 - `/terraform schematic list` - See all available schematics
 - `/terraform schematic load <schematics>` - Load specified schematics
+- `/terraform blockupdates` - Toggles block updates when brushing
 
 - Using the `-f` flag for brush size and depth forces that value to be set.
 - Example: `/tf s 20 -f` - Sets the brush size to 20

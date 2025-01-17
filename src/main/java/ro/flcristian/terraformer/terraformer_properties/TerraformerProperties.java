@@ -80,7 +80,7 @@ public class TerraformerProperties {
         BrushProperties toApply = brushProperties.clone();
         Brush = new BrushProperties(toApply.Type, toApply.BrushSize, toApply.BrushDepth, Brush.Materials,
                 Brush.Mode, Brush.Mask, Brush.RandomHeightFoliage, Brush.RandomSchematicRotation,
-                Brush.LoadedSchematicsData);
+                Brush.LoadedSchematicsData, Brush.BlockUpdates);
     }
 
     public void applyMaterialHistory(MaterialHistory materialHistory) {

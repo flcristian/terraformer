@@ -113,7 +113,7 @@ public class BrushPaint extends Brush {
         // First pass: replace non-solids with air
         for (BlockState state : states) {
             if (!state.getBlock().getType().isSolid()) {
-                state.getBlock().setType(Material.AIR);
+                state.getBlock().setType(Material.AIR, brushProperties.BlockUpdates);
             }
         }
 
@@ -123,7 +123,8 @@ public class BrushPaint extends Brush {
             if (brushProperties.Type != BrushType.PAINT_SURFACE) {
                 if (block.getType().isSolid() && (brushProperties.Mask.isEmpty()
                         || brushProperties.Mask.contains(block.getType()))) {
-                    block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation));
+                    block.setType(brushProperties.getMaterial(block.getLocation(), targetLocation),
+                            brushProperties.BlockUpdates);
                 }
             } else {
                 Location surfaceLocation = surfaceLocationMap.get(block.getLocation().getBlockX() + ","
@@ -132,7 +133,8 @@ public class BrushPaint extends Brush {
                 if (surfaceLocation != null) {
                     if (block.getType().isSolid() && (brushProperties.Mask.isEmpty()
                             || brushProperties.Mask.contains(block.getType()))) {
-                        block.setType(brushProperties.getMaterial(block.getLocation(), surfaceLocation));
+                        block.setType(brushProperties.getMaterial(block.getLocation(), surfaceLocation),
+                                brushProperties.BlockUpdates);
                     }
                 }
             }

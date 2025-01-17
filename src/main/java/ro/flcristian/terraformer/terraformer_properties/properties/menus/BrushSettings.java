@@ -29,6 +29,8 @@ public class BrushSettings implements InventoryHolder {
     private static final Component paintName = Component.text("Paint").color(NamedTextColor.BLUE);
     private static final Component depthSlotBlocked = Component.text("This brush doesn't use depth")
             .color(NamedTextColor.GRAY);
+    private static final Component brushesSoon = Component.text("Soon there will be more brushes!")
+            .color(NamedTextColor.RED);
     private static final Component brushHistoryEmpty = Component
             .text("Your brush properties will appear here.")
             .color(NamedTextColor.DARK_AQUA);
@@ -81,6 +83,15 @@ public class BrushSettings implements InventoryHolder {
 
         for (int i = 0; i < brushes.size(); i++) {
             inventory.setItem(0 + i, brushes.get(i));
+        }
+
+        ItemStack brushesSoonItem = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+        ItemMeta brushesSoonItemMeta = brushesSoonItem.getItemMeta();
+        brushesSoonItemMeta.customName(brushesSoon);
+        brushesSoonItem.setItemMeta(brushesSoonItemMeta);
+
+        for (int i = brushes.size(); i < 18; i++) {
+            inventory.setItem(0 + i, brushesSoonItem);
         }
 
         // Size Selection

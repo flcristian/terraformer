@@ -55,7 +55,7 @@ public class BrushDig extends Brush {
         }
 
         for (Map.Entry<Location, Material> entry : changes.entrySet()) {
-            entry.getKey().getBlock().setType(Material.AIR);
+            entry.getKey().getBlock().setType(Material.AIR, brushProperties.BlockUpdates);
         }
 
         return true;

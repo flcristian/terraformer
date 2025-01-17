@@ -198,7 +198,7 @@ public class Terraformer extends JavaPlugin implements Listener {
                             player.sendMessage(Messages.NOTHING_TO_UNDO);
                             return;
                         }
-                        undo(undoStates.states());
+                        undo(undoStates.states(), properties.Brush.BlockUpdates);
                         player.sendMessage(Messages.UNDO_SUCCESSFUL);
                         event.setCancelled(true);
                     }
@@ -325,9 +325,9 @@ public class Terraformer extends JavaPlugin implements Listener {
 
     // Undo
 
-    public void undo(Stack<BlockState> states) {
+    public void undo(Stack<BlockState> states, boolean blockUpdates) {
         for (BlockState state : states) {
-            state.update(true);
+            state.update(true, blockUpdates);
         }
     }
 }
