@@ -20,6 +20,7 @@ import ro.flcristian.terraformer.constants.Messages;
 import ro.flcristian.terraformer.terraformer_properties.TerraformerProperties;
 import ro.flcristian.terraformer.terraformer_properties.block_history.BlockHistoryStates;
 import ro.flcristian.terraformer.terraformer_properties.block_history.BrushAction;
+import ro.flcristian.terraformer.terraformer_properties.properties.BrushProperties;
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
 import ro.flcristian.terraformer.utility.MaterialObjectsParser;
@@ -98,6 +99,16 @@ class TerraformCommand implements CommandExecutor {
                 .appendNewline()
                 .append(Component.text("Alias: ", NamedTextColor.WHITE))
                 .append(Component.text("/tf bu", NamedTextColor.YELLOW)));
+        commands.put("minheight", Component.text("/terraform minheight <height> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set minimum paint height", NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf minh <height>", NamedTextColor.YELLOW)));
+        commands.put("maxheight", Component.text("/terraform maxheight <height> ", NamedTextColor.YELLOW)
+                .append(Component.text("- Set maximum paint height", NamedTextColor.WHITE))
+                .appendNewline()
+                .append(Component.text("Alias: ", NamedTextColor.WHITE))
+                .append(Component.text("/tf maxh <height>", NamedTextColor.YELLOW)));
 
         pages = new LinkedHashMap<>();
         pages.put(1, new Component[] { commands.get("help"), commands.get("start"), commands.get("stop"),
@@ -109,7 +120,8 @@ class TerraformCommand implements CommandExecutor {
         pages.put(4,
                 new Component[] { commands.get("mask"), commands.get("randomheight"), commands.get("randomrotation") });
         pages.put(5, new Component[] { commands.get("schematic") });
-        pages.put(6, new Component[] { commands.get("blockupdates") });
+        pages.put(6, new Component[] { commands.get("blockupdates"), commands.get("minheight") });
+        pages.put(7, new Component[] { commands.get("maxheight") });
     }
 
     @Override
@@ -576,6 +588,74 @@ class TerraformCommand implements CommandExecutor {
 
                 properties.Brush.BlockUpdates = !properties.Brush.BlockUpdates;
                 player.sendMessage(Messages.CHANGED_BLOCK_UPDATES(properties.Brush.BlockUpdates));
+                return true;
+
+            case "minheight", "minh":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(Messages.CLEARED_MINHEIGHT);
+                    return true;
+                }
+
+                int minHeight;
+                try {
+                    minHeight = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(Messages.INVALID_HEIGHT);
+                    return true;
+                }
+
+                if (minHeight < -64 || minHeight > 320) {
+                    player.sendMessage(Messages.INVALID_HEIGHT);
+                    return true;
+                }
+
+                properties.Brush.PaintRange = new BrushProperties.BrushPaintRange(minHeight,
+                        properties.Brush.PaintRange.maxY());
+                player.sendMessage(
+                        Component.text("Minimum paint height set to " + minHeight).color(NamedTextColor.GREEN));
+                return true;
+
+            case "maxheight", "maxh":
+                if (!player.hasPermission("terraformer.mode")) {
+                    player.sendMessage(Messages.NO_PERMISSION);
+                    return true;
+                }
+                if (properties == null || !properties.IsTerraformer) {
+                    player.sendMessage(Messages.TERRAFORM_MODE_NECESSARY);
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(Messages.CLEARED_MAXHEIGHT);
+                    return true;
+                }
+
+                int maxHeight;
+                try {
+                    maxHeight = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(Messages.INVALID_HEIGHT);
+                    return true;
+                }
+
+                if (maxHeight < -64 || maxHeight > 320) {
+                    player.sendMessage(Messages.INVALID_HEIGHT);
+                    return true;
+                }
+
+                properties.Brush.PaintRange = new BrushProperties.BrushPaintRange(properties.Brush.PaintRange.minY(),
+                        maxHeight);
+                player.sendMessage(
+                        Component.text("Maximum paint height set to " + maxHeight).color(NamedTextColor.GREEN));
                 return true;
             default:
                 player.sendMessage(Messages.UNKNOWN_COMMAND);

@@ -112,7 +112,7 @@ public class BrushPaint extends Brush {
 
         // First pass: replace non-solids with air
         for (BlockState state : states) {
-            if (!state.getBlock().getType().isSolid()) {
+            if (!state.getBlock().getType().isSolid() && brushProperties.PaintRange.contains(state.getLocation())) {
                 state.getBlock().setType(Material.AIR, brushProperties.BlockUpdates);
             }
         }
@@ -120,6 +120,9 @@ public class BrushPaint extends Brush {
         // Second pass: replace solid blocks with the new material
         for (BlockState state : states) {
             Block block = state.getBlock();
+            if (!brushProperties.PaintRange.contains(block.getLocation())) {
+                continue;
+            }
             if (brushProperties.Type != BrushType.PAINT_SURFACE) {
                 if (block.getType().isSolid() && (brushProperties.Mask.isEmpty()
                         || brushProperties.Mask.contains(block.getType()))) {

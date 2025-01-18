@@ -27,6 +27,8 @@ public final class Messages {
                         .text("Invalid brush depth. depth must be between 1 and 20.").color(NamedTextColor.RED);
         public static final Component INVALID_MATERIAL_MODE = Component.text("Invalid material mode.")
                         .color(NamedTextColor.RED);
+        public static final Component INVALID_HEIGHT = Component.text("Height must be between -64 and 320")
+                        .color(NamedTextColor.RED);
 
         public static final Component NOTHING_TO_UNDO = Component.text("Nothing to undo!")
                         .color(NamedTextColor.RED);
@@ -129,5 +131,9 @@ public final class Messages {
         public static final Component CLEARED_MATERIALS = Component.text("Materials reset!")
                         .color(NamedTextColor.GREEN);
         public static final Component CLEARED_MASK = Component.text("Mask materials cleared!")
+                        .color(NamedTextColor.GREEN);
+        public static final Component CLEARED_MINHEIGHT = Component.text("Reset brush paint minimum height!")
+                        .color(NamedTextColor.GREEN);
+        public static final Component CLEARED_MAXHEIGHT = Component.text("Reset brush paint maximum height!")
                         .color(NamedTextColor.GREEN);
 }

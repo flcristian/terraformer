@@ -113,5 +113,10 @@ public class BrushProperties implements Cloneable {
         public BrushPaintRange clone() {
             return new BrushPaintRange(minY, maxY);
         }
+
+        public boolean contains(Location location) {
+            int y = location.getBlockY();
+            return y >= minY && y <= maxY;
+        }
     }
 }

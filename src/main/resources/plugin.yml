@@ -74,6 +74,14 @@ commands:
         description: Toggle block updates when brushing
         usage: /terraform blockupdates
         aliases: [bu]
+      minheight:
+        description: Set minimum brush paint height
+        usage: /terraform minheight <height>
+        aliases: [minh]
+      maxheight:
+        description: Set maximum brush paint height
+        usage: /terraform maxheight <height> 
+        aliases: [maxh]
 
 permissions:
   terraformer.use:
