@@ -1,6 +1,6 @@
 Terraformer Public Use License (TPUL)
 
-Copyright (c) flcristian, 2025
+Copyright (c) Terraformer (Developer: Florescu Cristian-Ioan), 2025
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 software and associated documentation files (the "Software"), to use, copy, modify, 
@@ -17,7 +17,7 @@ No Misrepresentation: You may not claim ownership or authorship of the Software 
 modified versions of it.
 
 Derivative Works: You may create derivative works based on the Software, provided that 
-these works also comply with the terms of this license and maintain this license's 
+these works also comply with the terms of this license asnd maintain this license's 
 restrictions and permissions.
 
 Disclaimer: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 

@@ -1,4 +1,4 @@
-package ro.flcristian.terraformer.utility.schematics.records;
+package ro.flcristian.terraformer.utility;
 
 public class Pair<T, U> {
     private final T first;

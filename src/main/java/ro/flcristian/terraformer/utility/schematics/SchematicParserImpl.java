@@ -17,7 +17,7 @@ import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.IntTag;
-import ro.flcristian.terraformer.utility.schematics.records.Pair;
+import ro.flcristian.terraformer.utility.Pair;
 import ro.flcristian.terraformer.utility.schematics.records.SchematicBlockPos;
 import ro.flcristian.terraformer.utility.schematics.records.SchematicData;
 

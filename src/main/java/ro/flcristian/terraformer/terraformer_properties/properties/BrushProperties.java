@@ -25,6 +25,7 @@ public class BrushProperties implements Cloneable {
     public boolean RandomSchematicRotation;
     public List<SchematicData> LoadedSchematicsData;
     public boolean BlockUpdates;
+    public BrushPaintRange PaintRange;
 
     public BrushProperties() {
         Type = BrushType.BALL;
@@ -38,11 +39,13 @@ public class BrushProperties implements Cloneable {
         RandomSchematicRotation = false;
         LoadedSchematicsData = new ArrayList<>();
         BlockUpdates = true;
+        PaintRange = new BrushPaintRange(-64, 320);
     }
 
     public BrushProperties(BrushType brushType, int brushSize, int brushDepth, Map<Material, Integer> materials,
             MaterialMode materialsMode, List<Material> mask, boolean randomHeightFoliage,
-            boolean randomSchematicRotation, List<SchematicData> loadedSchematicsData, boolean blockUpdates) {
+            boolean randomSchematicRotation, List<SchematicData> loadedSchematicsData, boolean blockUpdates,
+            BrushPaintRange paintRange) {
         Type = brushType;
         BrushSize = brushSize;
         BrushDepth = brushDepth;
@@ -53,6 +56,7 @@ public class BrushProperties implements Cloneable {
         RandomSchematicRotation = randomSchematicRotation;
         LoadedSchematicsData = loadedSchematicsData;
         BlockUpdates = blockUpdates;
+        PaintRange = paintRange;
     }
 
     public void applyBrush(Terraformer plugin, Player player, Location targetLocation) {
@@ -67,7 +71,7 @@ public class BrushProperties implements Cloneable {
     public BrushProperties clone() {
         return new BrushProperties(Type, BrushSize, BrushDepth, new LinkedHashMap<>(Materials), Mode,
                 new ArrayList<>(Mask), RandomHeightFoliage, RandomSchematicRotation,
-                new ArrayList<>(LoadedSchematicsData), BlockUpdates);
+                new ArrayList<>(LoadedSchematicsData), BlockUpdates, PaintRange.clone());
     }
 
     @Override
@@ -101,6 +105,13 @@ public class BrushProperties implements Cloneable {
                 Materials.put(Material.WHITE_CONCRETE, 0);
                 Materials.put(Material.BLACK_CONCRETE, 100);
                 break;
+        }
+    }
+
+    public static record BrushPaintRange(int minY, int maxY) implements Cloneable {
+        @Override
+        public BrushPaintRange clone() {
+            return new BrushPaintRange(minY, maxY);
         }
     }
 }

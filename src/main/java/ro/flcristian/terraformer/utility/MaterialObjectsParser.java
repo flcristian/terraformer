@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import ro.flcristian.terraformer.terraformer_properties.properties.brushes.BrushType;
 import ro.flcristian.terraformer.terraformer_properties.properties.modes.MaterialMode;
@@ -31,9 +32,9 @@ public class MaterialObjectsParser {
 
                 int percentage = Integer.parseInt(parts[0]);
                 String materialName = parts[1].toUpperCase();
-                Material material = Material.getMaterial(materialName);
+                Material material = getTrueMaterial(Material.getMaterial(materialName));
 
-                if (material == null) {
+                if (material == null || !material.isBlock()) {
                     throw new IllegalArgumentException("Invalid material: " + materialName);
                 }
 
@@ -47,8 +48,8 @@ public class MaterialObjectsParser {
                 int numMaterials = materialNames.length;
 
                 if (numMaterials == 1) {
-                    Material material = Material.getMaterial(materialNames[0].trim().toUpperCase());
-                    if (material == null || !isValidMaterial(brushType, material)) {
+                    Material material = getTrueMaterial(Material.getMaterial(materialNames[0].trim().toUpperCase()));
+                    if (material == null || !material.isBlock()) {
                         throw new IllegalArgumentException("Invalid material: " + materialNames[0]);
                     }
 
@@ -56,8 +57,9 @@ public class MaterialObjectsParser {
                 } else {
                     int interval = 100 / (numMaterials - 1);
                     for (int i = 0; i < materialNames.length; i++) {
-                        Material material = Material.getMaterial(materialNames[i].trim().toUpperCase());
-                        if (material == null || !isValidMaterial(brushType, material)) {
+                        Material material = getTrueMaterial(
+                                Material.getMaterial(materialNames[i].trim().toUpperCase()));
+                        if (material == null || !material.isBlock()) {
                             throw new IllegalArgumentException("Invalid material: " + materialNames[i]);
                         }
 
@@ -71,8 +73,8 @@ public class MaterialObjectsParser {
                 int remainder = 100 % materialNames.length;
 
                 for (String materialName : materialNames) {
-                    Material material = Material.getMaterial(materialName.trim().toUpperCase());
-                    if (material == null || !isValidMaterial(brushType, material)) {
+                    Material material = getTrueMaterial(Material.getMaterial(materialName.trim().toUpperCase()));
+                    if (material == null || !material.isBlock()) {
                         throw new IllegalArgumentException("Invalid material: " + materialName);
                     }
 
@@ -105,15 +107,46 @@ public class MaterialObjectsParser {
         return maskMaterials;
     }
 
-    public static boolean isValidMaterial(BrushType brushType, Material material) {
-        if (!material.isBlock())
-            return false;
+    public static ItemStack getItemStackFromMaterial(Material material) {
+        return materialItemStackMap().get(material) == null ? new ItemStack(material)
+                : materialItemStackMap().get(material);
+    }
 
-        if (brushType == BrushType.FOLIAGE) {
-            return !material.isSolid() && material != Material.WATER && material != Material.LAVA
-                    || material == Material.CACTUS;
-        } else {
-            return material.isSolid() || material == Material.WATER || material == Material.LAVA;
+    public static Material getMaterialFromItemStack(ItemStack item) {
+        return materialMaterialMap().get(item.getType()) == null ? item.getType()
+                : materialMaterialMap().get(item.getType());
+    }
+
+    public static Material getTrueMaterial(Material material) {
+        return materialMaterialMap().get(material) == null ? material : materialMaterialMap().get(material);
+    }
+
+    private static List<Pair<Material, Material>> materialItemStackPairs = new ArrayList<>(
+            List.of(new Pair<>(Material.WATER, Material.WATER_BUCKET),
+                    new Pair<>(Material.LAVA, Material.LAVA_BUCKET),
+                    new Pair<>(Material.SWEET_BERRY_BUSH, Material.SWEET_BERRIES),
+                    new Pair<>(Material.CAVE_VINES, Material.GLOW_BERRIES),
+                    new Pair<>(Material.SWEET_BERRY_BUSH, Material.SWEET_BERRIES),
+                    new Pair<>(Material.COCOA, Material.COCOA_BEANS),
+                    new Pair<>(Material.CHORUS_PLANT, Material.CHORUS_FRUIT),
+                    new Pair<>(Material.POTATOES, Material.POTATO),
+                    new Pair<>(Material.CARROTS, Material.CARROT),
+                    new Pair<>(Material.BEETROOTS, Material.BEETROOT),
+                    new Pair<>(Material.KELP_PLANT, Material.KELP)));
+
+    private static Map<Material, ItemStack> materialItemStackMap() {
+        Map<Material, ItemStack> map = new LinkedHashMap<>();
+        for (Pair<Material, Material> pair : materialItemStackPairs) {
+            map.put(pair.getFirst(), new ItemStack(pair.getSecond()));
         }
+        return map;
+    }
+
+    private static Map<Material, Material> materialMaterialMap() {
+        Map<Material, Material> map = new LinkedHashMap<>();
+        for (Pair<Material, Material> pair : materialItemStackPairs) {
+            map.put(pair.getSecond(), pair.getFirst());
+        }
+        return map;
     }
 }

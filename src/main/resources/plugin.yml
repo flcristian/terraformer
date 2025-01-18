@@ -1,5 +1,5 @@
 name: Terraformer
-version: 1.4.0
+version: 1.5.0
 main: ro.flcristian.terraformer.Terraformer
 description: A terraforming and world editing tool.
 author: flcristian

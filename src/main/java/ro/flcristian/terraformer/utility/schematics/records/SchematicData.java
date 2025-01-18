@@ -3,6 +3,8 @@ package ro.flcristian.terraformer.utility.schematics.records;
 import java.util.ArrayList;
 import java.util.List;
 
+import ro.flcristian.terraformer.utility.Pair;
+
 public record SchematicData(int width, int height, int length, List<Pair<SchematicBlockPos, String>> blocks)
         implements Cloneable {
 

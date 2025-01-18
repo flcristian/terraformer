@@ -57,7 +57,6 @@ public class MaterialSettings implements InventoryHolder {
     public MaterialSettings(Terraformer plugin, TerraformerProperties properties, boolean usesMaterials) {
         this.usesMaterials = usesMaterials;
         this.currentMaterialPage = 1;
-
         Component inventoryName = Component.text("Material Settings").color(NamedTextColor.DARK_RED)
                 .append(Component.text(" - ").color(NamedTextColor.GRAY)
                         .append(properties.Brush.Type.getName()));
@@ -150,17 +149,7 @@ public class MaterialSettings implements InventoryHolder {
             materialSlot.setItemMeta(materialSlotMeta);
 
             ItemStack[] materials = properties.Brush.Materials.keySet().stream()
-                    .map(material -> {
-                        if (material == Material.WATER) {
-                            return new ItemStack(Material.WATER_BUCKET);
-                        }
-
-                        if (material == Material.LAVA) {
-                            return new ItemStack(Material.LAVA_BUCKET);
-                        }
-
-                        return new ItemStack(material);
-                    })
+                    .map(material -> MaterialObjectsParser.getItemStackFromMaterial(material))
                     .toArray(ItemStack[]::new);
 
             ItemStack materialPercentage = new ItemStack(Material.YELLOW_STAINED_GLASS_PANE);
@@ -181,18 +170,7 @@ public class MaterialSettings implements InventoryHolder {
                 int slot = i - startIndex;
 
                 ItemMeta materialMeta = materials[i].getItemMeta();
-                Material stackMaterial;
-                switch (materials[i].getType()) {
-                    case Material.WATER_BUCKET:
-                        stackMaterial = Material.WATER;
-                        break;
-                    case Material.LAVA_BUCKET:
-                        stackMaterial = Material.LAVA;
-                        break;
-                    default:
-                        stackMaterial = materials[i].getType();
-                        break;
-                }
+                Material stackMaterial = MaterialObjectsParser.getMaterialFromItemStack(materials[i]);
                 materialMeta.customName(
                         Component.text(MaterialNameFormatter.format(stackMaterial.toString()))
                                 .color(NamedTextColor.DARK_GREEN));
@@ -337,19 +315,8 @@ public class MaterialSettings implements InventoryHolder {
             }
 
             if (event.getSlot() >= 9 && event.getSlot() < 18) {
-                Material stackMaterial = inventory.getItem(event.getSlot() + 9).getType();
-                Material material;
-                switch (stackMaterial) {
-                    case WATER_BUCKET:
-                        material = Material.WATER;
-                        break;
-                    case LAVA_BUCKET:
-                        material = Material.LAVA;
-                        break;
-                    default:
-                        material = stackMaterial;
-                        break;
-                }
+                Material material = MaterialObjectsParser
+                        .getMaterialFromItemStack(inventory.getItem(event.getSlot() + 9));
 
                 ClickType clickType = event.getClick();
 
@@ -379,7 +346,12 @@ public class MaterialSettings implements InventoryHolder {
 
             if (event.getSlot() >= 18 && event.getSlot() < 27) {
                 if (!meta.customName().equals(materialSlotEmpty)) {
-                    properties.Brush.Materials.remove(item.getType());
+                    System.out.println("Material slot is not empty");
+                    System.out.println("Item: " + item);
+                    System.out.println("Item: "
+                            + MaterialObjectsParser.getMaterialFromItemStack(inventory.getItem(event.getSlot())));
+                    properties.Brush.Materials.remove(
+                            MaterialObjectsParser.getMaterialFromItemStack(inventory.getItem(event.getSlot())));
                     properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                     return;
                 } else {
@@ -391,20 +363,9 @@ public class MaterialSettings implements InventoryHolder {
                         materialToAdd = event.getCursor().getType();
                     }
 
-                    Material material;
-                    switch (materialToAdd) {
-                        case WATER_BUCKET:
-                            material = Material.WATER;
-                            break;
-                        case LAVA_BUCKET:
-                            material = Material.LAVA;
-                            break;
-                        default:
-                            material = materialToAdd;
-                            break;
-                    }
+                    Material material = MaterialObjectsParser.getTrueMaterial(materialToAdd);
 
-                    if (MaterialObjectsParser.isValidMaterial(properties.Brush.Type, material)) {
+                    if (material.isBlock()) {
                         properties.Brush.Materials.put(material, 0);
                         properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                         return;
@@ -460,23 +421,11 @@ public class MaterialSettings implements InventoryHolder {
                 if (index < properties.MaterialHistory.size()) {
                     int materialHistoryIndex = properties.MaterialHistory.size() - 1 - index;
 
-                    boolean validMaterials = true;
-                    for (Material material : properties.MaterialHistory.get(materialHistoryIndex).Materials.keySet()) {
-                        if (!MaterialObjectsParser.isValidMaterial(properties.Brush.Type, material)) {
-                            validMaterials = false;
-                            break;
-                        }
-                    }
-
-                    if (validMaterials) {
-                        properties
-                                .applyMaterialHistory(
-                                        properties.MaterialHistory.get(materialHistoryIndex));
-                        player.sendMessage(Messages.APPLIED_MATERIAL_HISTORY);
-                        properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
-                    } else {
-                        player.sendMessage(Messages.CANT_APPLY_MATERIAL_HISTORY);
-                    }
+                    properties
+                            .applyMaterialHistory(
+                                    properties.MaterialHistory.get(materialHistoryIndex));
+                    player.sendMessage(Messages.APPLIED_MATERIAL_HISTORY);
+                    properties.Brush.Type.openMaterialSettings(plugin, player, properties, currentMaterialPage);
                 }
             }
         }

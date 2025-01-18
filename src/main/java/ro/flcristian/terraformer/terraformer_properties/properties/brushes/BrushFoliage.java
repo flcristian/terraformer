@@ -38,7 +38,7 @@ public class BrushFoliage extends Brush {
                         Material currentBlock = checkLoc.getBlock().getType();
                         Material blockAbove = checkLoc.clone().add(0, 1, 0).getBlock().getType();
 
-                        if ((currentBlock.isSolid() || currentBlock == Material.WATER || currentBlock == Material.LAVA)
+                        if ((currentBlock.isSolid())
                                 && !blockAbove.isSolid()) {
                             surfaceLocation = checkLoc;
                             foundSurface = true;
