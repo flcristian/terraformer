@@ -117,4 +117,11 @@ Access the brush settings menu by right-clicking with the brush tool. The menu a
 
 ## License
 
-This mod is released under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3.
+This project is licensed under the **Terraformer Public Use License (TPUL)**.
+
+You are free to use, modify, and distribute the software, as long as you:
+- Provide proper credit to the original author.
+- Do not use the software for commercial purposes.
+- Do not claim ownership or authorship of the software or its derivatives.
+
+For more details, see the [LICENSE](./LICENSE.txt) file in this repository.
