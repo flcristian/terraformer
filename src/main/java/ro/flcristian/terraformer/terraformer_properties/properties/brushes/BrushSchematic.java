@@ -52,15 +52,15 @@ public class BrushSchematic extends Brush {
             int width = Math.max(1, schematic.width());
             int length = Math.max(1, schematic.length());
 
-            // Get rotated dimensions
+            // Get rotated dimensions with padding
             int[] rotatedDims = getRotatedDimensions(width, length, rotationAngle);
             int rotatedWidth = rotatedDims[0];
             int rotatedLength = rotatedDims[1];
 
-            // Calculate offsets using rotated dimensions
-            int offsetX = -rotatedWidth / 2;
+            // Calculate offsets using padded dimensions
+            int offsetX = -(rotatedWidth / 2);
             int offsetY = 0;
-            int offsetZ = -rotatedLength / 2;
+            int offsetZ = -(rotatedLength / 2);
 
             // First pass: collect states
             for (var blockPair : schematic.blocks()) {
@@ -148,9 +148,13 @@ public class BrushSchematic extends Brush {
     }
 
     private static SchematicBlockPos rotatePosition(SchematicBlockPos pos, int degrees, int width, int length) {
-        // Get center point of original schematic
-        double centerX = width / 2.0;
-        double centerZ = length / 2.0;
+        // Add padding for odd dimensions before calculating centers
+        int paddedWidth = width + (width % 2);
+        int paddedLength = length + (length % 2);
+
+        // Get center point of original schematic using padded dimensions
+        double centerX = (paddedWidth - 1) / 2.0;
+        double centerZ = (paddedLength - 1) / 2.0;
 
         // Translate to origin
         double relativeX = pos.x() - centerX;
@@ -161,25 +165,32 @@ public class BrushSchematic extends Brush {
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
 
-        int newX = (int) Math.round(relativeX * cos - relativeZ * sin);
-        int newZ = (int) Math.round(relativeX * sin + relativeZ * cos);
+        double rotatedX = relativeX * cos - relativeZ * sin;
+        double rotatedZ = relativeX * sin + relativeZ * cos;
 
-        // Translate back using rotated center
+        // Get rotated dimensions with padding
         int[] rotatedDims = getRotatedDimensions(width, length, degrees);
-        double newCenterX = rotatedDims[0] / 2.0;
-        double newCenterZ = rotatedDims[1] / 2.0;
+        double newCenterX = (rotatedDims[0] - 1) / 2.0;
+        double newCenterZ = (rotatedDims[1] - 1) / 2.0;
 
         return new SchematicBlockPos(
-                newX + (int) newCenterX,
+                (int) Math.round(rotatedX + newCenterX),
                 pos.y(),
-                newZ + (int) newCenterZ);
+                (int) Math.round(rotatedZ + newCenterZ));
     }
 
     private static int[] getRotatedDimensions(int width, int length, int rotationAngle) {
         // For 90 and 270 degrees, width and length are swapped
+        // We need to ensure enough space for the rotated structure
         if (rotationAngle == 90 || rotationAngle == 270) {
-            return new int[] { length, width };
+            // For odd dimensions, we need an extra block of space
+            int newWidth = length + (length % 2);
+            int newLength = width + (width % 2);
+            return new int[] { newWidth, newLength };
         }
-        return new int[] { width, length };
+        // For 0 and 180 degrees, dimensions stay the same but might need padding
+        int paddedWidth = width + (width % 2);
+        int paddedLength = length + (length % 2);
+        return new int[] { paddedWidth, paddedLength };
     }
 }
