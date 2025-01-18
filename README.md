@@ -33,6 +33,8 @@ I wish to implement a wide range of new features, including customizable brushes
 - `/terraform schematic list` - See all available schematics
 - `/terraform schematic load <schematics>` - Load specified schematics
 - `/terraform blockupdates` - Toggles block updates when brushing
+- `/terraform minheight <height>` - Set the minimum height for paint brush
+- `/terraform maxheight <height>` - Set the maximum height for paint brush
 
 - Using the `-f` flag for brush size and depth forces that value to be set.
 - Example: `/tf s 20 -f` - Sets the brush size to 20
